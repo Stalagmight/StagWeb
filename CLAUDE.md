@@ -1,6 +1,6 @@
 # Stalagmight Website
 
-Website for the [Stalagmight](../Stalagmight) cave mapping software project.
+Website for the Stalagmight cave mapping software project.
 
 ## Workflow
 
