@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Standard V2 Alternatives</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;700&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../shared.css" />
+    <style>
+      body { font-family: "Work Sans", sans-serif; }
+      h1, h2 { font-family: "Lora", serif; }
+      .wrap { width: min(1100px, calc(100vw - 2rem)); margin: 0 auto; padding: 1.2rem 0 2.5rem; }
+      .hero { border: 1px solid var(--cc-border); border-radius: 24px; padding: 1.1rem; background: linear-gradient(145deg, rgba(23,22,21,0.95), rgba(14,13,12,0.9)); }
+      .hero p { color: var(--cc-text-secondary); max-width: 72ch; }
+      .grid { margin-top: 0.9rem; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.7rem; }
+      .card { border: 1px solid var(--cc-border); border-radius: 14px; background: rgba(23,22,21,0.85); padding: 0.85rem; display: flex; flex-direction: column; gap: 0.55rem; }
+      .card p { margin: 0; color: var(--cc-text-secondary); font-size: 0.9rem; }
+      .card a { margin-top: auto; width: fit-content; border: 1px solid var(--cc-accent); border-radius: 999px; color: var(--cc-accent); text-decoration: none; padding: 0.35rem 0.8rem; }
+      .card a:hover { background: var(--cc-accent); color: var(--cc-accent-on); }
+      .foot { margin-top: 1.2rem; text-align: center; color: var(--cc-text-secondary); font-size: 0.82rem; }
+      @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body class="grid-noise">
+    <main class="wrap">
+      <section class="hero reveal">
+        <span class="label">Stalagmight / Standard V2</span>
+        <h1>10 standard one-page product introduction alternatives</h1>
+        <p>
+          A practical batch focused on conventional product-intro structure with moderate stylistic variation.
+        </p>
+      </section>
+      <section class="grid">
+        <article class="card reveal"><h2>01. Ridge Launch</h2><p>Balanced standard structure with cinematic cave tone.</p><a href="./std-v2-01-ridge-launch.html">Open</a></article>
+        <article class="card reveal"><h2>02. Caveflow Classic</h2><p>Conventional product hierarchy with split hero rhythm.</p><a href="./std-v2-02-caveflow-classic.html">Open</a></article>
+        <article class="card reveal"><h2>03. Surveydeck Prime</h2><p>Straightforward operational presentation for expedition teams.</p><a href="./std-v2-03-surveydeck-prime.html">Open</a></article>
+        <article class="card reveal"><h2>04. Basecamp Landing</h2><p>Friendly one-page structure with clear conversion emphasis.</p><a href="./std-v2-04-basecamp-landing.html">Open</a></article>
+        <article class="card reveal"><h2>05. Atlas Standard</h2><p>Conservative tone tuned for trust and quality framing.</p><a href="./std-v2-05-atlas-standard.html">Open</a></article>
+        <article class="card reveal"><h2>06. Waypoint Onepage</h2><p>Simple, compact story for stakeholder-first product review.</p><a href="./std-v2-06-waypoint-onepage.html">Open</a></article>
+        <article class="card reveal"><h2>07. Relay Product</h2><p>Workflow-first angle focused on field-office relay.</p><a href="./std-v2-07-relay-product.html">Open</a></article>
+        <article class="card reveal"><h2>08. Strata Intro</h2><p>Clear capability framing with softer UI expression.</p><a href="./std-v2-08-strata-intro.html">Open</a></article>
+        <article class="card reveal"><h2>09. Lantern Overview</h2><p>Practical one-page summary optimized for fast evaluation.</p><a href="./std-v2-09-lantern-overview.html">Open</a></article>
+        <article class="card reveal"><h2>10. Fieldgrid Launch</h2><p>Conventional product page with cave-native positioning.</p><a href="./std-v2-10-fieldgrid-launch.html">Open</a></article>
+      </section>
+      <p class="foot">Standard batch v2 · <span data-year></span></p>
+    </main>
+    <script src="./standard-base.js" defer></script>
+  </body>
+</html>
