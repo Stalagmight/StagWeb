@@ -20,6 +20,9 @@
       .card a { margin-top: auto; width: fit-content; border: 1px solid var(--cc-accent); border-radius: 999px; color: var(--cc-accent); text-decoration: none; padding: 0.35rem 0.8rem; }
       .card a:hover { background: var(--cc-accent); color: var(--cc-accent-on); }
       .foot { margin-top: 1.2rem; text-align: center; color: var(--cc-text-secondary); font-size: 0.82rem; }
+      /* This page uses standard-base.js which toggles .show, not .is-visible. */
+      .reveal { opacity: 1; transform: none; }
+      .reveal.show { opacity: 1; transform: none; }
       @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
     </style>
   </head>

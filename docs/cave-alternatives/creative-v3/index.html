@@ -104,6 +104,17 @@
         font-size: 0.82rem;
       }
 
+      /* This page uses creative-base.js which toggles .show, not .is-visible. */
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+
+      .reveal.show {
+        opacity: 1;
+        transform: none;
+      }
+
       @media (max-width: 860px) {
         .grid {
           grid-template-columns: 1fr;
