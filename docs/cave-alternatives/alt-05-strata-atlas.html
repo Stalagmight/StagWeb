@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alt 05 · Strata Atlas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700;900&family=Public+Sans:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./shared.css" />
+    <style>
+      body {
+        font-family: "Public Sans", sans-serif;
+        background:
+          radial-gradient(circle at 10% 20%, rgba(184, 152, 72, 0.15), transparent 35%),
+          radial-gradient(circle at 90% 82%, rgba(72, 152, 106, 0.14), transparent 40%),
+          var(--cc-background);
+      }
+
+      h1,
+      h2,
+      h3,
+      .brand {
+        font-family: "Playfair Display", serif;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 1rem;
+      }
+
+      .mag-lead h1 {
+        font-size: clamp(2.3rem, 5vw, 4.8rem);
+      }
+
+      .cover-stack {
+        position: relative;
+        min-height: 280px;
+      }
+
+      .cover {
+        position: absolute;
+        border: 1px solid var(--cc-border);
+        border-radius: 14px;
+        padding: 0.9rem;
+        background: linear-gradient(160deg, rgba(23, 22, 21, 0.96), rgba(14, 13, 12, 0.9));
+        box-shadow: var(--shadow-deep);
+      }
+
+      .cover.one {
+        inset: 0 24% 34% 0;
+      }
+
+      .cover.two {
+        inset: 28% 2% 8% 20%;
+      }
+
+      .cover b {
+        display: block;
+        font-size: 1.4rem;
+        font-family: "Playfair Display", serif;
+      }
+
+      .columns {
+        margin-top: 1.4rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.9rem;
+      }
+
+      .panel ul {
+        margin: 0.7rem 0 0;
+        padding-left: 1rem;
+        color: var(--cc-text-secondary);
+      }
+
+      .panel li + li {
+        margin-top: 0.45rem;
+      }
+
+      .steps {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      @media (max-width: 980px) {
+        .hero-copy,
+        .columns,
+        .steps {
+          grid-template-columns: 1fr;
+        }
+
+        .cover-stack {
+          min-height: 230px;
+        }
+      }
+    </style>
+  </head>
+  <body class="grid-noise">
+    <div class="float-orb a"></div>
+    <main class="site-shell">
+      <nav class="top-nav reveal">
+        <a class="brand" href="./index.html"><span class="brand-mark"></span>Stalagmight · Strata Atlas</a>
+        <div class="nav-links">
+          <a href="#product">Product Spread</a>
+          <a href="#project">Project View</a>
+          <a href="#onboarding">Onboarding</a>
+        </div>
+      </nav>
+
+      <section class="hero-grid">
+        <article class="hero-copy reveal">
+          <div class="mag-lead">
+            <span class="label">Alternative 05 · Magazine Collage</span>
+            <h1>The survey publication your cave team actually trusts.</h1>
+            <p>
+              Strata Atlas blends editorial storytelling with operational UI to present Stalagmight as both
+              a product and a credible project platform.
+            </p>
+            <div class="hero-actions">
+              <a class="button-solid" href="#onboarding">Open First Issue</a>
+              <a class="button-ghost" href="#project">Read Project Ledger</a>
+            </div>
+          </div>
+          <div class="cover-stack">
+            <div class="cover one">
+              <small>Cover Story</small>
+              <b>Closure under 2 cm at -200 m</b>
+              <p>How teams reduced redraw cycles with station-level diagnostics.</p>
+            </div>
+            <div class="cover two">
+              <small>Inside</small>
+              <b>Onboarding flow in 3 screens</b>
+              <p>From cave metadata to validated first map package in one session.</p>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="columns" id="product">
+        <article class="panel reveal">
+          <h3>Product spread</h3>
+          <ul>
+            <li>Multi-section editing with durable provenance metadata.</li>
+            <li>Depth-aware visual presets tuned for cave readability.</li>
+            <li>Export suite that preserves map hierarchy and labels.</li>
+          </ul>
+        </article>
+        <article class="panel reveal" id="project">
+          <h3>Project spread</h3>
+          <ul>
+            <li>Milestone history for each expedition cycle.</li>
+            <li>Role-aware collaboration from surveyor to reviewer.</li>
+            <li>Versioned map artifacts for audit and publication.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section id="onboarding" class="steps">
+        <article class="step reveal">
+          <b>I</b>
+          <h3>Profile the cave</h3>
+          <p>Define cave name, region, and coordinate assumptions as project context.</p>
+        </article>
+        <article class="step reveal">
+          <b>II</b>
+          <h3>Ingest source survey data</h3>
+          <p>Bring in shots and notes from field logs; review auto-linked topology.</p>
+        </article>
+        <article class="step reveal">
+          <b>III</b>
+          <h3>Publish your first atlas page</h3>
+          <p>Export a polished baseline map and preserve it as project issue zero.</p>
+        </article>
+      </section>
+
+      <p class="footer-note">Concept 05 / Strata Atlas · <span data-year></span></p>
+    </main>
+    <script src="./shared.js" defer></script>
+  </body>
+</html>

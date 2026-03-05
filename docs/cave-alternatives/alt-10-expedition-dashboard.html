@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alt 10 · Expedition Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Urbanist:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./shared.css" />
+    <style>
+      body {
+        font-family: "Urbanist", sans-serif;
+        background:
+          radial-gradient(circle at 15% 20%, rgba(168, 144, 96, 0.2), transparent 40%),
+          radial-gradient(circle at 90% 85%, rgba(184, 80, 72, 0.16), transparent 34%),
+          #0d0c0b;
+      }
+
+      h1,
+      h2,
+      h3,
+      .brand {
+        font-family: "Syne", sans-serif;
+      }
+
+      .hero-copy h1 {
+        font-size: clamp(2rem, 5vw, 4.5rem);
+      }
+
+      .dash {
+        display: grid;
+        gap: 0.72rem;
+      }
+
+      .dash-top {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.6rem;
+      }
+
+      .kpi {
+        border: 1px solid var(--cc-border);
+        border-radius: 14px;
+        padding: 0.7rem;
+        background: rgba(14, 13, 12, 0.72);
+      }
+
+      .kpi small {
+        color: var(--cc-text-secondary);
+      }
+
+      .kpi strong {
+        display: block;
+        margin-top: 0.2rem;
+        font-size: 1.2rem;
+      }
+
+      .wizard {
+        border: 1px solid var(--cc-border);
+        border-radius: 18px;
+        padding: 0.9rem;
+        background: rgba(14, 13, 12, 0.72);
+      }
+
+      .wizard h3 {
+        margin-bottom: 0.7rem;
+      }
+
+      .wizard-step {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.52rem 0.58rem;
+        border-radius: 10px;
+        margin-bottom: 0.45rem;
+        border: 1px solid var(--cc-border);
+      }
+
+      .wizard-step.active {
+        border-color: var(--cc-accent);
+        background: var(--cc-accent-10);
+      }
+
+      .wizard-step span {
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--cc-border);
+        color: var(--cc-text-secondary);
+        font-size: 0.82rem;
+      }
+
+      .wizard-step.active span {
+        background: var(--cc-accent);
+        color: var(--cc-accent-on);
+      }
+
+      .step-name {
+        font-size: 0.9rem;
+      }
+
+      .feature-grid {
+        margin-top: 1.6rem;
+      }
+
+      @media (max-width: 980px) {
+        .dash-top {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="float-orb a"></div>
+    <main class="site-shell">
+      <nav class="top-nav reveal">
+        <a class="brand" href="./index.html"><span class="brand-mark"></span>Stalagmight · Expedition Dashboard</a>
+        <div class="nav-links">
+          <a href="#product">Product KPIs</a>
+          <a href="#project">Project Board</a>
+          <a href="#onboarding">Onboarding Wizard</a>
+        </div>
+      </nav>
+
+      <section class="hero-grid">
+        <article class="hero-copy reveal">
+          <span class="label">Alternative 10 · Operational SaaS</span>
+          <h1>Your expedition command center for cave survey data.</h1>
+          <p>
+            Expedition Dashboard positions Stalagmight as a scalable operations product: measurable value,
+            project-level governance, and a structured onboarding funnel.
+          </p>
+          <div class="hero-actions">
+            <a class="button-solid" href="#onboarding">Start Guided Setup</a>
+            <a class="button-ghost" href="#project">Open Project Board</a>
+          </div>
+          <div class="metrics">
+            <div class="metric"><strong>61%</strong><span>Faster new-cave activation</span></div>
+            <div class="metric"><strong>28%</strong><span>Fewer closure defects</span></div>
+            <div class="metric"><strong>4.9/5</strong><span>Reviewer confidence score</span></div>
+          </div>
+        </article>
+
+        <article class="hero-visual reveal" id="product">
+          <div class="dash">
+            <div class="dash-top">
+              <div class="kpi"><small>Active projects</small><strong>18</strong></div>
+              <div class="kpi"><small>Pending validation</small><strong>03</strong></div>
+              <div class="kpi"><small>Maps published</small><strong>126</strong></div>
+            </div>
+            <div class="wizard" id="onboarding">
+              <h3>Onboarding Wizard</h3>
+              <div class="wizard-step active"><span>1</span><div class="step-name">Create cave profile</div></div>
+              <div class="wizard-step"><span>2</span><div class="step-name">Import first survey batch</div></div>
+              <div class="wizard-step"><span>3</span><div class="step-name">Resolve quality warnings</div></div>
+              <div class="wizard-step"><span>4</span><div class="step-name">Publish baseline map package</div></div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section id="project" class="feature-grid">
+        <article class="feature reveal">
+          <h3>Product: Portfolio view</h3>
+          <p>Track every cave program in one place with integrity and activity signals.</p>
+        </article>
+        <article class="feature reveal">
+          <h3>Project: Team workflow lanes</h3>
+          <p>Coordinate field collection, validation, and publication without context switching.</p>
+        </article>
+        <article class="feature reveal">
+          <h3>Onboarding: Step completion analytics</h3>
+          <p>Understand exactly where new teams stall and optimize the first-session funnel.</p>
+        </article>
+      </section>
+
+      <section class="callout reveal">
+        <strong>Project framing:</strong> this direction is optimized for organizations running multiple cave
+        projects and needing clear executive-level progress reporting.
+      </section>
+
+      <p class="footer-note">Concept 10 / Expedition Dashboard · <span data-year></span></p>
+    </main>
+    <script src="./shared.js" defer></script>
+  </body>
+</html>

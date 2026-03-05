@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alt 02 · Echo Locator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Orbitron:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./shared.css" />
+    <style>
+      body {
+        font-family: "IBM Plex Mono", monospace;
+        background:
+          radial-gradient(circle at 50% 14%, rgba(168, 144, 96, 0.2), transparent 42%),
+          radial-gradient(circle at 85% 85%, rgba(184, 80, 72, 0.2), transparent 36%),
+          #080706;
+      }
+
+      h1,
+      h2,
+      h3,
+      .brand {
+        font-family: "Orbitron", sans-serif;
+        letter-spacing: 0.04em;
+      }
+
+      .top-nav {
+        border: 1px solid var(--cc-border);
+        padding: 0.6rem 0.9rem;
+        border-radius: 14px;
+        background: rgba(14, 13, 12, 0.72);
+      }
+
+      .hud {
+        position: relative;
+        aspect-ratio: 1;
+        max-width: 390px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 1px solid var(--cc-accent-50);
+        background:
+          radial-gradient(circle at center, rgba(168, 144, 96, 0.14) 0, transparent 36%),
+          repeating-radial-gradient(circle at center, rgba(213, 208, 202, 0.06) 0 2px, transparent 2px 34px),
+          rgba(14, 13, 12, 0.8);
+        overflow: hidden;
+      }
+
+      .hud::before,
+      .hud::after {
+        content: "";
+        position: absolute;
+        inset: 12%;
+        border-radius: 50%;
+        border: 1px dashed rgba(184, 152, 72, 0.35);
+        animation: spin 9s linear infinite;
+      }
+
+      .hud::after {
+        inset: 24%;
+        animation-direction: reverse;
+        animation-duration: 13s;
+      }
+
+      .ping {
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--cc-error);
+        box-shadow: 0 0 0 0 rgba(184, 80, 72, 0.5);
+        animation: pulse 2.8s ease-out infinite;
+      }
+
+      .readout {
+        margin-top: 0.9rem;
+        display: grid;
+        gap: 0.6rem;
+      }
+
+      .readout .panel {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .feature {
+        border-radius: 12px;
+      }
+
+      .steps .step {
+        border-style: solid;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(184, 80, 72, 0.5);
+        }
+        70% {
+          box-shadow: 0 0 0 22px rgba(184, 80, 72, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(184, 80, 72, 0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="site-shell">
+      <nav class="top-nav reveal">
+        <a class="brand" href="./index.html"><span class="brand-mark"></span>Stalagmight · Echo Locator</a>
+        <div class="nav-links">
+          <a href="#product">Product Grid</a>
+          <a href="#project">Project Ops</a>
+          <a href="#onboarding">Mission Start</a>
+        </div>
+      </nav>
+
+      <section class="hero-grid">
+        <article class="hero-copy reveal">
+          <span class="label">Alternative 02 · Signal HUD</span>
+          <h1>Find route truth before your next rappel.</h1>
+          <p>
+            Echo Locator sells Stalagmight like a subterranean mission-control platform: high signal,
+            low ambiguity, immediate confidence on survey quality.
+          </p>
+          <div class="hero-actions">
+            <a class="button-solid" href="#onboarding">Initialize Survey</a>
+            <a class="button-ghost" href="#project">Open Live Ops</a>
+          </div>
+          <div class="metrics">
+            <div class="metric"><strong>94%</strong><span>Auto-resolved shot links</span></div>
+            <div class="metric"><strong>0.8s</strong><span>Station redraw latency</span></div>
+            <div class="metric"><strong>5.4 km</strong><span>Total traversed passages</span></div>
+          </div>
+        </article>
+
+        <article class="hero-visual reveal">
+          <div class="hud panel">
+            <span class="ping"></span>
+          </div>
+          <div class="readout">
+            <div class="panel"><span>Echo consistency</span><strong>Stable</strong></div>
+            <div class="panel"><span>Loop closure drift</span><strong>2.1 cm</strong></div>
+            <div class="panel"><span>Depth envelope</span><strong>-214 m</strong></div>
+          </div>
+        </article>
+      </section>
+
+      <section id="product" class="feature-grid">
+        <article class="feature reveal">
+          <h3>Product: Live shot integrity radar</h3>
+          <p>Visualize confidence in every segment as new data streams from field notebooks.</p>
+        </article>
+        <article class="feature reveal">
+          <h3>Product: Smart conflict queues</h3>
+          <p>Group geometric anomalies by probable cause so teams resolve issues in minutes.</p>
+        </article>
+        <article class="feature reveal">
+          <h3>Product: Unified export beam</h3>
+          <p>Ship polished maps and audit logs in one controlled operation with version marks.</p>
+        </article>
+      </section>
+
+      <section id="project" class="callout reveal">
+        <strong>Project framing:</strong> Position Stalagmight as the operations layer between raw field
+        notes and trustworthy cave datasets used by rescue, science, and exploration groups.
+      </section>
+
+      <section id="onboarding" class="steps">
+        <article class="step reveal">
+          <b>A</b>
+          <h3>Activate cave workspace</h3>
+          <p>Load metadata, datum constraints, and team roles in a single launch panel.</p>
+        </article>
+        <article class="step reveal">
+          <b>B</b>
+          <h3>Feed first survey batch</h3>
+          <p>Import shots and instrument notes; auto-linking starts immediately.</p>
+        </article>
+        <article class="step reveal">
+          <b>C</b>
+          <h3>Deploy verified map</h3>
+          <p>Publish depth-aware outputs once integrity thresholds pass.</p>
+        </article>
+      </section>
+
+      <p class="footer-note">Concept 02 / Echo Locator · <span data-year></span></p>
+    </main>
+    <script src="./shared.js" defer></script>
+  </body>
+</html>

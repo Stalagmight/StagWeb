@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alt 07 · Compass Ritual</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Questrial&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./shared.css" />
+    <style>
+      body {
+        font-family: "Questrial", sans-serif;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(168, 144, 96, 0.22), transparent 42%),
+          #0b0a09;
+      }
+
+      h1,
+      h2,
+      h3,
+      .brand {
+        font-family: "Cinzel", serif;
+        letter-spacing: 0.06em;
+      }
+
+      .hero-copy,
+      .hero-visual,
+      .feature,
+      .step,
+      .callout {
+        border-radius: 2px;
+      }
+
+      .hero-copy {
+        border: 1px solid var(--cc-accent-50);
+        background:
+          linear-gradient(180deg, rgba(168, 144, 96, 0.07), transparent),
+          linear-gradient(160deg, rgba(23, 22, 21, 0.94), rgba(14, 13, 12, 0.9));
+      }
+
+      .hero-copy h1 {
+        font-size: clamp(2rem, 4.8vw, 4.5rem);
+      }
+
+      .compass {
+        margin: 0 auto;
+        width: min(340px, 100%);
+        aspect-ratio: 1;
+        border: 1px solid var(--cc-accent-50);
+        position: relative;
+        transform: rotate(45deg);
+      }
+
+      .compass::before,
+      .compass::after {
+        content: "";
+        position: absolute;
+        inset: 13%;
+        border: 1px solid var(--cc-accent-30);
+      }
+
+      .compass::after {
+        inset: 30%;
+      }
+
+      .needle {
+        position: absolute;
+        inset: 50% auto auto 50%;
+        width: 2px;
+        height: 42%;
+        background: linear-gradient(180deg, var(--cc-error), var(--cc-warning));
+        transform-origin: top center;
+        transform: translate(-50%, -50%) rotate(-45deg);
+      }
+
+      .needle::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: -5px;
+        width: 12px;
+        height: 12px;
+        border: 1px solid var(--cc-accent);
+        background: var(--cc-background);
+        border-radius: 50%;
+      }
+
+      .label-ring {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: space-between;
+        color: var(--cc-text-secondary);
+      }
+
+      .feature-grid {
+        margin-top: 1.8rem;
+      }
+
+      .feature,
+      .step {
+        border: 1px solid var(--cc-accent-30);
+      }
+
+      .step b {
+        border-radius: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="site-shell">
+      <nav class="top-nav reveal">
+        <a class="brand" href="./index.html"><span class="brand-mark"></span>Stalagmight · Compass Ritual</a>
+        <div class="nav-links">
+          <a href="#product">Instrument</a>
+          <a href="#project">Program</a>
+          <a href="#onboarding">Ritual</a>
+        </div>
+      </nav>
+
+      <section class="hero-grid">
+        <article class="hero-copy reveal">
+          <span class="label">Alternative 07 · Art Deco Precision</span>
+          <h1>The ceremony of reliable cave surveying.</h1>
+          <p>
+            Compass Ritual presents Stalagmight as a premium instrument platform: disciplined structure,
+            measured motion, and confidence-laced onboarding.
+          </p>
+          <div class="hero-actions">
+            <a class="button-solid" href="#onboarding">Enter Calibration</a>
+            <a class="button-ghost" href="#project">View Program Design</a>
+          </div>
+          <div class="metrics">
+            <div class="metric"><strong>100%</strong><span>Traceable revisions</span></div>
+            <div class="metric"><strong>3.1x</strong><span>Faster sign-off</span></div>
+            <div class="metric"><strong>40+</strong><span>Active cave programs</span></div>
+          </div>
+        </article>
+
+        <article class="hero-visual reveal" id="product">
+          <div class="compass"><i class="needle"></i></div>
+          <div class="label-ring"><span>N</span><span>E</span><span>S</span><span>W</span></div>
+          <div class="callout"><strong>Product lens:</strong> orient every decision around validated direction.</div>
+        </article>
+      </section>
+
+      <section id="project" class="feature-grid">
+        <article class="feature reveal">
+          <h3>Program governance</h3>
+          <p>Project controls align expedition teams around shared cave conventions.</p>
+        </article>
+        <article class="feature reveal">
+          <h3>Measured visualization</h3>
+          <p>Depth and section color language stay elegant without sacrificing readability.</p>
+        </article>
+        <article class="feature reveal">
+          <h3>Patina exports</h3>
+          <p>Publish cartography-ready outputs with metadata signatures intact.</p>
+        </article>
+      </section>
+
+      <section id="onboarding" class="steps">
+        <article class="step reveal">
+          <b>I</b>
+          <h3>Calibrate project charter</h3>
+          <p>Lock naming rules, datum mode, and expected closure envelope.</p>
+        </article>
+        <article class="step reveal">
+          <b>II</b>
+          <h3>Process opening traverse</h3>
+          <p>Upload first route and verify station integrity in one review sweep.</p>
+        </article>
+        <article class="step reveal">
+          <b>III</b>
+          <h3>Consecrate release build</h3>
+          <p>Publish an official cave map issue with archival lineage.</p>
+        </article>
+      </section>
+
+      <p class="footer-note">Concept 07 / Compass Ritual · <span data-year></span></p>
+    </main>
+    <script src="./shared.js" defer></script>
+  </body>
+</html>
