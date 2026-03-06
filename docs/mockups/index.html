@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StalagMight — Design Mockups</title>
+<title>StalagMight — Crystal Matrix Variations</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -21,18 +21,16 @@
     --accent: #a89060;
     --text-secondary: #858280;
     --border-subtle: rgba(243,232,216,0.18);
-    --border-strong: rgba(243,232,216,0.60);
   }
 
   body {
     background: var(--basalt-950);
     color: var(--limestone-50);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Barlow', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  /* Grain texture */
   body::before {
     content: '';
     position: fixed;
@@ -60,9 +58,11 @@
   .header svg { width: 32px; height: 32px; flex-shrink: 0; }
 
   .header-title {
-    font-size: 1.1rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.2rem;
     font-weight: 700;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--limestone-50);
   }
 
@@ -90,9 +90,11 @@
   }
 
   .hero h1 {
+    font-family: 'Rajdhani', sans-serif;
     font-size: clamp(2.2rem, 4.5vw, 3.8rem);
     font-weight: 700;
-    letter-spacing: -0.03em;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
     line-height: 1.15;
     margin-bottom: 1.25rem;
     opacity: 0;
@@ -133,13 +135,32 @@
 
   .pill strong { color: var(--sandstone-200); font-weight: 700; }
 
+  /* Section labels */
+  .section-label {
+    padding: 3rem 3rem 1rem;
+    max-width: 1380px;
+    margin: 0 auto;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border-top: 1px solid var(--border);
+  }
+  .section-label:first-of-type { border-top: none; }
+
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
     gap: 1.75rem;
-    padding: 2rem 3rem 6rem;
+    padding: 1rem 3rem 3rem;
     max-width: 1380px;
     margin: 0 auto;
+  }
+
+  .grid-featured {
+    grid-template-columns: 1fr;
+    max-width: 680px;
   }
 
   .card {
@@ -156,26 +177,14 @@
     display: block;
   }
 
-  .card:nth-child(1) { animation-delay: 0.05s; }
-  .card:nth-child(2) { animation-delay: 0.1s; }
-  .card:nth-child(3) { animation-delay: 0.15s; }
-  .card:nth-child(4) { animation-delay: 0.2s; }
-  .card:nth-child(5) { animation-delay: 0.25s; }
-  .card:nth-child(6) { animation-delay: 0.3s; }
-  .card:nth-child(7) { animation-delay: 0.35s; }
-  .card:nth-child(8) { animation-delay: 0.4s; }
-  .card:nth-child(9) { animation-delay: 0.45s; }
-  .card:nth-child(10) { animation-delay: 0.5s; }
-  .card:nth-child(11) { animation-delay: 0.55s; }
-  .card:nth-child(12) { animation-delay: 0.6s; }
-  .card:nth-child(13) { animation-delay: 0.65s; }
-  .card:nth-child(14) { animation-delay: 0.7s; }
-
   .card:hover {
     transform: translateY(-4px);
     border-color: rgba(168, 144, 96, 0.35);
     box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6);
   }
+
+  .card-featured { border-color: var(--accent); }
+  .card-featured:hover { border-color: var(--sandstone-200); }
 
   .card-preview {
     height: 200px;
@@ -194,14 +203,12 @@
     z-index: 1;
   }
 
-  .card:hover .card-preview svg {
-    opacity: 0.9;
-    transform: scale(1.08);
-  }
+  .card:hover .card-preview svg { opacity: 0.9; transform: scale(1.08); }
 
   .card-body { padding: 1.25rem 1.5rem 1.5rem; }
 
   .card-number {
+    font-family: 'Rajdhani', sans-serif;
     font-size: 0.65rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -210,9 +217,11 @@
   }
 
   .card-name {
+    font-family: 'Rajdhani', sans-serif;
     font-size: 1.35rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
     margin-bottom: 0.6rem;
     color: var(--limestone-50);
   }
@@ -254,44 +263,23 @@
   }
 
   .card:hover .card-arrow { opacity: 1; transform: translate(0,0); }
-
   .card-arrow svg { width: 12px; height: 12px; stroke: var(--limestone-50); fill: none; stroke-width: 2; }
 
-  /* Preview backgrounds — all using Cave palette */
-  .p-01 { background: linear-gradient(180deg, #0F0906 0%, #0e0d0c 100%); }
-  .p-01::after { content:''; position:absolute; bottom:0; left:0; right:0; height:50%; background:linear-gradient(180deg, transparent, rgba(168,144,96,0.06)); }
+  /* Preview backgrounds */
+  .p-base { background: linear-gradient(135deg, #0F0906 0%, #1A120B 50%, #0F0906 100%); }
+  .p-base::before { content:''; position:absolute; inset:0; background: linear-gradient(60deg, transparent 44%, rgba(193,160,122,0.06) 45%, transparent 46%), linear-gradient(-60deg, transparent 44%, rgba(168,144,96,0.04) 45%, transparent 46%); background-size: 70px 120px; }
 
-  .p-02 { background: linear-gradient(180deg, #1A120B 0%, #3A251A 25%, #C1A07A 50%, #F3E8D8 75%, #1A120B 100%); }
+  .p-v01 { background: linear-gradient(180deg, #0F0906 0%, #1A120B 100%); }
+  .p-v01::before { content:''; position:absolute; inset:0; background:linear-gradient(180deg, transparent, rgba(168,144,96,0.04)); }
 
-  .p-03 { background: linear-gradient(135deg, #F3E8D8 0%, #C1A07A 100%); }
-  .p-03 svg { color: #1A120B !important; }
+  .p-v02 { background: linear-gradient(90deg, #0F0906 0%, #1A120B 50%, #0F0906 100%); }
+  .p-v02::before { content:''; position:absolute; top:0; bottom:0; left:50%; width:1px; background:rgba(193,160,122,0.2); }
 
-  .p-04 { background: radial-gradient(circle, rgba(168,144,96,0.12) 0%, #0F0906 70%); }
-  .p-04::before { content:''; position:absolute; inset:0; background: radial-gradient(circle, transparent 30%, rgba(168,144,96,0.04) 31%, transparent 32%), radial-gradient(circle, transparent 55%, rgba(168,144,96,0.03) 56%, transparent 57%); }
+  .p-v03 { background: #0e0d0c; }
+  .p-v03::before { content:''; position:absolute; inset:0; opacity:0.06; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zm0 34L0 84V50l28-16 28 16v34L28 100z' fill='none' stroke='%23C1A07A' stroke-width='0.5'/%3E%3C/svg%3E"); }
 
-  .p-05 { background: #0F0906; }
-  .p-05::before { content:''; position:absolute; inset:0; background: radial-gradient(circle at 25% 35%, rgba(193,160,122,0.12) 0%, transparent 40%), radial-gradient(circle at 70% 60%, rgba(168,144,96,0.09) 0%, transparent 35%); }
-
-  .p-06 {
-    background:
-      linear-gradient(rgba(243,232,216,0.95), rgba(243,232,216,0.95)),
-      repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(0,0,0,0.05) 23px, rgba(0,0,0,0.05) 24px),
-      repeating-linear-gradient(90deg, transparent, transparent 23px, rgba(0,0,0,0.05) 23px, rgba(0,0,0,0.05) 24px);
-  }
-  .p-06::before { content:''; position:absolute; left:55px; top:0; bottom:0; width:2px; background:rgba(184,80,72,0.25); }
-  .p-06 svg { color: #3A251A !important; }
-
-  .p-07 { background: linear-gradient(135deg, #0F0906 0%, #1A120B 50%, #0F0906 100%); }
-  .p-07::before { content:''; position:absolute; inset:0; background: linear-gradient(60deg, transparent 44%, rgba(193,160,122,0.06) 45%, transparent 46%), linear-gradient(-60deg, transparent 44%, rgba(168,144,96,0.04) 45%, transparent 46%); background-size: 70px 120px; }
-
-  .p-08 { background: #171615; border-bottom: 2px solid rgba(193,160,122,0.25); }
-  .p-08::before { content:''; position:absolute; inset:0; background: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(243,232,216,0.015) 39px, rgba(243,232,216,0.015) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(243,232,216,0.015) 39px, rgba(243,232,216,0.015) 40px); }
-
-  .p-09 { background: #1A120B; }
-  .p-09::before { content:''; position:absolute; inset:0; opacity:0.06; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size:256px; }
-
-  .p-10 { background: linear-gradient(180deg, #0F0906 0%, #1A120B 20%, #3A251A 40%, #AE8D67 60%, #C1A07A 80%, #F3E8D8 100%); }
-  .p-10 svg { color: #F3E8D8 !important; filter: drop-shadow(0 0 6px rgba(243,232,216,0.2)); }
+  .p-v04 { background: #0e0d0c; }
+  .p-v04::before { content:''; position:absolute; inset:0; background: radial-gradient(circle, rgba(168,144,96,0.08) 0%, transparent 70%); }
 
   .p-v05 { background: radial-gradient(circle at 50% 50%, #3A251A 0%, #1A120B 50%, #0F0906 100%); }
   .p-v05::before { content:''; position:absolute; inset:0; background: radial-gradient(circle at 40% 40%, rgba(193,160,122,0.15) 0%, transparent 50%); }
@@ -304,17 +292,40 @@
 
   .p-v08 { background: #0e0d0c; border-bottom: 1px solid rgba(193,160,122,0.15); }
 
+  .p-v09 { background: radial-gradient(ellipse at 50% 70%, #3A251A 0%, #1A120B 40%, #0F0906 100%); }
+
+  .p-v10 { background: linear-gradient(135deg, #1A120B 0%, #3A251A 30%, #1A120B 60%, #0F0906 100%); }
+  .p-v10::before { content:''; position:absolute; inset:0; background: linear-gradient(135deg, rgba(193,160,122,0.08) 0%, transparent 30%, rgba(168,144,96,0.06) 60%, transparent 100%); }
+
+  .p-v11 { background: #0F0906; }
+  .p-v11::before { content:''; position:absolute; top:0; bottom:0; left:50%; width:2px; background:linear-gradient(180deg, rgba(193,160,122,0.3), rgba(168,144,96,0.05)); }
+
+  .p-v12 { background: #0e0d0c; }
+  .p-v12::before { content:''; position:absolute; inset:0; opacity:0.05; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M20 0L40 20L20 40L0 20Z' fill='none' stroke='%23C1A07A' stroke-width='0.5'/%3E%3C/svg%3E"); }
+
   .p-v13 { background: #0e0d0c; }
   .p-v13::before { content:''; position:absolute; inset:0; background-image: repeating-linear-gradient(90deg, rgba(243,232,216,0.04) 0px, rgba(243,232,216,0.04) 1px, transparent 1px, transparent calc(100%/12)); }
 
   .p-v14 { background: linear-gradient(145deg, #1A120B 0%, #0F0906 100%); }
-  .p-v14::before { content:''; position:absolute; width:60%; height:70%; top:10%; left:5%; border:1px solid rgba(243,232,216,0.08); transform:rotate(-3deg); box-shadow:0 10px 30px rgba(0,0,0,0.3); }
-  .p-v14::after { content:''; position:absolute; width:50%; height:50%; top:25%; right:10%; border:1px solid rgba(243,232,216,0.05); transform:rotate(4deg); box-shadow:0 8px 20px rgba(0,0,0,0.2); }
+  .p-v14::before { content:''; position:absolute; width:60%; height:70%; top:10%; left:5%; border:1px solid rgba(243,232,216,0.08); transform:rotate(-3deg); }
+  .p-v14::after { content:''; position:absolute; width:50%; height:50%; top:25%; right:10%; border:1px solid rgba(243,232,216,0.05); transform:rotate(4deg); }
 
   .p-v15 { background: radial-gradient(ellipse at 30% 40%, #3A251A 0%, #1A120B 50%, #0F0906 100%); }
 
   .p-v16 { background: #171615; }
   .p-v16::before { content:''; position:absolute; inset:0; background: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(243,232,216,0.03) 39px, rgba(243,232,216,0.03) 40px); }
+
+  .p-v17 { background: linear-gradient(180deg, #3A251A 0%, #1A120B 30%, #0F0906 100%); }
+  .p-v17::before { content:''; position:absolute; top:0; left:30%; right:30%; height:3px; background: linear-gradient(90deg, transparent, var(--sandstone-200), transparent); }
+
+  .p-v18 { background: #0e0d0c; }
+  .p-v18::before { content:''; position:absolute; inset:20px; border:1px solid rgba(243,232,216,0.06); }
+
+  .p-v19 { background: #0a0807; }
+  .p-v19::before { content:''; position:absolute; inset:0; background: radial-gradient(circle at 50% 50%, rgba(26,18,11,0.5) 0%, transparent 60%); }
+
+  .p-v20 { background: #0e0d0c; }
+  .p-v20::before { content:''; position:absolute; top:50%; left:50%; width:60px; height:60px; transform:translate(-50%,-50%) rotate(45deg); border:1px solid rgba(193,160,122,0.12); }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(16px); }
@@ -322,10 +333,11 @@
   }
 
   @media (max-width: 840px) {
-    .grid { grid-template-columns: 1fr; padding: 0 1.25rem 4rem; }
+    .grid { grid-template-columns: 1fr; padding: 0 1.25rem 3rem; }
     .hero { padding: 7rem 1.25rem 3rem; }
     .header { padding: 1rem 1.25rem; }
     .header-subtitle { display: none; }
+    .section-label { padding: 2rem 1.25rem 0.75rem; }
   }
 </style>
 </head>
@@ -343,247 +355,292 @@
     </g>
   </svg>
   <span class="header-title">StalagMight</span>
-  <span class="header-subtitle">Design Mockups</span>
+  <span class="header-subtitle">Crystal Matrix Variations</span>
 </header>
 
 <section class="hero">
-  <h1>18 Visions for <span>StalagMight</span></h1>
-  <p>Product and onboarding page mockups built on the Cave color scheme. Underwater cave survey and mapping.</p>
-  <div class="pill"><strong>18</strong> designs &middot; Cave palette &middot; Self-contained HTML</div>
+  <h1>21 <span>Crystal Matrix</span> Variations</h1>
+  <p>Product page mockups riffing on the Crystal Matrix concept. Geometric crystalline aesthetics, Cave palette, faceted layouts.</p>
+  <div class="pill"><strong>1</strong> base &middot; <strong>20</strong> variations &middot; Cave palette &middot; Self-contained HTML</div>
 </section>
 
+<div class="section-label">Base Design</div>
+<div class="grid grid-featured">
+
+  <a href="07-crystal-matrix.html" class="card card-featured" style="animation-delay:0.05s">
+    <div class="card-preview p-base">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="ab" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#ab)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Base &mdash; Design 07</div>
+      <div class="card-name">Crystal Matrix</div>
+      <div class="card-desc">Geometric crystalline formations with sharp angles, faceted card borders, prismatic warm refractions, hex grid overlays, and tessellated section dividers. Rajdhani + Barlow typography.</div>
+      <div class="card-tags"><span class="tag">Geometric</span><span class="tag">Angular</span><span class="tag">Crystalline</span><span class="tag">Faceted</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+</div>
+
+<div class="section-label">20 Variations</div>
 <div class="grid">
 
-  <a href="01-abyssal-descent.html" class="card">
-    <div class="card-preview p-01">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#a1)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+  <a href="v01-faceted-monolith.html" class="card" style="animation-delay:0.05s">
+    <div class="card-preview p-v01">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a01" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a01)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
     </div>
     <div class="card-body">
-      <div class="card-number">Design 01</div>
-      <div class="card-name">Abyssal Descent</div>
-      <div class="card-desc">Ultra-dark vertical descent with parallax depth layers, drifting limestone particles, and a cave depth gauge.</div>
-      <div class="card-tags"><span class="tag">Dark</span><span class="tag">Dramatic</span><span class="tag">Parallax</span><span class="tag">Particles</span></div>
+      <div class="card-number">Variation 01</div>
+      <div class="card-name">Faceted Monolith</div>
+      <div class="card-desc">Single-column monolithic slab layout with a towering vertical flow, large hero, and crystalline feature cards stacked edge-to-edge.</div>
+      <div class="card-tags"><span class="tag">Monolithic</span><span class="tag">Vertical</span><span class="tag">Bold</span></div>
     </div>
     <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>
 
-  <a href="02-stratum.html" class="card">
-    <div class="card-preview p-02">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#a2)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+  <a href="v02-prism-split.html" class="card" style="animation-delay:0.1s">
+    <div class="card-preview p-v02">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a02" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a02)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
     </div>
     <div class="card-body">
-      <div class="card-number">Design 02</div>
-      <div class="card-name">Stratum</div>
-      <div class="card-desc">Geological strata layers with wavy dividers, grain textures, core sample cards, and a stratigraphic column.</div>
-      <div class="card-tags"><span class="tag">Earthy</span><span class="tag">Scientific</span><span class="tag">Layered</span><span class="tag">Warm</span></div>
+      <div class="card-number">Variation 02</div>
+      <div class="card-name">Prism Split</div>
+      <div class="card-desc">Split-screen layout with horizontal workflow pipeline. Left panel for content, right for visuals. Prismatic divider line.</div>
+      <div class="card-tags"><span class="tag">Split-Screen</span><span class="tag">Horizontal</span><span class="tag">Prism</span></div>
     </div>
     <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>
 
-  <a href="03-cartographer.html" class="card">
-    <div class="card-preview p-03">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3A251A"/><stop offset="1" stop-color="#1A120B"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#1A120B" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#1A120B" stroke-width="10" opacity=".12"/><g stroke="#3A251A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#a3)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#1A120B" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+  <a href="v03-hex-grid.html" class="card" style="animation-delay:0.15s">
+    <div class="card-preview p-v03">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a03" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a03)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
     </div>
     <div class="card-body">
-      <div class="card-number">Design 03</div>
-      <div class="card-name">Cartographer</div>
-      <div class="card-desc">Vintage exploration maps with parchment textures, compass rose, contour lines, and expedition trail annotations.</div>
-      <div class="card-tags"><span class="tag">Vintage</span><span class="tag">Cartography</span><span class="tag">Parchment</span><span class="tag">Warm</span></div>
+      <div class="card-number">Variation 03</div>
+      <div class="card-name">Hex Grid</div>
+      <div class="card-desc">Hexagonal everything — hex-shaped cards, honeycomb backgrounds, hex workflow connectors. Fully committed to the hexagon motif.</div>
+      <div class="card-tags"><span class="tag">Hexagonal</span><span class="tag">Honeycomb</span><span class="tag">Geometric</span></div>
     </div>
     <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>
 
-  <a href="04-sonar-pulse.html" class="card">
-    <div class="card-preview p-04">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a4" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#a4)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+  <a href="v04-crystal-wire.html" class="card" style="animation-delay:0.2s">
+    <div class="card-preview p-v04">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a04" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a04)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
     </div>
     <div class="card-body">
-      <div class="card-number">Design 04</div>
-      <div class="card-name">Sonar Pulse</div>
-      <div class="card-desc">Warm-toned sonar/radar interface with animated sweep, HUD panels, dot-matrix, and terminal typing effects.</div>
-      <div class="card-tags"><span class="tag">Tech</span><span class="tag">HUD</span><span class="tag">Sonar</span><span class="tag">Animated</span></div>
+      <div class="card-number">Variation 04</div>
+      <div class="card-name">Crystal Wire</div>
+      <div class="card-desc">Wireframe-only aesthetic with outline borders, node-graph workflow visualization, no fills. Blueprint-like crystal structure.</div>
+      <div class="card-tags"><span class="tag">Wireframe</span><span class="tag">Node-Graph</span><span class="tag">Outline</span></div>
     </div>
     <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>
 
-  <a href="05-bioluminescent.html" class="card">
-    <div class="card-preview p-05">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a5" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#a5)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
-    </div>
-    <div class="card-body">
-      <div class="card-number">Design 05</div>
-      <div class="card-name">Bioluminescent</div>
-      <div class="card-desc">Ethereal warm-glow particles drifting through darkness. Organic shapes, soft radial light pools, subaquatic feel.</div>
-      <div class="card-tags"><span class="tag">Ethereal</span><span class="tag">Organic</span><span class="tag">Glowing</span><span class="tag">Warm</span></div>
-    </div>
-    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-  </a>
-
-  <a href="06-field-journal.html" class="card">
-    <div class="card-preview p-06">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a6" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3A251A"/><stop offset="1" stop-color="#1A120B"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#1A120B" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#1A120B" stroke-width="10" opacity=".12"/><g stroke="#3A251A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#a6)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#1A120B" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
-    </div>
-    <div class="card-body">
-      <div class="card-number">Design 06</div>
-      <div class="card-name">Field Journal</div>
-      <div class="card-desc">Cave diver's notebook with grid paper, handwritten annotations, coffee stains, taped cards, and survey sketches.</div>
-      <div class="card-tags"><span class="tag">Handwritten</span><span class="tag">Notebook</span><span class="tag">Authentic</span><span class="tag">Light</span></div>
-    </div>
-    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-  </a>
-
-  <a href="07-crystal-matrix.html" class="card">
-    <div class="card-preview p-07">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a7" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#a7)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
-    </div>
-    <div class="card-body">
-      <div class="card-number">Design 07</div>
-      <div class="card-name">Crystal Matrix</div>
-      <div class="card-desc">Geometric crystalline formations with sharp angles, faceted card borders, prismatic warm refractions, and tessellations.</div>
-      <div class="card-tags"><span class="tag">Geometric</span><span class="tag">Angular</span><span class="tag">Crystalline</span><span class="tag">Modern</span></div>
-    </div>
-    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-  </a>
-
-  <a href="08-expedition-hq.html" class="card">
-    <div class="card-preview p-08">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a8" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#a8)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
-    </div>
-    <div class="card-body">
-      <div class="card-number">Design 08</div>
-      <div class="card-name">Expedition HQ</div>
-      <div class="card-desc">Mission control dashboard with live data feeds, status indicators, progress bars, and HUD-style panel corners.</div>
-      <div class="card-tags"><span class="tag">Dashboard</span><span class="tag">Command</span><span class="tag">Data-dense</span><span class="tag">Operational</span></div>
-    </div>
-    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-  </a>
-
-  <a href="09-mineral-core.html" class="card">
-    <div class="card-preview p-09">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a9" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#a9)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
-    </div>
-    <div class="card-body">
-      <div class="card-number">Design 09</div>
-      <div class="card-name">Mineral Core</div>
-      <div class="card-desc">Brutalist raw power with oversized typography, thick asymmetric borders, noise textures, and massive section numbers.</div>
-      <div class="card-tags"><span class="tag">Brutalist</span><span class="tag">Industrial</span><span class="tag">Bold</span><span class="tag">Raw</span></div>
-    </div>
-    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-  </a>
-
-  <a href="10-emergence.html" class="card">
-    <div class="card-preview p-10">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a10" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#a10)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
-    </div>
-    <div class="card-body">
-      <div class="card-number">Design 10</div>
-      <div class="card-name">Emergence</div>
-      <div class="card-desc">Elegant dark-to-light transition through the full Cave palette — ascending from basalt depths to limestone warmth.</div>
-      <div class="card-tags"><span class="tag">Elegant</span><span class="tag">Transitional</span><span class="tag">Editorial</span><span class="tag">Refined</span></div>
-    </div>
-    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-  </a>
-
-  <a href="v05-ember-glow.html" class="card">
+  <a href="v05-ember-glow.html" class="card" style="animation-delay:0.25s">
     <div class="card-preview p-v05">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="av05" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#av05)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a05" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a05)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
     </div>
     <div class="card-body">
       <div class="card-number">Variation 05</div>
       <div class="card-name">Ember Glow</div>
       <div class="card-desc">Warm emphasis with radial glows, gradient borders, S-curve workflow, and sandstone-hued feature icons. Inviting and luminous.</div>
-      <div class="card-tags"><span class="tag">Warm</span><span class="tag">Radial Glow</span><span class="tag">Gradient</span><span class="tag">Crystal Matrix</span></div>
+      <div class="card-tags"><span class="tag">Warm</span><span class="tag">Radial Glow</span><span class="tag">S-Curve</span></div>
     </div>
     <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>
 
-  <a href="v06-lattice-dense.html" class="card">
+  <a href="v06-lattice-dense.html" class="card" style="animation-delay:0.3s">
     <div class="card-preview p-v06">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="av06" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#av06)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a06" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a06)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
     </div>
     <div class="card-body">
       <div class="card-number">Variation 06</div>
       <div class="card-name">Lattice Dense</div>
       <div class="card-desc">Information-dense dashboard layout with 3x3 grid, horizontal stepper workflow, stat panels, and compact sections.</div>
-      <div class="card-tags"><span class="tag">Dashboard</span><span class="tag">Dense</span><span class="tag">Stepper</span><span class="tag">Crystal Matrix</span></div>
+      <div class="card-tags"><span class="tag">Dashboard</span><span class="tag">Dense</span><span class="tag">Stepper</span></div>
     </div>
     <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>
 
-  <a href="v07-shard-cascade.html" class="card">
+  <a href="v07-shard-cascade.html" class="card" style="animation-delay:0.35s">
     <div class="card-preview p-v07">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="av07" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#av07)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a07" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a07)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
     </div>
     <div class="card-body">
       <div class="card-number">Variation 07</div>
       <div class="card-name">Shard Cascade</div>
       <div class="card-desc">Cascading diagonal flow with staggered cards, 45-degree dividers, parallax shards, and asymmetric composition.</div>
-      <div class="card-tags"><span class="tag">Diagonal</span><span class="tag">Cascade</span><span class="tag">Parallax</span><span class="tag">Crystal Matrix</span></div>
+      <div class="card-tags"><span class="tag">Diagonal</span><span class="tag">Cascade</span><span class="tag">Parallax</span></div>
     </div>
     <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>
 
-  <a href="v08-crystal-minimal.html" class="card">
+  <a href="v08-crystal-minimal.html" class="card" style="animation-delay:0.4s">
     <div class="card-preview p-v08">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="av08" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#av08)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a08" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a08)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
     </div>
     <div class="card-body">
       <div class="card-number">Variation 08</div>
       <div class="card-name">Crystal Minimal</div>
       <div class="card-desc">Ultra-minimal design with pristine typography, clip-path cards, generous whitespace, and clean numbered workflow list.</div>
-      <div class="card-tags"><span class="tag">Minimal</span><span class="tag">Clean</span><span class="tag">Typography</span><span class="tag">Crystal Matrix</span></div>
+      <div class="card-tags"><span class="tag">Minimal</span><span class="tag">Clean</span><span class="tag">Typography</span></div>
     </div>
     <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>
 
-  <a href="v13-matrix-grid.html" class="card">
+  <a href="v09-geode-interior.html" class="card" style="animation-delay:0.45s">
+    <div class="card-preview p-v09">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a09" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a09)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Variation 09</div>
+      <div class="card-name">Geode Interior</div>
+      <div class="card-desc">Organic-meets-geometric tension with curved outer shells, crystalline inner content, semicircular workflow arc.</div>
+      <div class="card-tags"><span class="tag">Organic</span><span class="tag">Curved</span><span class="tag">Geode</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="v10-refracted-light.html" class="card" style="animation-delay:0.5s">
+    <div class="card-preview p-v10">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a10" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a10)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Variation 10</div>
+      <div class="card-name">Refracted Light</div>
+      <div class="card-desc">Gradient-rich glass-morphism with prismatic color bands, frosted panels, light refraction effects, and translucent layers.</div>
+      <div class="card-tags"><span class="tag">Glassmorphism</span><span class="tag">Prismatic</span><span class="tag">Gradient</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="v11-formation-timeline.html" class="card" style="animation-delay:0.55s">
+    <div class="card-preview p-v11">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a11" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a11)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Variation 11</div>
+      <div class="card-name">Formation Timeline</div>
+      <div class="card-desc">Vertical timeline spine with depth markers, alternating left-right content blocks, geological era indicators.</div>
+      <div class="card-tags"><span class="tag">Timeline</span><span class="tag">Vertical</span><span class="tag">Depth</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="v12-tessellation.html" class="card" style="animation-delay:0.6s">
+    <div class="card-preview p-v12">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a12" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a12)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Variation 12</div>
+      <div class="card-name">Tessellation</div>
+      <div class="card-desc">Diamond and hexagonal tiling patterns with interlocking feature cards, tessellated backgrounds, and mosaic-like composition.</div>
+      <div class="card-tags"><span class="tag">Tessellated</span><span class="tag">Diamond</span><span class="tag">Mosaic</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="v13-matrix-grid.html" class="card" style="animation-delay:0.65s">
     <div class="card-preview p-v13">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="av13" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#av13)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a13" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a13)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
     </div>
     <div class="card-body">
       <div class="card-number">Variation 13</div>
       <div class="card-name">Matrix Grid</div>
       <div class="card-desc">Strict 12-column CSS grid with visible gridlines, asymmetric card spans, magazine-like layout, and prominent stat numbers.</div>
-      <div class="card-tags"><span class="tag">12-Column</span><span class="tag">Asymmetric</span><span class="tag">Data-Forward</span><span class="tag">Crystal Matrix</span></div>
+      <div class="card-tags"><span class="tag">12-Column</span><span class="tag">Asymmetric</span><span class="tag">Magazine</span></div>
     </div>
     <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>
 
-  <a href="v14-layered-crystal.html" class="card">
+  <a href="v14-layered-crystal.html" class="card" style="animation-delay:0.7s">
     <div class="card-preview p-v14">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="av14" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#av14)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a14" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a14)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
     </div>
     <div class="card-body">
       <div class="card-number">Variation 14</div>
       <div class="card-name">Layered Crystal</div>
       <div class="card-desc">Z-depth layering with overlapping cards, crystalline planes, parallax layers, and heavy box-shadow depth effects.</div>
-      <div class="card-tags"><span class="tag">Depth</span><span class="tag">Overlap</span><span class="tag">Parallax</span><span class="tag">Crystal Matrix</span></div>
+      <div class="card-tags"><span class="tag">Depth</span><span class="tag">Overlap</span><span class="tag">Parallax</span></div>
     </div>
     <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>
 
-  <a href="v15-full-bleed.html" class="card">
+  <a href="v15-full-bleed.html" class="card" style="animation-delay:0.75s">
     <div class="card-preview p-v15">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="av15" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#av15)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a15" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a15)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
     </div>
     <div class="card-body">
       <div class="card-number">Variation 15</div>
       <div class="card-name">Full Bleed</div>
-      <div class="card-desc">Edge-to-edge viewport width, no margins. Full-width feature rows, horizontal workflow bands, scroll-snap, and cinematic scale.</div>
-      <div class="card-tags"><span class="tag">Full-Width</span><span class="tag">Cinematic</span><span class="tag">Scroll-Snap</span><span class="tag">Crystal Matrix</span></div>
+      <div class="card-desc">Edge-to-edge viewport width, no margins. Full-width feature rows, horizontal workflow bands, scroll-snap, cinematic scale.</div>
+      <div class="card-tags"><span class="tag">Full-Width</span><span class="tag">Cinematic</span><span class="tag">Scroll-Snap</span></div>
     </div>
     <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>
 
-  <a href="v16-crystalline-accordion.html" class="card">
+  <a href="v16-crystalline-accordion.html" class="card" style="animation-delay:0.8s">
     <div class="card-preview p-v16">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="av16" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#av16)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a16" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a16)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
     </div>
     <div class="card-body">
       <div class="card-number">Variation 16</div>
       <div class="card-name">Crystalline Accordion</div>
-      <div class="card-desc">Interactive expand/collapse sections with clip-path transitions, compact hero, geometric unfold animations, and rich interactivity.</div>
-      <div class="card-tags"><span class="tag">Interactive</span><span class="tag">Accordion</span><span class="tag">Compact</span><span class="tag">Crystal Matrix</span></div>
+      <div class="card-desc">Interactive expand/collapse sections with clip-path transitions, compact hero, geometric unfold animations.</div>
+      <div class="card-tags"><span class="tag">Interactive</span><span class="tag">Accordion</span><span class="tag">Compact</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="v17-stalactite.html" class="card" style="animation-delay:0.85s">
+    <div class="card-preview p-v17">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a17" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a17)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Variation 17</div>
+      <div class="card-name">Stalactite</div>
+      <div class="card-desc">Top-heavy design with content dripping downward. Massive header, narrowing sections, stalactite-shaped dividers.</div>
+      <div class="card-tags"><span class="tag">Top-Heavy</span><span class="tag">Dripping</span><span class="tag">Organic</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="v18-mineral-catalog.html" class="card" style="animation-delay:0.9s">
+    <div class="card-preview p-v18">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a18" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a18)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Variation 18</div>
+      <div class="card-name">Mineral Catalog</div>
+      <div class="card-desc">Museum specimen display with catalog-style cards, specimen labels, classification numbers, and archival framing.</div>
+      <div class="card-tags"><span class="tag">Museum</span><span class="tag">Catalog</span><span class="tag">Archival</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="v19-crystalline-dark.html" class="card" style="animation-delay:0.95s">
+    <div class="card-preview p-v19">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a19" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a19)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Variation 19</div>
+      <div class="card-name">Crystalline Dark</div>
+      <div class="card-desc">Maximum darkness with editorial restraint. Near-black backgrounds, minimal accent lines, luxurious negative space.</div>
+      <div class="card-tags"><span class="tag">Ultra-Dark</span><span class="tag">Editorial</span><span class="tag">Luxury</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="v20-facet-expand.html" class="card" style="animation-delay:1s">
+    <div class="card-preview p-v20">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="a20" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><g fill="none" stroke="url(#a20)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="12"/><circle cx="430" cy="520" r="12"/><circle cx="520" cy="600" r="12"/><circle cx="640" cy="460" r="12"/><circle cx="730" cy="540" r="12"/></g></g></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Variation 20</div>
+      <div class="card-name">Facet Expand</div>
+      <div class="card-desc">Progressive disclosure with diamond-shaped expand triggers, layered content reveal, and crystalline motif transitions.</div>
+      <div class="card-tags"><span class="tag">Progressive</span><span class="tag">Diamond</span><span class="tag">Interactive</span></div>
     </div>
     <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>
