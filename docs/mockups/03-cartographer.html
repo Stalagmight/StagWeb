@@ -3,1670 +3,1002 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stalagmight — The Cartographer's Map</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<title>StalagMight — Underwater Cave Survey &amp; Mapping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@800&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ===== RESET ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'Crimson Text',Georgia,serif;color:#1A120B;background:#F3E8D8;line-height:1.7;overflow-x:hidden}
 
-:root {
-  --parchment: #F1D6A2;
-  --parchment-light: #f7e6c4;
-  --parchment-dark: #d4b87a;
-  --navy: #0F172A;
-  --navy-mid: #1E293B;
-  --burnt-orange: #FF8C17;
-  --blue-primary: #3852fc;
-  --purple: #784FAF;
-  --emerald: #10b981;
-  --white: #FFFFFD;
-  --ink: #2c1810;
-  --ink-light: #5a3e2b;
+/* ===== BRAND TOKENS ===== */
+:root{
+  --ember-700:#3A251A;--ember-900:#1A120B;--basalt-950:#0F0906;
+  --limestone-50:#F3E8D8;--sandstone-200:#C1A07A;--silt-300:#AE8D67;
+  --bg:#0e0d0c;--panel:#171615;--border:#2a2826;
+  --text-primary:#d5d0ca;--text-secondary:#858280;
+  --accent:#a89060;--warning:#b89848;--error:#b85048;--success:#48986a;
+  --border-subtle:rgba(243,232,216,0.18);--border-strong:rgba(243,232,216,0.60);
+  --parchment:#F3E8D8;--parchment-dark:#E8D5BF;--parchment-darker:#D4BC9A;
+  --ink:#1A120B;--ink-light:#3A251A;
 }
 
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Crimson Text', Georgia, serif;
-  background: var(--parchment);
-  color: var(--ink);
-  line-height: 1.7;
-  overflow-x: hidden;
-  position: relative;
-}
-
-/* ===================== CONTOUR LINE BACKGROUND ===================== */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  pointer-events: none;
-  z-index: 0;
+/* ===== CONTOUR LINE BACKGROUND ===== */
+body::before{
+  content:'';position:fixed;inset:0;z-index:-2;pointer-events:none;
   background:
-    repeating-conic-gradient(from 0deg at 30% 25%, transparent 0deg, transparent 355deg, rgba(44,24,16,0.03) 360deg),
-    repeating-conic-gradient(from 45deg at 70% 60%, transparent 0deg, transparent 355deg, rgba(44,24,16,0.02) 360deg);
+    repeating-conic-gradient(from 0deg at 50% 120%,transparent 0deg,transparent 3deg,rgba(193,160,122,0.04) 3deg,rgba(193,160,122,0.04) 3.5deg,transparent 3.5deg,transparent 20deg),
+    radial-gradient(ellipse 120% 80% at 50% 120%,transparent 30%,rgba(193,160,122,0.06) 31%,transparent 32%,transparent 38%,rgba(193,160,122,0.05) 39%,transparent 40%,transparent 46%,rgba(193,160,122,0.04) 47%,transparent 48%,transparent 54%,rgba(193,160,122,0.03) 55%,transparent 56%,transparent 62%,rgba(193,160,122,0.025) 63%,transparent 64%,transparent 70%,rgba(193,160,122,0.02) 71%,transparent 72%),
+    var(--parchment);
 }
 
-/* Topographic contour overlay */
-.contour-bg {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.06;
-  background-image:
-    radial-gradient(ellipse 600px 400px at 25% 30%, transparent 45%, var(--ink) 45.5%, transparent 46%),
-    radial-gradient(ellipse 550px 370px at 25% 30%, transparent 45%, var(--ink) 45.5%, transparent 46%),
-    radial-gradient(ellipse 500px 340px at 25% 30%, transparent 45%, var(--ink) 45.5%, transparent 46%),
-    radial-gradient(ellipse 450px 310px at 25% 30%, transparent 45%, var(--ink) 45.5%, transparent 46%),
-    radial-gradient(ellipse 400px 280px at 25% 30%, transparent 45%, var(--ink) 45.5%, transparent 46%),
-    radial-gradient(ellipse 700px 500px at 72% 65%, transparent 45%, var(--ink) 45.5%, transparent 46%),
-    radial-gradient(ellipse 650px 460px at 72% 65%, transparent 45%, var(--ink) 45.5%, transparent 46%),
-    radial-gradient(ellipse 600px 420px at 72% 65%, transparent 45%, var(--ink) 45.5%, transparent 46%),
-    radial-gradient(ellipse 550px 380px at 72% 65%, transparent 45%, var(--ink) 45.5%, transparent 46%),
-    radial-gradient(ellipse 500px 340px at 72% 65%, transparent 45%, var(--ink) 45.5%, transparent 46%);
+/* ===== GRID OVERLAY ===== */
+body::after{
+  content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    linear-gradient(rgba(26,18,11,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(26,18,11,0.03) 1px,transparent 1px);
+  background-size:60px 60px;
 }
 
-/* Grid overlay */
-.grid-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  pointer-events: none;
-  z-index: 0;
-  background-image:
-    linear-gradient(rgba(44,24,16,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(44,24,16,0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
+/* ===== TYPOGRAPHY ===== */
+h1,h2,h3,h4,h5,h6{font-family:'Cinzel',serif;font-weight:700;line-height:1.2;color:var(--ink)}
+.brand-wordmark{font-family:'Inter',sans-serif;font-weight:800}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--parchment-dark)}
+::-webkit-scrollbar-thumb{background:var(--sandstone-200);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--silt-300)}
+
+/* ===== HEADER / NAV ===== */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  padding:1rem 2rem;
+  background:rgba(243,232,216,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(193,160,122,0.3);
+  display:flex;align-items:center;justify-content:space-between;
+  transition:box-shadow .3s,padding .3s;
 }
-
-/* ===================== GLOBAL STYLES ===================== */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Cinzel', serif;
-  font-weight: 700;
-  line-height: 1.2;
-  color: var(--navy);
+.nav.scrolled{box-shadow:0 2px 20px rgba(26,18,11,0.12);padding:.6rem 2rem}
+.nav-logo{display:flex;align-items:center;gap:.75rem;text-decoration:none}
+.nav-logo svg{width:36px;height:36px;flex-shrink:0}
+.nav-logo span{font-family:'Inter',sans-serif;font-weight:800;font-size:1.25rem;color:var(--ink);letter-spacing:-0.02em}
+.nav-links{display:flex;gap:2rem;align-items:center}
+.nav-links a{
+  font-family:'Cinzel',serif;font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-light);text-decoration:none;
+  position:relative;padding:.25rem 0;transition:color .3s;
 }
-
-a { color: var(--burnt-orange); text-decoration: none; transition: color 0.3s; }
-a:hover { color: var(--purple); }
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  position: relative;
-  z-index: 1;
+.nav-links a::after{
+  content:'';position:absolute;bottom:0;left:0;width:0;height:1px;
+  background:var(--sandstone-200);transition:width .3s;
 }
-
-/* Section label - like map annotations */
-.section-label {
-  font-family: 'Cinzel', serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--burnt-orange);
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+.nav-links a:hover{color:var(--ink)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{
+  font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;
+  padding:.6rem 1.5rem;
+  background:var(--ink);color:var(--limestone-50);
+  border:none;border-radius:0;cursor:pointer;text-decoration:none;
+  transition:background .3s,transform .15s;
 }
+.nav-cta:hover{background:var(--ember-700);transform:translateY(-1px)}
 
-.section-label::before {
-  content: '';
-  width: 40px;
-  height: 1px;
-  background: var(--burnt-orange);
-}
-
-.section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, var(--burnt-orange), transparent);
-}
-
-/* Decorative borders */
-.ornate-border {
-  border: 2px solid var(--ink);
-  position: relative;
-}
-
-.ornate-border::before,
-.ornate-border::after {
-  content: '';
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border: 2px solid var(--burnt-orange);
-}
-
-.ornate-border::before { top: -4px; left: -4px; border-right: none; border-bottom: none; }
-.ornate-border::after { bottom: -4px; right: -4px; border-left: none; border-top: none; }
-
-/* Reveal animation */
-.reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.reveal-delay-1 { transition-delay: 0.15s; }
-.reveal-delay-2 { transition-delay: 0.3s; }
-.reveal-delay-3 { transition-delay: 0.45s; }
-.reveal-delay-4 { transition-delay: 0.6s; }
-
-/* ===================== NAVIGATION ===================== */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
-  padding: 1rem 0;
-  transition: all 0.4s ease;
-  background: transparent;
-}
-
-nav.scrolled {
-  background: rgba(241, 214, 162, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 20px rgba(44, 24, 16, 0.1);
-  border-bottom: 1px solid var(--parchment-dark);
-}
-
-nav .container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: var(--navy);
-}
-
-.nav-logo svg { width: 36px; height: 36px; }
-
-.nav-logo span {
-  font-family: 'Cinzel', serif;
-  font-weight: 700;
-  font-size: 1.2rem;
-  letter-spacing: 0.05em;
-}
-
-.nav-links {
-  display: flex;
-  gap: 2rem;
-  list-style: none;
-  align-items: center;
-}
-
-.nav-links a {
-  font-family: 'Cinzel', serif;
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink);
-  position: relative;
-  padding-bottom: 4px;
-}
-
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--burnt-orange);
-  transition: width 0.3s ease;
-}
-
-.nav-links a:hover::after { width: 100%; }
-
-.nav-cta {
-  font-family: 'Cinzel', serif;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  background: var(--navy);
-  color: var(--parchment) !important;
-  padding: 0.6rem 1.5rem;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.nav-cta:hover {
-  background: var(--burnt-orange);
-  color: var(--white) !important;
-}
-
-/* ===================== HERO ===================== */
-.hero {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, var(--parchment) 0%, var(--parchment-light) 50%, var(--parchment) 100%);
+/* ===== HERO ===== */
+.hero{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  position:relative;padding:8rem 2rem 6rem;
+  background:radial-gradient(circle at 35% 30%,#3A251A 0%,#1A120B 100%);
+  overflow:hidden;
 }
 
 /* Compass rose watermark */
-.compass-rose {
-  position: absolute;
-  right: -5%;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 700px;
-  height: 700px;
-  opacity: 0.07;
-  transition: transform 0.1s linear;
-}
-
-.compass-rose svg {
-  width: 100%;
-  height: 100%;
-}
-
-/* Decorative dotted trail from hero */
-.hero-trail {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 2px;
-  height: 120px;
-  background: repeating-linear-gradient(
-    to bottom,
-    var(--burnt-orange) 0px,
-    var(--burnt-orange) 6px,
-    transparent 6px,
-    transparent 12px
-  );
-  opacity: 0.5;
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-  max-width: 650px;
-  padding-top: 6rem;
-}
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: 'Cinzel', serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--burnt-orange);
-  border: 1px solid var(--burnt-orange);
-  padding: 0.4rem 1.2rem;
-  margin-bottom: 2rem;
-}
-
-.hero-badge::before {
-  content: '\2316';
-  font-size: 1rem;
-}
-
-.hero h1 {
-  font-size: clamp(3rem, 6vw, 5rem);
-  font-weight: 900;
-  color: var(--navy);
-  margin-bottom: 1.5rem;
-  line-height: 1.05;
-}
-
-.hero h1 .accent {
-  color: var(--burnt-orange);
-  position: relative;
-}
-
-.hero h1 .accent::after {
-  content: '';
-  position: absolute;
-  bottom: 4px;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--burnt-orange);
-  opacity: 0.4;
-}
-
-.hero-description {
-  font-size: 1.25rem;
-  color: var(--ink-light);
-  margin-bottom: 2.5rem;
-  max-width: 520px;
-  font-style: italic;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.btn-primary {
-  font-family: 'Cinzel', serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  background: var(--navy);
-  color: var(--parchment);
-  padding: 1rem 2.5rem;
-  border: 2px solid var(--navy);
-  cursor: pointer;
-  transition: all 0.3s;
-  position: relative;
-  display: inline-block;
-}
-
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  top: 4px; left: 4px; right: -4px; bottom: -4px;
-  border: 1px solid var(--navy);
-  opacity: 0.3;
-  transition: all 0.3s;
-}
-
-.btn-primary:hover {
-  background: var(--burnt-orange);
-  border-color: var(--burnt-orange);
-  color: var(--white);
-}
-
-.btn-primary:hover::before {
-  border-color: var(--burnt-orange);
-}
-
-.btn-secondary {
-  font-family: 'Cinzel', serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink);
-  padding: 1rem 2rem;
-  border: 2px solid var(--ink);
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-secondary:hover {
-  background: var(--ink);
-  color: var(--parchment);
-}
-
-.hero-coordinates {
-  margin-top: 3rem;
-  font-family: 'Cinzel', serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.15em;
-  color: var(--ink-light);
-  opacity: 0.6;
-}
-
-/* ===================== FEATURES SECTION ===================== */
-.features {
-  padding: 8rem 0;
-  position: relative;
-}
-
-.features-header {
-  text-align: center;
-  margin-bottom: 5rem;
-}
-
-.features-header h2 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  margin-bottom: 1rem;
-}
-
-.features-header p {
-  font-size: 1.2rem;
-  color: var(--ink-light);
-  max-width: 600px;
-  margin: 0 auto;
-  font-style: italic;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2.5rem;
-}
-
-.feature-card {
-  background: var(--parchment-light);
-  border: 1px solid var(--parchment-dark);
-  padding: 2.5rem 2rem;
-  position: relative;
-  transition: all 0.4s ease;
-  cursor: default;
-}
-
-/* Map pin top-left */
-.feature-card::before {
-  content: '';
-  position: absolute;
-  top: -6px;
-  left: 20px;
-  width: 12px;
-  height: 12px;
-  background: var(--burnt-orange);
-  border-radius: 50%;
-  border: 2px solid var(--navy);
-  z-index: 2;
-}
-
-/* Pin shadow */
-.feature-card::after {
-  content: '';
-  position: absolute;
-  top: -12px;
-  left: 23px;
-  width: 6px;
-  height: 18px;
-  background: var(--navy);
-  border-radius: 3px 3px 0 0;
-  z-index: 1;
-}
-
-.feature-card:hover {
-  transform: translateY(-4px) rotate(-0.5deg);
-  box-shadow: 8px 8px 0 rgba(44,24,16,0.08);
-  border-color: var(--burnt-orange);
-}
-
-.feature-icon {
-  width: 50px;
-  height: 50px;
-  background: var(--navy);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  color: var(--parchment);
-  font-size: 1.5rem;
-}
-
-.feature-card h3 {
-  font-size: 1.1rem;
-  margin-bottom: 0.75rem;
-  color: var(--navy);
-}
-
-.feature-card p {
-  font-size: 1rem;
-  color: var(--ink-light);
-  line-height: 1.6;
-}
-
-.feature-card .feature-ref {
-  display: block;
-  margin-top: 1rem;
-  font-family: 'Cinzel', serif;
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--burnt-orange);
-  opacity: 0.7;
-}
-
-/* ===================== HOW IT WORKS / EXPEDITION ROUTE ===================== */
-.expedition {
-  padding: 8rem 0;
-  background: var(--navy);
-  color: var(--parchment);
-  position: relative;
-  overflow: hidden;
-}
-
-.expedition::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image:
-    linear-gradient(rgba(241,214,162,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(241,214,162,0.03) 1px, transparent 1px);
-  background-size: 80px 80px;
-  pointer-events: none;
-}
-
-/* Contour lines on dark bg */
-.expedition::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  pointer-events: none;
-  opacity: 0.04;
-  background-image:
-    radial-gradient(ellipse 500px 350px at 80% 20%, transparent 45%, var(--parchment) 45.5%, transparent 46%),
-    radial-gradient(ellipse 450px 310px at 80% 20%, transparent 45%, var(--parchment) 45.5%, transparent 46%),
-    radial-gradient(ellipse 400px 270px at 80% 20%, transparent 45%, var(--parchment) 45.5%, transparent 46%);
-}
-
-.expedition .section-label { color: var(--burnt-orange); }
-.expedition .section-label::before { background: var(--burnt-orange); }
-.expedition .section-label::after { background: linear-gradient(90deg, var(--burnt-orange), transparent); }
-
-.expedition-header {
-  text-align: center;
-  margin-bottom: 5rem;
-  position: relative;
-  z-index: 1;
-}
-
-.expedition-header h2 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  color: var(--parchment);
-  margin-bottom: 1rem;
-}
-
-.expedition-header p {
-  font-size: 1.2rem;
-  color: var(--parchment-dark);
-  max-width: 550px;
-  margin: 0 auto;
-  font-style: italic;
-}
-
-.expedition-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  position: relative;
-  z-index: 1;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-/* Trail line connecting steps */
-.expedition-trail {
-  position: absolute;
-  left: 30px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: repeating-linear-gradient(
-    to bottom,
-    var(--burnt-orange) 0px,
-    var(--burnt-orange) 8px,
-    transparent 8px,
-    transparent 16px
-  );
-  opacity: 0.4;
-}
-
-.trail-progress {
-  position: absolute;
-  left: 30px;
-  top: 0;
-  width: 2px;
-  height: 0;
-  background: var(--burnt-orange);
-  transition: height 0.1s linear;
-}
-
-.step {
-  display: flex;
-  gap: 3rem;
-  padding: 2.5rem 0;
-  position: relative;
-  align-items: flex-start;
-}
-
-.step-marker {
-  flex-shrink: 0;
-  width: 60px;
-  height: 60px;
-  border: 2px solid var(--burnt-orange);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Cinzel', serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--burnt-orange);
-  position: relative;
-  background: var(--navy);
-  z-index: 2;
-}
-
-.step-marker::before {
-  content: '';
-  position: absolute;
-  top: -6px; left: -6px; right: -6px; bottom: -6px;
-  border: 1px solid rgba(255,140,23,0.2);
-}
-
-.step-content h3 {
-  font-size: 1.3rem;
-  color: var(--parchment);
-  margin-bottom: 0.75rem;
-}
-
-.step-content p {
-  color: var(--parchment-dark);
-  font-size: 1.05rem;
-  max-width: 500px;
-}
-
-.step-content .step-detail {
-  margin-top: 0.75rem;
-  font-family: 'Cinzel', serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--burnt-orange);
-  opacity: 0.6;
-}
-
-/* ===================== HIGHLIGHTS SECTION ===================== */
-.highlights {
-  padding: 8rem 0;
-  position: relative;
-}
-
-.highlight-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: center;
-  margin-bottom: 6rem;
-}
-
-.highlight-row:last-child { margin-bottom: 0; }
-
-.highlight-row.reverse { direction: rtl; }
-.highlight-row.reverse > * { direction: ltr; }
-
-.highlight-visual {
-  position: relative;
-  aspect-ratio: 4/3;
-  background: var(--navy);
-  border: 2px solid var(--ink);
-  overflow: hidden;
-}
-
-/* Corner ornaments */
-.highlight-visual::before,
-.highlight-visual::after {
-  content: '';
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--burnt-orange);
-  z-index: 2;
-}
-
-.highlight-visual::before { top: 8px; left: 8px; border-right: none; border-bottom: none; }
-.highlight-visual::after { bottom: 8px; right: 8px; border-left: none; border-top: none; }
-
-.highlight-visual-inner {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-/* Map visualization inside highlight */
-.map-viz {
-  width: 80%;
-  height: 80%;
-  position: relative;
-}
-
-.map-viz .contour {
-  position: absolute;
-  border: 1px solid rgba(241,214,162,0.15);
-  border-radius: 50%;
-  animation: contourPulse 4s ease-in-out infinite;
-}
-
-.map-viz .contour:nth-child(1) { width: 100%; height: 100%; top: 0; left: 0; animation-delay: 0s; }
-.map-viz .contour:nth-child(2) { width: 80%; height: 80%; top: 10%; left: 10%; animation-delay: 0.5s; }
-.map-viz .contour:nth-child(3) { width: 60%; height: 60%; top: 20%; left: 20%; animation-delay: 1s; }
-.map-viz .contour:nth-child(4) { width: 40%; height: 40%; top: 30%; left: 30%; animation-delay: 1.5s; }
-.map-viz .contour:nth-child(5) { width: 20%; height: 20%; top: 40%; left: 40%; animation-delay: 2s; }
-
-.map-viz .station-dot {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: var(--burnt-orange);
-  border-radius: 50%;
-  animation: stationBlink 3s ease-in-out infinite;
-}
-
-.map-viz .station-dot:nth-child(6) { top: 25%; left: 35%; animation-delay: 0.3s; }
-.map-viz .station-dot:nth-child(7) { top: 50%; left: 60%; animation-delay: 0.8s; }
-.map-viz .station-dot:nth-child(8) { top: 40%; left: 25%; animation-delay: 1.3s; }
-.map-viz .station-dot:nth-child(9) { top: 65%; left: 45%; animation-delay: 1.8s; }
-
-/* Passage lines */
-.map-viz .passage-line {
-  position: absolute;
-  height: 1px;
-  background: var(--emerald);
-  opacity: 0.5;
-  transform-origin: left center;
-}
-
-.map-viz .passage-line:nth-child(10) { top: 28%; left: 38%; width: 100px; transform: rotate(25deg); }
-.map-viz .passage-line:nth-child(11) { top: 52%; left: 30%; width: 130px; transform: rotate(-15deg); }
-.map-viz .passage-line:nth-child(12) { top: 44%; left: 28%; width: 80px; transform: rotate(55deg); }
-
-@keyframes contourPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-@keyframes stationBlink {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.3); }
-}
-
-/* GIS visualization */
-.gis-viz {
-  width: 80%;
-  height: 80%;
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(5, 1fr);
-  gap: 2px;
-}
-
-.gis-viz .cell {
-  background: rgba(241,214,162,0.05);
-  border: 1px solid rgba(241,214,162,0.08);
-  transition: all 0.5s;
-}
-
-.gis-viz .cell.active {
-  background: rgba(255,140,23,0.2);
-  border-color: rgba(255,140,23,0.4);
-}
-
-.gis-viz .cell:nth-child(3n+1) { animation: cellFade 5s ease-in-out infinite; }
-.gis-viz .cell:nth-child(5n+2) { animation: cellFade 5s ease-in-out infinite 1s; }
-.gis-viz .cell:nth-child(7n+3) { animation: cellFade 5s ease-in-out infinite 2s; }
-
-@keyframes cellFade {
-  0%, 100% { background: rgba(241,214,162,0.05); }
-  50% { background: rgba(16,185,129,0.15); }
-}
-
-/* Equipment viz */
-.equip-viz {
-  width: 80%;
-  height: 80%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 12px;
-  padding: 0 10%;
-}
-
-.equip-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.equip-bar-label {
-  font-family: 'Cinzel', serif;
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--parchment-dark);
-  width: 70px;
-  text-align: right;
-  flex-shrink: 0;
-}
-
-.equip-bar-track {
-  flex: 1;
-  height: 8px;
-  background: rgba(241,214,162,0.1);
-  border: 1px solid rgba(241,214,162,0.15);
-  position: relative;
-  overflow: hidden;
-}
-
-.equip-bar-fill {
-  height: 100%;
-  background: var(--burnt-orange);
-  transition: width 1.5s ease;
-}
-
-.equip-bar:nth-child(1) .equip-bar-fill { width: 85%; background: var(--emerald); }
-.equip-bar:nth-child(2) .equip-bar-fill { width: 62%; background: var(--burnt-orange); }
-.equip-bar:nth-child(3) .equip-bar-fill { width: 94%; background: var(--emerald); }
-.equip-bar:nth-child(4) .equip-bar-fill { width: 45%; background: var(--burnt-orange); }
-.equip-bar:nth-child(5) .equip-bar-fill { width: 78%; background: var(--blue-primary); }
-
-.highlight-text h3 {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  margin-bottom: 1rem;
-}
-
-.highlight-text p {
-  font-size: 1.1rem;
-  color: var(--ink-light);
-  margin-bottom: 1.5rem;
-  line-height: 1.7;
-}
-
-.highlight-list {
-  list-style: none;
-  padding: 0;
-}
-
-.highlight-list li {
-  padding: 0.5rem 0;
-  padding-left: 1.5rem;
-  position: relative;
-  color: var(--ink-light);
-  font-size: 1.05rem;
-}
-
-.highlight-list li::before {
-  content: '\2022';
-  position: absolute;
-  left: 0;
-  color: var(--burnt-orange);
-  font-size: 1.4rem;
-  line-height: 1.4;
-}
-
-/* ===================== STATS BANNER ===================== */
-.stats-banner {
-  background: var(--navy);
-  padding: 4rem 0;
-  position: relative;
-  overflow: hidden;
-}
-
-.stats-banner::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image:
-    linear-gradient(rgba(241,214,162,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(241,214,162,0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-  position: relative;
-  z-index: 1;
-}
+.compass-rose{
+  position:absolute;width:700px;height:700px;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  opacity:.06;pointer-events:none;
+  animation:compass-rotate 120s linear infinite;
+}
+@keyframes compass-rotate{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+.compass-rose svg{width:100%;height:100%}
+
+/* Contour hero lines */
+.hero-contours{
+  position:absolute;inset:0;pointer-events:none;overflow:hidden;
+}
+.hero-contour{
+  position:absolute;border-radius:50%;
+  border:1px solid rgba(193,160,122,0.08);
+}
+.hero-contour:nth-child(1){width:600px;height:400px;top:20%;left:-10%;transform:rotate(-15deg)}
+.hero-contour:nth-child(2){width:800px;height:500px;top:15%;left:-15%;transform:rotate(-15deg)}
+.hero-contour:nth-child(3){width:1000px;height:600px;top:10%;left:-20%;transform:rotate(-15deg)}
+.hero-contour:nth-child(4){width:500px;height:350px;bottom:10%;right:-5%;transform:rotate(20deg)}
+.hero-contour:nth-child(5){width:700px;height:450px;bottom:5%;right:-10%;transform:rotate(20deg)}
+
+.hero-content{
+  position:relative;z-index:2;text-align:center;max-width:900px;
+}
+.hero-brand-mark{
+  display:inline-block;margin-bottom:2rem;
+  filter:drop-shadow(0 0 30px rgba(168,144,96,0.3));
+}
+.hero-brand-mark svg{width:80px;height:80px}
+.hero-title{
+  font-family:'Cinzel',serif;font-size:clamp(2.5rem,6vw,5rem);font-weight:900;
+  color:var(--limestone-50);letter-spacing:.08em;
+  margin-bottom:1rem;
+  text-shadow:0 2px 40px rgba(0,0,0,0.5);
+}
+.hero-title .wordmark{font-family:'Inter',sans-serif;font-weight:800;letter-spacing:-0.02em}
+.hero-tagline{
+  font-family:'Crimson Text',serif;font-size:clamp(1.1rem,2.5vw,1.5rem);
+  color:var(--sandstone-200);font-style:italic;
+  margin-bottom:.5rem;letter-spacing:.05em;
+}
+.hero-subtitle{
+  font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(243,232,216,0.45);margin-bottom:3rem;
+}
+.hero-divider{
+  width:120px;height:1px;margin:0 auto 2rem;
+  background:linear-gradient(90deg,transparent,var(--sandstone-200),transparent);
+}
+.hero-cta-group{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap}
+.btn-expedition{
+  font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;
+  padding:1rem 2.5rem;border:2px solid var(--sandstone-200);
+  background:transparent;color:var(--limestone-50);cursor:pointer;
+  position:relative;overflow:hidden;transition:all .4s;text-decoration:none;
+}
+.btn-expedition::before{
+  content:'';position:absolute;inset:0;
+  background:var(--sandstone-200);transform:translateX(-101%);
+  transition:transform .4s cubic-bezier(.4,0,.2,1);z-index:-1;
+}
+.btn-expedition:hover{color:var(--ink)}
+.btn-expedition:hover::before{transform:translateX(0)}
+.btn-expedition.primary{background:var(--sandstone-200);color:var(--ink);border-color:var(--sandstone-200)}
+.btn-expedition.primary::before{background:var(--limestone-50)}
+
+/* Scroll indicator */
+.scroll-indicator{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  color:rgba(243,232,216,0.35);font-family:'Cinzel',serif;font-size:.65rem;
+  letter-spacing:.2em;text-transform:uppercase;
+  animation:scroll-bounce 2s ease-in-out infinite;
+}
+@keyframes scroll-bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+.scroll-arrow{width:20px;height:20px;border-right:1px solid rgba(243,232,216,0.35);border-bottom:1px solid rgba(243,232,216,0.35);transform:rotate(45deg)}
+
+/* ===== SECTION SHARED ===== */
+section{padding:6rem 2rem;position:relative}
+.section-inner{max-width:1200px;margin:0 auto}
+.section-header{text-align:center;margin-bottom:4rem}
+.section-label{
+  font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--sandstone-200);margin-bottom:.75rem;display:block;
+}
+.section-title{font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:1rem;color:var(--ink)}
+.section-rule{
+  width:80px;height:1px;margin:0 auto;
+  background:linear-gradient(90deg,transparent,var(--sandstone-200),transparent);
+}
+
+/* ===== TRAIL LINE ===== */
+.trail-line{
+  position:absolute;left:50%;width:2px;
+  background:repeating-linear-gradient(to bottom,var(--sandstone-200) 0,var(--sandstone-200) 6px,transparent 6px,transparent 12px);
+  opacity:.3;transform:translateX(-50%);
+  height:0;transition:height 1.5s cubic-bezier(.4,0,.2,1);
+}
+.trail-line.visible{height:100px}
 
-.stat-item {
-  text-align: center;
-  padding: 1.5rem;
-  border: 1px solid rgba(241,214,162,0.1);
-  position: relative;
+/* ===== FEATURES SECTION ===== */
+.features{background:transparent;position:relative}
+.features-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:2.5rem;
 }
-
-.stat-item::before,
-.stat-item::after {
-  content: '';
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  border: 1px solid var(--burnt-orange);
-}
-
-.stat-item::before { top: -2px; left: -2px; border-right: none; border-bottom: none; }
-.stat-item::after { bottom: -2px; right: -2px; border-left: none; border-top: none; }
-
-.stat-number {
-  font-family: 'Cinzel', serif;
-  font-size: 2.5rem;
-  font-weight: 900;
-  color: var(--burnt-orange);
-  display: block;
-  margin-bottom: 0.25rem;
-}
-
-.stat-label {
-  font-family: 'Cinzel', serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--parchment-dark);
-}
-
-/* ===================== CTA SECTION ===================== */
-.cta {
-  padding: 8rem 0;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Large decorative compass in CTA */
-.cta-compass {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 500px;
-  height: 500px;
-  opacity: 0.04;
-}
-
-.cta-content {
-  position: relative;
-  z-index: 1;
-}
-
-.cta h2 {
-  font-size: clamp(2rem, 4.5vw, 3.5rem);
-  margin-bottom: 1.5rem;
-}
-
-.cta p {
-  font-size: 1.25rem;
-  color: var(--ink-light);
-  max-width: 550px;
-  margin: 0 auto 2.5rem;
-  font-style: italic;
-}
-
-.cta-form {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  max-width: 500px;
-  margin: 0 auto 1.5rem;
-}
-
-.cta-form input {
-  flex: 1;
-  min-width: 250px;
-  padding: 1rem 1.5rem;
-  font-family: 'Crimson Text', serif;
-  font-size: 1rem;
-  background: var(--parchment-light);
-  border: 2px solid var(--ink);
-  color: var(--ink);
-  outline: none;
-  transition: border-color 0.3s;
-}
-
-.cta-form input::placeholder { color: var(--ink-light); opacity: 0.6; }
-.cta-form input:focus { border-color: var(--burnt-orange); }
-
-.cta-note {
-  font-size: 0.85rem;
-  color: var(--ink-light);
-  opacity: 0.7;
-}
-
-/* ===================== FOOTER ===================== */
-footer {
-  background: var(--navy);
-  color: var(--parchment);
-  padding: 5rem 0 2rem;
-  position: relative;
-}
-
-footer::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--burnt-orange), var(--purple), var(--burnt-orange));
-}
-
-.footer-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 3rem;
-  margin-bottom: 3rem;
-}
-
-.footer-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-}
-
-.footer-brand svg { width: 32px; height: 32px; color: var(--parchment); }
-
-.footer-brand span {
-  font-family: 'Cinzel', serif;
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-.footer-about p {
-  color: var(--parchment-dark);
-  font-size: 0.95rem;
-  max-width: 300px;
-}
-
-.footer-col h4 {
-  font-family: 'Cinzel', serif;
-  font-size: 0.75rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--parchment);
-  margin-bottom: 1.25rem;
-}
-
-.footer-col ul { list-style: none; }
-
-.footer-col ul li { margin-bottom: 0.6rem; }
-
-.footer-col ul a {
-  color: var(--parchment-dark);
-  font-size: 0.95rem;
-  transition: color 0.3s;
-}
-
-.footer-col ul a:hover { color: var(--burnt-orange); }
-
-.footer-bottom {
-  border-top: 1px solid rgba(241,214,162,0.1);
-  padding-top: 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.footer-bottom p {
-  font-family: 'Cinzel', serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  color: var(--parchment-dark);
-}
-
-.footer-coords {
-  font-family: 'Cinzel', serif;
-  font-size: 0.65rem;
-  letter-spacing: 0.15em;
-  color: var(--parchment-dark);
-  opacity: 0.5;
-}
-
-/* ===================== RESPONSIVE ===================== */
-@media (max-width: 1024px) {
-  .features-grid { grid-template-columns: repeat(2, 1fr); }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
-  .compass-rose { width: 500px; right: -15%; }
-}
-
-@media (max-width: 768px) {
-  .features-grid { grid-template-columns: 1fr; }
-  .highlight-row { grid-template-columns: 1fr; gap: 2rem; }
-  .highlight-row.reverse { direction: ltr; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .footer-grid { grid-template-columns: 1fr; }
-  .nav-links { display: none; }
-  .compass-rose { width: 350px; right: -20%; }
-  .step { gap: 1.5rem; }
-  .expedition-trail, .trail-progress { left: 15px; }
-  .step-marker { width: 40px; height: 40px; font-size: 0.9rem; }
+.feature-card{
+  background:rgba(243,232,216,0.6);
+  border:1px solid rgba(193,160,122,0.25);
+  padding:2.5rem 2rem;position:relative;
+  transform:rotate(0deg);transition:transform .5s,box-shadow .5s,border-color .5s;
+  opacity:0;transform:translateY(30px) rotate(0deg);
+}
+.feature-card.revealed{opacity:1;transform:translateY(0)}
+.feature-card:nth-child(even){transform:translateY(30px) rotate(0deg)}
+.feature-card:nth-child(even).revealed{transform:translateY(0) rotate(0deg)}
+.feature-card:hover{
+  box-shadow:0 8px 40px rgba(26,18,11,0.1);
+  border-color:var(--sandstone-200);
+  transform:translateY(-4px) rotate(0deg) !important;
 }
 
-@media (max-width: 480px) {
-  .hero h1 { font-size: 2.4rem; }
-  .hero-actions { flex-direction: column; width: 100%; }
-  .hero-actions .btn-primary,
-  .hero-actions .btn-secondary { width: 100%; text-align: center; }
-  .compass-rose { display: none; }
-  .cta-form { flex-direction: column; }
-  .cta-form input { min-width: 100%; }
+/* Corner decorations — map annotation style */
+.feature-card::before,.feature-card::after{
+  content:'';position:absolute;width:20px;height:20px;
+  border-color:var(--sandstone-200);opacity:.4;transition:opacity .3s;
+}
+.feature-card::before{top:8px;left:8px;border-top:1px solid;border-left:1px solid}
+.feature-card::after{bottom:8px;right:8px;border-bottom:1px solid;border-right:1px solid}
+.feature-card:hover::before,.feature-card:hover::after{opacity:.8}
+
+.feature-icon{
+  width:48px;height:48px;margin-bottom:1.5rem;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--sandstone-200);border-radius:50%;
+  color:var(--sandstone-200);font-size:1.2rem;
+}
+.feature-card h3{
+  font-family:'Cinzel',serif;font-size:1.15rem;margin-bottom:.75rem;
+  letter-spacing:.05em;
+}
+.feature-card p{font-size:1.05rem;color:var(--ink-light);line-height:1.8}
+
+/* ===== EXPEDITION STEPS / HOW IT WORKS ===== */
+.expedition{
+  background:radial-gradient(circle at 35% 30%,#3A251A 0%,#1A120B 100%);
+  color:var(--limestone-50);position:relative;overflow:hidden;
+}
+.expedition .section-title{color:var(--limestone-50)}
+.expedition .section-label{color:var(--sandstone-200)}
+
+.expedition-contours{
+  position:absolute;inset:0;pointer-events:none;opacity:.05;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 80%,transparent 30%,rgba(193,160,122,0.3) 31%,transparent 32%,transparent 40%,rgba(193,160,122,0.2) 41%,transparent 42%,transparent 50%,rgba(193,160,122,0.15) 51%,transparent 52%);
+}
+
+.steps{
+  display:flex;flex-direction:column;gap:0;position:relative;max-width:800px;margin:0 auto;
+}
+
+/* Dotted trail connecting steps */
+.steps::before{
+  content:'';position:absolute;left:32px;top:0;bottom:0;width:2px;
+  background:repeating-linear-gradient(to bottom,var(--sandstone-200) 0,var(--sandstone-200) 4px,transparent 4px,transparent 10px);
+  opacity:.3;
+}
+
+.step{
+  display:flex;gap:2rem;align-items:flex-start;padding:2rem 0;
+  position:relative;
+  opacity:0;transform:translateX(-20px);transition:all .6s cubic-bezier(.4,0,.2,1);
+}
+.step.revealed{opacity:1;transform:translateX(0)}
+
+.step-number{
+  flex-shrink:0;width:64px;height:64px;
+  border:2px solid var(--sandstone-200);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;font-size:1.4rem;font-weight:700;
+  color:var(--sandstone-200);background:var(--ember-900);
+  position:relative;z-index:2;
+}
+
+.step-content h3{
+  font-family:'Cinzel',serif;font-size:1.2rem;color:var(--limestone-50);
+  margin-bottom:.5rem;letter-spacing:.05em;
+}
+.step-content p{color:var(--sandstone-200);font-size:1.05rem;line-height:1.8}
+
+/* ===== MAP LEGEND / HIGHLIGHTS ===== */
+.highlights{background:transparent;position:relative}
+.highlights-layout{
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;
+}
+.highlight-map{
+  position:relative;aspect-ratio:4/3;
+  background:rgba(243,232,216,0.3);
+  border:1px solid rgba(193,160,122,0.3);
+  overflow:hidden;
+}
+/* Grid lines in map */
+.highlight-map::before{
+  content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(rgba(26,18,11,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(26,18,11,0.04) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.highlight-map .brand-mark-legend{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  opacity:.12;
+}
+.highlight-map .brand-mark-legend svg{width:200px;height:200px}
+
+/* Animated survey path in the map */
+.survey-path{
+  position:absolute;inset:0;
+}
+.survey-path svg{width:100%;height:100%}
+.survey-path .path-line{
+  stroke:var(--sandstone-200);stroke-width:2;fill:none;
+  stroke-dasharray:800;stroke-dashoffset:800;
+  transition:stroke-dashoffset 2s cubic-bezier(.4,0,.2,1);
+}
+.survey-path.revealed .path-line{stroke-dashoffset:0}
+.survey-path .station-dot{
+  fill:var(--sandstone-200);opacity:0;
+  transition:opacity .4s;
+}
+.survey-path.revealed .station-dot{opacity:1}
+.survey-path.revealed .station-dot:nth-child(2){transition-delay:.3s}
+.survey-path.revealed .station-dot:nth-child(3){transition-delay:.6s}
+.survey-path.revealed .station-dot:nth-child(4){transition-delay:.9s}
+.survey-path.revealed .station-dot:nth-child(5){transition-delay:1.2s}
+.survey-path.revealed .station-dot:nth-child(6){transition-delay:1.5s}
+
+.highlight-details{display:flex;flex-direction:column;gap:2rem}
+.highlight-item{
+  padding:1.5rem 2rem;border-left:3px solid var(--sandstone-200);
+  background:rgba(243,232,216,0.4);
+  opacity:0;transform:translateX(20px);transition:all .5s;
+}
+.highlight-item.revealed{opacity:1;transform:translateX(0)}
+.highlight-item h4{
+  font-family:'Cinzel',serif;font-size:1rem;margin-bottom:.5rem;
+  letter-spacing:.05em;
+}
+.highlight-item p{font-size:.95rem;color:var(--ink-light);line-height:1.7}
+.highlight-item .tag{
+  display:inline-block;margin-top:.75rem;
+  font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--sandstone-200);border:1px solid var(--sandstone-200);
+  padding:.2rem .75rem;
+}
+
+/* ===== TECH SPECS BANNER ===== */
+.tech-specs{
+  background:var(--parchment-dark);border-top:1px solid rgba(193,160,122,0.2);
+  border-bottom:1px solid rgba(193,160,122,0.2);
+  padding:3rem 2rem;
+}
+.specs-grid{
+  max-width:1200px;margin:0 auto;
+  display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;
+}
+.spec-item{text-align:center;min-width:140px}
+.spec-value{
+  font-family:'Cinzel',serif;font-size:1.6rem;font-weight:700;
+  color:var(--ink);display:block;margin-bottom:.25rem;
+}
+.spec-label{
+  font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--silt-300);
+}
+
+/* ===== FORMATS / EXPORT ===== */
+.formats{background:transparent}
+.formats-showcase{
+  display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-top:2rem;
+}
+.format-badge{
+  display:flex;flex-direction:column;align-items:center;gap:.75rem;
+  padding:2rem 2.5rem;
+  border:1px solid rgba(193,160,122,0.3);
+  background:rgba(243,232,216,0.5);
+  transition:all .4s;cursor:default;
+  opacity:0;transform:translateY(20px);
+}
+.format-badge.revealed{opacity:1;transform:translateY(0)}
+.format-badge:hover{
+  border-color:var(--sandstone-200);
+  background:rgba(243,232,216,0.8);
+  transform:translateY(-4px) !important;
+  box-shadow:0 8px 30px rgba(26,18,11,0.1);
+}
+.format-ext{
+  font-family:'Cinzel',serif;font-size:1.4rem;font-weight:700;
+  color:var(--ink);
+}
+.format-desc{
+  font-size:.85rem;color:var(--silt-300);text-align:center;
+  max-width:100px;
+}
+
+/* ===== CTA / DOWNLOAD ===== */
+.cta-section{
+  background:radial-gradient(circle at 35% 30%,#3A251A 0%,#1A120B 100%);
+  color:var(--limestone-50);text-align:center;
+  padding:8rem 2rem;position:relative;overflow:hidden;
+}
+.cta-section .section-title{color:var(--limestone-50);margin-bottom:1rem}
+.cta-text{
+  font-family:'Crimson Text',serif;font-size:1.2rem;font-style:italic;
+  color:var(--sandstone-200);max-width:600px;margin:0 auto 3rem;
+  line-height:1.8;
+}
+.cta-buttons{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+.cta-platform-note{
+  font-size:.85rem;color:rgba(243,232,216,0.4);
+  font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;
+}
+
+/* Compass rose in CTA */
+.cta-compass{
+  position:absolute;right:-100px;top:50%;transform:translateY(-50%);
+  width:400px;height:400px;opacity:.04;pointer-events:none;
+  animation:compass-rotate 90s linear infinite reverse;
+}
+
+/* ===== FOOTER ===== */
+.footer{
+  background:var(--basalt-950);color:rgba(243,232,216,0.5);
+  padding:4rem 2rem 2rem;
+}
+.footer-inner{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;
+  padding-bottom:3rem;border-bottom:1px solid rgba(243,232,216,0.08);
+}
+.footer-brand{display:flex;flex-direction:column;gap:1rem}
+.footer-brand-logo{display:flex;align-items:center;gap:.75rem}
+.footer-brand-logo svg{width:32px;height:32px}
+.footer-brand-logo span{font-family:'Inter',sans-serif;font-weight:800;font-size:1.1rem;color:var(--limestone-50)}
+.footer-brand p{font-size:.9rem;line-height:1.7;max-width:300px}
+.footer-col h5{
+  font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--sandstone-200);margin-bottom:1rem;
+}
+.footer-col a{
+  display:block;font-size:.9rem;color:rgba(243,232,216,0.5);
+  text-decoration:none;padding:.25rem 0;transition:color .3s;
+}
+.footer-col a:hover{color:var(--limestone-50)}
+.footer-bottom{
+  max-width:1200px;margin:0 auto;padding-top:2rem;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.8rem;
+}
+.footer-bottom a{color:rgba(243,232,216,0.4);text-decoration:none}
+.footer-bottom a:hover{color:var(--limestone-50)}
+
+/* ===== REVEAL ANIMATIONS ===== */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)}
+.reveal.revealed{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}
+.reveal-delay-5{transition-delay:.5s}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .highlights-layout{grid-template-columns:1fr;gap:2rem}
+  .footer-inner{grid-template-columns:1fr 1fr;gap:2rem}
+  .nav-links{display:none}
+  .hero-title{font-size:clamp(2rem,5vw,3.5rem)}
+  .compass-rose{width:400px;height:400px}
+}
+@media(max-width:600px){
+  .features-grid{grid-template-columns:1fr}
+  .footer-inner{grid-template-columns:1fr}
+  .specs-grid{gap:2rem}
+  .hero-cta-group{flex-direction:column;align-items:center}
+  .step{flex-direction:column;align-items:center;text-align:center}
+  .steps::before{display:none}
 }
 </style>
 </head>
 <body>
 
-<div class="contour-bg"></div>
-<div class="grid-overlay"></div>
-
-<!-- ========== NAVIGATION ========== -->
-<nav id="nav">
-  <div class="container">
-    <a href="#" class="nav-logo">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462" width="36" height="36">
-        <path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/>
-      </svg>
-      <span>Stalagmight</span>
-    </a>
-    <ul class="nav-links">
-      <li><a href="#features">Features</a></li>
-      <li><a href="#expedition">How It Works</a></li>
-      <li><a href="#highlights">Platform</a></li>
-      <li><a href="#cta" class="nav-cta">Begin Expedition</a></li>
-    </ul>
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav" id="nav">
+  <a href="#" class="nav-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="36" height="36">
+      <defs><linearGradient id="nav-accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3A251A"/><stop offset="1" stop-color="#1A120B"/></linearGradient></defs>
+      <g transform="translate(512 512) scale(1.18) translate(-512 -512)">
+        <circle cx="512" cy="512" r="310" fill="none" stroke="#1A120B" stroke-width="14" opacity="0.20"/>
+        <circle cx="512" cy="512" r="240" fill="none" stroke="#1A120B" stroke-width="10" opacity="0.12"/>
+        <g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity="0.32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g>
+        <g fill="none" stroke="url(#nav-accent)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g>
+        <g fill="#1A120B" opacity="0.98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g>
+      </g>
+    </svg>
+    <span class="brand-wordmark">StalagMight</span>
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#expedition">How It Works</a>
+    <a href="#highlights">Highlights</a>
+    <a href="#formats">Export</a>
+    <a href="#download" class="nav-cta">Download</a>
   </div>
 </nav>
 
-<!-- ========== HERO ========== -->
+<!-- ===== HERO ===== -->
 <section class="hero" id="hero">
-  <div class="compass-rose" id="compassRose">
-    <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Outer circle -->
-      <circle cx="200" cy="200" r="190" stroke="currentColor" stroke-width="1" fill="none" opacity="0.3"/>
-      <circle cx="200" cy="200" r="180" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.2"/>
-      <circle cx="200" cy="200" r="160" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.15"/>
-      <!-- Tick marks -->
-      <g stroke="currentColor" stroke-width="0.5" opacity="0.3">
-        <line x1="200" y1="10" x2="200" y2="30"/>
-        <line x1="200" y1="370" x2="200" y2="390"/>
-        <line x1="10" y1="200" x2="30" y2="200"/>
-        <line x1="370" y1="200" x2="390" y2="200"/>
+  <!-- Compass Rose Watermark -->
+  <div class="compass-rose">
+    <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(250,250)" fill="none" stroke="#F3E8D8">
+        <!-- Outer ring -->
+        <circle r="230" stroke-width="2"/>
+        <circle r="200" stroke-width="1"/>
+        <circle r="170" stroke-width="0.5"/>
+        <!-- Cardinal points -->
+        <g stroke-width="2">
+          <line x1="0" y1="-240" x2="0" y2="-180"/>
+          <line x1="0" y1="180" x2="0" y2="240"/>
+          <line x1="-240" y1="0" x2="-180" y2="0"/>
+          <line x1="180" y1="0" x2="240" y2="0"/>
+        </g>
+        <!-- Compass star -->
+        <polygon points="0,-160 15,-30 0,160 -15,-30" fill="#F3E8D8" opacity="0.3" stroke="none"/>
+        <polygon points="-160,0 -30,-15 160,0 -30,15" fill="#F3E8D8" opacity="0.15" stroke="none"/>
+        <!-- Intermediate directions -->
+        <g stroke-width="1" opacity="0.6">
+          <line x1="120" y1="-120" x2="155" y2="-155"/>
+          <line x1="120" y1="120" x2="155" y2="155"/>
+          <line x1="-120" y1="-120" x2="-155" y2="-155"/>
+          <line x1="-120" y1="120" x2="-155" y2="155"/>
+        </g>
+        <!-- Tick marks -->
+        <g stroke-width="0.5" opacity="0.3">
+          <line x1="0" y1="-230" x2="0" y2="-220"/>
+          <line x1="60" y1="-222" x2="57" y2="-213"/>
+          <line x1="115" y1="-200" x2="110" y2="-192"/>
+          <line x1="163" y1="-163" x2="156" y2="-156"/>
+          <line x1="200" y1="-115" x2="192" y2="-110"/>
+          <line x1="222" y1="-60" x2="213" y2="-57"/>
+          <line x1="230" y1="0" x2="220" y2="0"/>
+          <line x1="222" y1="60" x2="213" y2="57"/>
+          <line x1="200" y1="115" x2="192" y2="110"/>
+          <line x1="163" y1="163" x2="156" y2="156"/>
+          <line x1="115" y1="200" x2="110" y2="192"/>
+          <line x1="60" y1="222" x2="57" y2="213"/>
+          <line x1="0" y1="230" x2="0" y2="220"/>
+          <line x1="-60" y1="222" x2="-57" y2="213"/>
+          <line x1="-115" y1="200" x2="-110" y2="192"/>
+          <line x1="-163" y1="163" x2="-156" y2="156"/>
+          <line x1="-200" y1="115" x2="-192" y2="110"/>
+          <line x1="-222" y1="60" x2="-213" y2="57"/>
+          <line x1="-230" y1="0" x2="-220" y2="0"/>
+          <line x1="-222" y1="-60" x2="-213" y2="-57"/>
+          <line x1="-200" y1="-115" x2="-192" y2="-110"/>
+          <line x1="-163" y1="-163" x2="-156" y2="-156"/>
+          <line x1="-115" y1="-200" x2="-110" y2="-192"/>
+          <line x1="-60" y1="-222" x2="-57" y2="-213"/>
+        </g>
+        <!-- N/S/E/W labels -->
+        <text x="0" y="-242" text-anchor="middle" fill="#F3E8D8" font-family="Cinzel,serif" font-size="14" opacity="0.6">N</text>
+        <text x="0" y="258" text-anchor="middle" fill="#F3E8D8" font-family="Cinzel,serif" font-size="14" opacity="0.6">S</text>
+        <text x="256" y="5" text-anchor="middle" fill="#F3E8D8" font-family="Cinzel,serif" font-size="14" opacity="0.6">E</text>
+        <text x="-256" y="5" text-anchor="middle" fill="#F3E8D8" font-family="Cinzel,serif" font-size="14" opacity="0.6">W</text>
       </g>
-      <!-- Main compass points -->
-      <polygon points="200,20 210,180 200,170 190,180" fill="currentColor" opacity="0.5"/>
-      <polygon points="200,380 190,220 200,230 210,220" fill="currentColor" opacity="0.25"/>
-      <polygon points="20,200 180,190 170,200 180,210" fill="currentColor" opacity="0.25"/>
-      <polygon points="380,200 220,210 230,200 220,190" fill="currentColor" opacity="0.25"/>
-      <!-- Diagonal points -->
-      <polygon points="65,65 175,185 168,178 178,168" fill="currentColor" opacity="0.15"/>
-      <polygon points="335,65 222,178 228,168 218,185" fill="currentColor" opacity="0.15"/>
-      <polygon points="65,335 178,218 168,228 185,222" fill="currentColor" opacity="0.15"/>
-      <polygon points="335,335 218,222 228,218 222,228" fill="currentColor" opacity="0.15"/>
-      <!-- Center -->
-      <circle cx="200" cy="200" r="8" fill="currentColor" opacity="0.4"/>
-      <circle cx="200" cy="200" r="3" fill="currentColor" opacity="0.6"/>
-      <!-- Cardinal labels -->
-      <text x="200" y="55" text-anchor="middle" font-family="Cinzel, serif" font-size="14" fill="currentColor" opacity="0.4">N</text>
-      <text x="200" y="360" text-anchor="middle" font-family="Cinzel, serif" font-size="14" fill="currentColor" opacity="0.4">S</text>
-      <text x="55" y="205" text-anchor="middle" font-family="Cinzel, serif" font-size="14" fill="currentColor" opacity="0.4">W</text>
-      <text x="350" y="205" text-anchor="middle" font-family="Cinzel, serif" font-size="14" fill="currentColor" opacity="0.4">E</text>
     </svg>
   </div>
 
-  <div class="hero-trail"></div>
+  <!-- Contour lines -->
+  <div class="hero-contours">
+    <div class="hero-contour"></div>
+    <div class="hero-contour"></div>
+    <div class="hero-contour"></div>
+    <div class="hero-contour"></div>
+    <div class="hero-contour"></div>
+  </div>
 
-  <div class="container">
-    <div class="hero-content">
-      <div class="hero-badge">Speleological Survey Platform</div>
-      <h1>Chart the <span class="accent">Unknown</span> Depths</h1>
-      <p class="hero-description">
-        Stalagmight is a collaborative cave mapping and survey data management platform built for exploration teams, researchers, and speleological societies.
-      </p>
-      <div class="hero-actions">
-        <a href="#cta" class="btn-primary">Begin Your Expedition</a>
-        <a href="#features" class="btn-secondary">View the Map</a>
-      </div>
-      <p class="hero-coordinates">48&deg;12'31.8"N &nbsp; 16&deg;22'14.5"E &nbsp; &middot; &nbsp; Depth: -1,247m</p>
+  <div class="hero-content">
+    <div class="hero-brand-mark">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="80" height="80">
+        <defs><linearGradient id="hero-accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs>
+        <g transform="translate(512 512) scale(1.18) translate(-512 -512)">
+          <circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity="0.20"/>
+          <circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity="0.12"/>
+          <g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity="0.32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g>
+          <g fill="none" stroke="url(#hero-accent)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g>
+          <g fill="#F3E8D8" opacity="0.98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g>
+        </g>
+      </svg>
     </div>
+    <h1 class="hero-title"><span class="wordmark">StalagMight</span></h1>
+    <p class="hero-tagline">Underwater cave survey and mapping</p>
+    <p class="hero-subtitle">Desktop application for cave divers &amp; cartographers</p>
+    <div class="hero-divider"></div>
+    <div class="hero-cta-group">
+      <a href="#download" class="btn-expedition primary">Begin Your Expedition</a>
+      <a href="#features" class="btn-expedition">Explore Features</a>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Descend</span>
+    <div class="scroll-arrow"></div>
   </div>
 </section>
 
-<!-- ========== FEATURES ========== -->
+<!-- ===== FEATURES ===== -->
 <section class="features" id="features">
-  <div class="container">
-    <div class="features-header reveal">
-      <div class="section-label">Expedition Toolkit</div>
-      <h2>Survey Instruments</h2>
-      <p>Everything your team needs to map, document, and understand the subterranean world.</p>
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-label">Survey Instruments</span>
+      <h2 class="section-title">Chart the Depths</h2>
+      <div class="section-rule"></div>
     </div>
-
     <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <h3>DMP File Import</h3>
+        <p>Import survey data directly from mNemo diving devices. Automatic parsing of bearing, distance, and depth readings from your underwater expeditions.</p>
+      </div>
       <div class="feature-card reveal reveal-delay-1">
         <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
         </div>
-        <h3>Cave System Mapping</h3>
-        <p>Build detailed 2D and 3D maps of cave passages, chambers, and geological formations with precise survey data integration.</p>
-        <span class="feature-ref">Ref. Map-001 &middot; Passage Survey</span>
+        <h3>Spreadsheet Entry</h3>
+        <p>Manual data entry through an intuitive spreadsheet interface. Enter station names, compass bearings, distances, and depth data with full validation.</p>
       </div>
-
       <div class="feature-card reveal reveal-delay-2">
         <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
         </div>
-        <h3>GIS Station Data</h3>
-        <p>Manage survey stations with full geographic information system integration, coordinate transforms, and datum conversions.</p>
-        <span class="feature-ref">Ref. GIS-002 &middot; Geodetic Survey</span>
+        <h3>2D Visualization</h3>
+        <p>Render your cave surveys as detailed 2D plan views with satellite imagery overlay. Pan, zoom, and examine every passage and connection.</p>
       </div>
-
       <div class="feature-card reveal reveal-delay-3">
         <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
-        <h3>Equipment Tracking</h3>
-        <p>Monitor sensors, gas cylinders, rope stocks, and scientific instruments across all your field operations and storage depots.</p>
-        <span class="feature-ref">Ref. EQP-003 &middot; Inventory</span>
+        <h3>Section Management</h3>
+        <p>Organize complex cave systems into logical sections. Group survey legs, assign names, and manage hierarchical relationships between passages.</p>
       </div>
-
-      <div class="feature-card reveal reveal-delay-1">
+      <div class="feature-card reveal reveal-delay-4">
         <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12 L12 8 L16 12 L12 16 Z"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M2 12h4"/><path d="M18 12h4"/></svg>
         </div>
-        <h3>Team Collaboration</h3>
-        <p>Role-based permissions for surveyors, researchers, and administrators. Real-time collaboration on survey data and maps.</p>
-        <span class="feature-ref">Ref. COL-004 &middot; Field Teams</span>
+        <h3>Loop Closure Detection</h3>
+        <p>Automatically identify closed loops in your survey network. Essential for detecting errors and validating the integrity of your cave survey data.</p>
       </div>
-
-      <div class="feature-card reveal reveal-delay-2">
+      <div class="feature-card reveal reveal-delay-5">
         <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         </div>
-        <h3>Scientific Experiments</h3>
-        <p>Track ongoing research projects, environmental monitoring data, biological surveys, and geological sampling across cave sites.</p>
-        <span class="feature-ref">Ref. SCI-005 &middot; Research Log</span>
-      </div>
-
-      <div class="feature-card reveal reveal-delay-3">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-        </div>
-        <h3>GPS Track Import</h3>
-        <p>Import GPS tracks and waypoints from field devices. Overlay surface GPS data onto subsurface cave maps for comprehensive analysis.</p>
-        <span class="feature-ref">Ref. GPS-006 &middot; Track Data</span>
+        <h3>Error Distribution</h3>
+        <p>Distribute survey measurement errors across loop closures using least-squares adjustment. Achieve the most accurate representation of cave geometry.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ========== EXPEDITION ROUTE (HOW IT WORKS) ========== -->
+<!-- Trail connector -->
+<div style="position:relative;height:100px">
+  <div class="trail-line" style="top:0"></div>
+</div>
+
+<!-- ===== HOW IT WORKS / EXPEDITION ===== -->
 <section class="expedition" id="expedition">
-  <div class="container">
-    <div class="expedition-header reveal">
-      <div class="section-label">The Route</div>
-      <h2>Your Expedition Begins</h2>
-      <p>From basecamp to the deepest sump, Stalagmight guides your team every step of the way.</p>
+  <div class="expedition-contours"></div>
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-label">Field Protocol</span>
+      <h2 class="section-title">Your Expedition Route</h2>
+      <div class="section-rule"></div>
     </div>
-
-    <div class="expedition-steps">
-      <div class="expedition-trail"></div>
-      <div class="trail-progress" id="trailProgress"></div>
-
+    <div class="steps">
       <div class="step reveal">
-        <div class="step-marker">I</div>
+        <div class="step-number">I</div>
         <div class="step-content">
-          <h3>Establish Basecamp</h3>
-          <p>Create your project, invite your team, and configure roles. Set your datum, coordinate system, and cave entrance coordinates.</p>
-          <span class="step-detail">Est. setup time: 10 minutes</span>
+          <h3>Gather Your Data</h3>
+          <p>Import DMP files from your mNemo device after a dive, or manually enter survey measurements through the built-in spreadsheet. All standard cave survey data fields are supported.</p>
         </div>
       </div>
-
       <div class="step reveal reveal-delay-1">
-        <div class="step-marker">II</div>
+        <div class="step-number">II</div>
         <div class="step-content">
-          <h3>Import Survey Data</h3>
-          <p>Upload existing surveys in standard formats, import GPS tracks, or begin fresh with our integrated survey instrument interface.</p>
-          <span class="step-detail">Supports Survex, Therion, Compass, CSV</span>
+          <h3>Organize Sections</h3>
+          <p>Structure your cave system by creating sections for each passage and branch. Name your stations, annotate survey legs, and build a clear hierarchy of your underwater cave network.</p>
         </div>
       </div>
-
       <div class="step reveal reveal-delay-2">
-        <div class="step-marker">III</div>
+        <div class="step-number">III</div>
         <div class="step-content">
-          <h3>Map the Passages</h3>
-          <p>Build your cave map collaboratively. Add survey stations, draw passages, annotate formations, and link scientific observations.</p>
-          <span class="step-detail">Real-time collaboration enabled</span>
+          <h3>Detect &amp; Correct</h3>
+          <p>Let StalagMight identify loop closures in your survey. The error distribution engine uses least-squares adjustment to optimally spread measurement discrepancies across the network.</p>
         </div>
       </div>
-
       <div class="step reveal reveal-delay-3">
-        <div class="step-marker">IV</div>
+        <div class="step-number">IV</div>
         <div class="step-content">
-          <h3>Analyze &amp; Share</h3>
-          <p>Generate reports, export publication-ready maps, share findings with the speleological community, and plan your next expedition.</p>
-          <span class="step-detail">Export: PDF, SVG, GeoJSON, KML</span>
+          <h3>Visualize &amp; Map</h3>
+          <p>Explore your cave survey in the 2D viewer with satellite overlay. Examine passage connectivity, verify loop integrity, and review the complete map of your underwater exploration.</p>
+        </div>
+      </div>
+      <div class="step reveal reveal-delay-4">
+        <div class="step-number">V</div>
+        <div class="step-content">
+          <h3>Export &amp; Share</h3>
+          <p>Generate publication-ready outputs in PNG, SVG, or PDF for printed maps, or export structured data in CSV and JSON for further analysis and collaboration with fellow explorers.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ========== HIGHLIGHTS ========== -->
+<!-- Trail connector -->
+<div style="position:relative;height:100px;background:transparent">
+  <div class="trail-line" style="top:0"></div>
+</div>
+
+<!-- ===== HIGHLIGHTS ===== -->
 <section class="highlights" id="highlights">
-  <div class="container">
-
-    <div class="highlight-row reveal">
-      <div class="highlight-visual">
-        <div class="highlight-visual-inner">
-          <div class="map-viz">
-            <div class="contour"></div>
-            <div class="contour"></div>
-            <div class="contour"></div>
-            <div class="contour"></div>
-            <div class="contour"></div>
-            <div class="station-dot"></div>
-            <div class="station-dot"></div>
-            <div class="station-dot"></div>
-            <div class="station-dot"></div>
-            <div class="passage-line"></div>
-            <div class="passage-line"></div>
-            <div class="passage-line"></div>
-          </div>
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-label">Map Legend</span>
+      <h2 class="section-title">Survey Highlights</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="highlights-layout">
+      <div class="highlight-map reveal">
+        <!-- Brand mark as map legend element -->
+        <div class="brand-mark-legend">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="200" height="200">
+            <defs><linearGradient id="map-accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C1A07A"/><stop offset="1" stop-color="#AE8D67"/></linearGradient></defs>
+            <g transform="translate(512 512) scale(1.18) translate(-512 -512)">
+              <circle cx="512" cy="512" r="310" fill="none" stroke="#C1A07A" stroke-width="14" opacity="0.20"/>
+              <circle cx="512" cy="512" r="240" fill="none" stroke="#C1A07A" stroke-width="10" opacity="0.12"/>
+              <g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity="0.32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g>
+              <g fill="none" stroke="url(#map-accent)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g>
+              <g fill="#C1A07A" opacity="0.5"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g>
+            </g>
+          </svg>
+        </div>
+        <!-- Animated survey path -->
+        <div class="survey-path" id="surveyPath">
+          <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <path class="path-line" d="M50,250 L100,180 L160,200 L200,140 L250,160 L280,100 L340,120 L360,70"/>
+            <path class="path-line" style="stroke-dasharray:400;stroke-dashoffset:400;opacity:0.5" d="M160,200 L180,260 L240,240 L250,160"/>
+            <circle class="station-dot" cx="50" cy="250" r="5"/>
+            <circle class="station-dot" cx="100" cy="180" r="5"/>
+            <circle class="station-dot" cx="160" cy="200" r="5"/>
+            <circle class="station-dot" cx="200" cy="140" r="5"/>
+            <circle class="station-dot" cx="250" cy="160" r="5"/>
+            <circle class="station-dot" cx="280" cy="100" r="5"/>
+            <circle class="station-dot" cx="340" cy="120" r="4"/>
+            <circle class="station-dot" cx="360" cy="70" r="4"/>
+            <circle class="station-dot" cx="180" cy="260" r="4"/>
+            <circle class="station-dot" cx="240" cy="240" r="4"/>
+            <!-- Station labels -->
+            <text x="45" y="270" fill="#C1A07A" font-family="Cinzel,serif" font-size="8" opacity="0.7">A0</text>
+            <text x="95" y="175" fill="#C1A07A" font-family="Cinzel,serif" font-size="8" opacity="0.7">A1</text>
+            <text x="155" y="195" fill="#C1A07A" font-family="Cinzel,serif" font-size="8" opacity="0.7">B0</text>
+            <text x="195" y="135" fill="#C1A07A" font-family="Cinzel,serif" font-size="8" opacity="0.7">B1</text>
+            <text x="255" y="158" fill="#C1A07A" font-family="Cinzel,serif" font-size="8" opacity="0.7">C0</text>
+            <text x="355" y="65" fill="#C1A07A" font-family="Cinzel,serif" font-size="8" opacity="0.7">C2</text>
+          </svg>
         </div>
       </div>
-      <div class="highlight-text">
-        <div class="section-label">Cartographic Engine</div>
-        <h3>Survey-Grade Mapping</h3>
-        <p>Our mapping engine renders cave systems from raw survey data with loop closure, error distribution, and automatic passage wall generation.</p>
-        <ul class="highlight-list">
-          <li>Least-squares loop closure algorithm</li>
-          <li>LRUD passage wall generation</li>
-          <li>Vertical section and extended elevation views</li>
-          <li>Layer management for geological features</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="highlight-row reverse reveal">
-      <div class="highlight-visual">
-        <div class="highlight-visual-inner">
-          <div class="gis-viz">
-            <div class="cell"></div><div class="cell active"></div><div class="cell"></div><div class="cell"></div><div class="cell active"></div><div class="cell"></div>
-            <div class="cell"></div><div class="cell"></div><div class="cell active"></div><div class="cell"></div><div class="cell"></div><div class="cell active"></div>
-            <div class="cell active"></div><div class="cell"></div><div class="cell"></div><div class="cell active"></div><div class="cell"></div><div class="cell"></div>
-            <div class="cell"></div><div class="cell active"></div><div class="cell"></div><div class="cell"></div><div class="cell active"></div><div class="cell"></div>
-            <div class="cell"></div><div class="cell"></div><div class="cell active"></div><div class="cell"></div><div class="cell"></div><div class="cell active"></div>
-          </div>
+      <div class="highlight-details">
+        <div class="highlight-item reveal">
+          <h4>Native Performance</h4>
+          <p>Built with Tauri, React, and Rust for a fast, lightweight desktop experience. No Electron bloat — just raw performance on Windows, macOS, and Linux.</p>
+          <span class="tag">Tauri + Rust</span>
         </div>
-      </div>
-      <div class="highlight-text">
-        <div class="section-label">Spatial Intelligence</div>
-        <h3>GIS-Integrated Station Network</h3>
-        <p>Every survey station carries full GIS metadata. Transform between coordinate systems, overlay geological maps, and perform spatial queries.</p>
-        <ul class="highlight-list">
-          <li>Support for 4,000+ coordinate reference systems</li>
-          <li>Geological map overlay and cross-referencing</li>
-          <li>Surface-to-cave spatial correlation</li>
-          <li>Hydrological flow path analysis</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="highlight-row reveal">
-      <div class="highlight-visual">
-        <div class="highlight-visual-inner">
-          <div class="equip-viz">
-            <div class="equip-bar">
-              <span class="equip-bar-label">Sensors</span>
-              <div class="equip-bar-track"><div class="equip-bar-fill"></div></div>
-            </div>
-            <div class="equip-bar">
-              <span class="equip-bar-label">Cylinders</span>
-              <div class="equip-bar-track"><div class="equip-bar-fill"></div></div>
-            </div>
-            <div class="equip-bar">
-              <span class="equip-bar-label">Rope</span>
-              <div class="equip-bar-track"><div class="equip-bar-fill"></div></div>
-            </div>
-            <div class="equip-bar">
-              <span class="equip-bar-label">First Aid</span>
-              <div class="equip-bar-track"><div class="equip-bar-fill"></div></div>
-            </div>
-            <div class="equip-bar">
-              <span class="equip-bar-label">Lighting</span>
-              <div class="equip-bar-track"><div class="equip-bar-fill"></div></div>
-            </div>
-          </div>
+        <div class="highlight-item reveal reveal-delay-1">
+          <h4>Satellite Overlay</h4>
+          <p>Layer your 2D cave plan view over satellite imagery to understand the relationship between underground passages and surface geography.</p>
+          <span class="tag">Geospatial</span>
         </div>
-      </div>
-      <div class="highlight-text">
-        <div class="section-label">Field Operations</div>
-        <h3>Equipment &amp; Resource Management</h3>
-        <p>Track every piece of gear from warehouse to cave. Manage calibration schedules, inspection logs, and deployment history for complete operational awareness.</p>
-        <ul class="highlight-list">
-          <li>Equipment lifecycle and maintenance tracking</li>
-          <li>Gas cylinder pressure and certification monitoring</li>
-          <li>Deployment assignment per expedition</li>
-          <li>Automated restock alerts and supply chain visibility</li>
-        </ul>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ========== STATS BANNER ========== -->
-<section class="stats-banner">
-  <div class="container">
-    <div class="stats-grid">
-      <div class="stat-item reveal">
-        <span class="stat-number" data-target="2847">0</span>
-        <span class="stat-label">Cave Systems Mapped</span>
-      </div>
-      <div class="stat-item reveal reveal-delay-1">
-        <span class="stat-number" data-target="156">0</span>
-        <span class="stat-label">Exploration Teams</span>
-      </div>
-      <div class="stat-item reveal reveal-delay-2">
-        <span class="stat-number" data-target="94200">0</span>
-        <span class="stat-label">Survey Stations</span>
-      </div>
-      <div class="stat-item reveal reveal-delay-3">
-        <span class="stat-number" data-target="31">0</span>
-        <span class="stat-label">Countries Active</span>
+        <div class="highlight-item reveal reveal-delay-2">
+          <h4>Least-Squares Adjustment</h4>
+          <p>Industry-standard error distribution that optimally corrects measurement discrepancies across your entire survey network, ensuring geometric accuracy.</p>
+          <span class="tag">Precision</span>
+        </div>
+        <div class="highlight-item reveal reveal-delay-3">
+          <h4>Multi-Format Export</h4>
+          <p>Generate PNG and SVG images for visual presentations, PDF for print-ready maps, or CSV and JSON for data interchange with other cave survey tools.</p>
+          <span class="tag">Interoperability</span>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ========== CTA ========== -->
-<section class="cta" id="cta">
+<!-- ===== TECH SPECS ===== -->
+<div class="tech-specs">
+  <div class="specs-grid">
+    <div class="spec-item reveal">
+      <span class="spec-value" data-count="5">5</span>
+      <span class="spec-label">Export Formats</span>
+    </div>
+    <div class="spec-item reveal reveal-delay-1">
+      <span class="spec-value">Tauri</span>
+      <span class="spec-label">Framework</span>
+    </div>
+    <div class="spec-item reveal reveal-delay-2">
+      <span class="spec-value">Rust</span>
+      <span class="spec-label">Backend</span>
+    </div>
+    <div class="spec-item reveal reveal-delay-3">
+      <span class="spec-value">React</span>
+      <span class="spec-label">Frontend</span>
+    </div>
+    <div class="spec-item reveal reveal-delay-4">
+      <span class="spec-value">3</span>
+      <span class="spec-label">Platforms</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EXPORT FORMATS ===== -->
+<section class="formats" id="formats">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-label">Cartographic Output</span>
+      <h2 class="section-title">Export Your Discoveries</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="formats-showcase">
+      <div class="format-badge reveal">
+        <span class="format-ext">.PNG</span>
+        <span class="format-desc">Raster images for sharing</span>
+      </div>
+      <div class="format-badge reveal reveal-delay-1">
+        <span class="format-ext">.SVG</span>
+        <span class="format-desc">Scalable vector graphics</span>
+      </div>
+      <div class="format-badge reveal reveal-delay-2">
+        <span class="format-ext">.PDF</span>
+        <span class="format-desc">Print-ready maps</span>
+      </div>
+      <div class="format-badge reveal reveal-delay-3">
+        <span class="format-ext">.CSV</span>
+        <span class="format-desc">Tabular survey data</span>
+      </div>
+      <div class="format-badge reveal reveal-delay-4">
+        <span class="format-ext">.JSON</span>
+        <span class="format-desc">Structured interchange</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA / DOWNLOAD ===== -->
+<section class="cta-section" id="download">
   <div class="cta-compass">
-    <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="200" cy="200" r="190" stroke="currentColor" stroke-width="1" fill="none"/>
-      <circle cx="200" cy="200" r="170" stroke="currentColor" stroke-width="0.5" fill="none"/>
-      <polygon points="200,20 210,180 200,170 190,180" fill="currentColor"/>
-      <polygon points="200,380 190,220 200,230 210,220" fill="currentColor"/>
-      <polygon points="20,200 180,190 170,200 180,210" fill="currentColor"/>
-      <polygon points="380,200 220,210 230,200 220,190" fill="currentColor"/>
-      <circle cx="200" cy="200" r="8" fill="currentColor"/>
+    <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(250,250)" fill="none" stroke="#F3E8D8">
+        <circle r="230" stroke-width="2"/>
+        <circle r="200" stroke-width="1"/>
+        <polygon points="0,-160 15,-30 0,160 -15,-30" fill="#F3E8D8" opacity="0.3" stroke="none"/>
+        <polygon points="-160,0 -30,-15 160,0 -30,15" fill="#F3E8D8" opacity="0.15" stroke="none"/>
+        <g stroke-width="2"><line x1="0" y1="-240" x2="0" y2="-180"/><line x1="0" y1="180" x2="0" y2="240"/><line x1="-240" y1="0" x2="-180" y2="0"/><line x1="180" y1="0" x2="240" y2="0"/></g>
+      </g>
     </svg>
   </div>
-  <div class="container">
-    <div class="cta-content reveal">
-      <div class="section-label" style="justify-content: center;">Join the Expedition</div>
-      <h2>Ready to Map<br>Uncharted Territory?</h2>
-      <p>Join hundreds of speleological teams already using Stalagmight to document the world beneath our feet.</p>
-      <form class="cta-form" onsubmit="event.preventDefault();">
-        <input type="email" placeholder="Enter your email address" aria-label="Email address">
-        <button type="submit" class="btn-primary">Start Free</button>
-      </form>
-      <p class="cta-note">Free for small teams. No credit card required. Begin mapping in minutes.</p>
+  <div class="section-inner" style="position:relative;z-index:2">
+    <div class="reveal">
+      <span class="section-label">Embark</span>
+      <h2 class="section-title" style="margin-bottom:1.5rem">Begin Your Cartographic Journey</h2>
     </div>
+    <p class="cta-text reveal reveal-delay-1">
+      Every great map began with a single bearing. StalagMight transforms your underwater survey data into the definitive chart of unexplored passages.
+    </p>
+    <div class="cta-buttons reveal reveal-delay-2">
+      <a href="#" class="btn-expedition primary">Download for Free</a>
+      <a href="#" class="btn-expedition">View Documentation</a>
+    </div>
+    <p class="cta-platform-note reveal reveal-delay-3">Available for Windows, macOS &amp; Linux</p>
   </div>
 </section>
 
-<!-- ========== FOOTER ========== -->
-<footer>
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-about">
-        <div class="footer-brand">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462" width="32" height="32">
-            <path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/>
-          </svg>
-          <span>Stalagmight</span>
-        </div>
-        <p>Collaborative cave mapping and speleological survey data management for modern exploration teams.</p>
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-brand-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="32" height="32">
+          <defs><linearGradient id="ft-accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs>
+          <g transform="translate(512 512) scale(1.18) translate(-512 -512)">
+            <circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity="0.20"/>
+            <circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity="0.12"/>
+            <g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity="0.32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g>
+            <g fill="none" stroke="url(#ft-accent)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g>
+            <g fill="#F3E8D8" opacity="0.98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g>
+          </g>
+        </svg>
+        <span class="brand-wordmark">StalagMight</span>
       </div>
-
-      <div class="footer-col">
-        <h4>Platform</h4>
-        <ul>
-          <li><a href="#">Cave Mapping</a></li>
-          <li><a href="#">Survey Data</a></li>
-          <li><a href="#">GIS Integration</a></li>
-          <li><a href="#">Equipment Tracking</a></li>
-          <li><a href="#">GPS Import</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4>Resources</h4>
-        <ul>
-          <li><a href="#">Documentation</a></li>
-          <li><a href="#">API Reference</a></li>
-          <li><a href="#">Survey Standards</a></li>
-          <li><a href="#">Community Forum</a></li>
-          <li><a href="#">Tutorials</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4>Company</h4>
-        <ul>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Contact</a></li>
-          <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Terms of Service</a></li>
-        </ul>
-      </div>
+      <p>Desktop application for processing underwater cave survey data. Built with Tauri, React, and Rust.</p>
     </div>
-
-    <div class="footer-bottom">
-      <p>&copy; 2026 Stalagmight. All rights reserved.</p>
-      <span class="footer-coords">48&deg;12'31.8"N &nbsp; 16&deg;22'14.5"E &nbsp; &middot; &nbsp; Elevation: 523m ASL</span>
+    <div class="footer-col">
+      <h5>Product</h5>
+      <a href="#features">Features</a>
+      <a href="#download">Download</a>
+      <a href="#">Changelog</a>
+      <a href="#">Roadmap</a>
+    </div>
+    <div class="footer-col">
+      <h5>Resources</h5>
+      <a href="#">Documentation</a>
+      <a href="#">Tutorials</a>
+      <a href="#">DMP Format</a>
+      <a href="#">API Reference</a>
+    </div>
+    <div class="footer-col">
+      <h5>Community</h5>
+      <a href="#">GitHub</a>
+      <a href="#">Discussions</a>
+      <a href="#">Cave Diving</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 StalagMight. Charting the unseen.</span>
+    <div style="display:flex;gap:1.5rem">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">License</a>
     </div>
   </div>
 </footer>
 
 <script>
-(function() {
-  'use strict';
+/* ===== Scroll-based reveal animations ===== */
+(function(){
+  const revealElements = document.querySelectorAll('.reveal, .feature-card, .step, .highlight-item, .format-badge, .trail-line, .survey-path');
 
-  // ===== Nav scroll effect =====
-  const nav = document.getElementById('nav');
-  let lastScroll = 0;
-
-  function handleNavScroll() {
-    const scrollY = window.scrollY;
-    nav.classList.toggle('scrolled', scrollY > 80);
-    lastScroll = scrollY;
-  }
-
-  // ===== Compass rose rotation on scroll =====
-  const compassRose = document.getElementById('compassRose');
-  function handleCompassRotation() {
-    if (!compassRose) return;
-    const rotation = window.scrollY * 0.03;
-    compassRose.style.transform = 'translateY(-50%) rotate(' + rotation + 'deg)';
-  }
-
-  // ===== Scroll reveal =====
-  const revealElements = document.querySelectorAll('.reveal');
-  const revealObserver = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
       if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
         entry.target.classList.add('visible');
       }
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-
-  revealElements.forEach(function(el) {
-    revealObserver.observe(el);
+  }, {
+    threshold: 0.15,
+    rootMargin: '0px 0px -50px 0px'
   });
 
-  // ===== Trail progress line =====
-  const trailProgress = document.getElementById('trailProgress');
-  const expeditionSection = document.getElementById('expedition');
+  revealElements.forEach(el => observer.observe(el));
 
-  function handleTrailProgress() {
-    if (!expeditionSection || !trailProgress) return;
-    const rect = expeditionSection.getBoundingClientRect();
-    const sectionHeight = rect.height;
-    const scrolled = -rect.top;
-    const viewportHeight = window.innerHeight;
-    const progress = Math.max(0, Math.min(1, (scrolled + viewportHeight * 0.5) / sectionHeight));
-    trailProgress.style.height = (progress * 100) + '%';
-  }
+  /* ===== Nav scroll effect ===== */
+  const nav = document.getElementById('nav');
+  let lastScroll = 0;
 
-  // ===== Counter animation =====
-  const statNumbers = document.querySelectorAll('.stat-number[data-target]');
-  const counterObserver = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (entry.isIntersecting) {
-        const el = entry.target;
-        const target = parseInt(el.getAttribute('data-target'), 10);
-        animateCounter(el, target);
-        counterObserver.unobserve(el);
-      }
-    });
-  }, { threshold: 0.5 });
-
-  statNumbers.forEach(function(el) {
-    counterObserver.observe(el);
-  });
-
-  function animateCounter(el, target) {
-    const duration = 2000;
-    const startTime = performance.now();
-
-    function update(currentTime) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const current = Math.floor(eased * target);
-
-      if (target >= 1000) {
-        el.textContent = current.toLocaleString();
-      } else {
-        el.textContent = current;
-      }
-
-      if (progress < 1) {
-        requestAnimationFrame(update);
-      } else {
-        if (target >= 1000) {
-          el.textContent = target.toLocaleString();
-        } else {
-          el.textContent = target;
-        }
-      }
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    if (scrollY > 80) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
     }
-
-    requestAnimationFrame(update);
-  }
-
-  // ===== Scroll handler (throttled) =====
-  let ticking = false;
-  window.addEventListener('scroll', function() {
-    if (!ticking) {
-      requestAnimationFrame(function() {
-        handleNavScroll();
-        handleCompassRotation();
-        handleTrailProgress();
-        ticking = false;
-      });
-      ticking = true;
-    }
+    lastScroll = scrollY;
   }, { passive: true });
 
-  // Initial calls
-  handleNavScroll();
-  handleCompassRotation();
-  handleTrailProgress();
+  /* ===== Smooth scroll for anchor links ===== */
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
 
+  /* ===== Parallax on compass rose ===== */
+  const compassRose = document.querySelector('.compass-rose');
+  window.addEventListener('scroll', () => {
+    if (compassRose) {
+      const scrollY = window.scrollY;
+      const heroHeight = document.querySelector('.hero').offsetHeight;
+      if (scrollY < heroHeight) {
+        const progress = scrollY / heroHeight;
+        compassRose.style.transform = `translate(-50%, -50%) rotate(${progress * 30}deg) scale(${1 + progress * 0.1})`;
+      }
+    }
+  }, { passive: true });
 })();
 </script>
 </body>

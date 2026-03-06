@@ -3,1974 +3,1147 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stalagmight — Sonar Pulse</title>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>StalagMight — Underwater Cave Survey &amp; Mapping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Inter:wght@800&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg-deep: #0a0e1a;
-  --bg-primary: #0F172A;
-  --bg-secondary: #1E293B;
-  --bg-surface: #162033;
-  --teal: #14b8a6;
-  --teal-dim: rgba(20, 184, 166, 0.15);
-  --emerald: #10b981;
-  --emerald-dim: rgba(16, 185, 129, 0.1);
-  --cyan: #22d3ee;
-  --blue: #3852fc;
-  --purple: #8b5cf6;
-  --orange: #FF8C17;
-  --white: #FFFFFD;
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-dim: #64748b;
-  --border: rgba(20, 184, 166, 0.15);
-  --glow-teal: 0 0 20px rgba(20, 184, 166, 0.3);
-  --glow-emerald: 0 0 20px rgba(16, 185, 129, 0.3);
+/* ===== RESET ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  font-family:'Exo 2',sans-serif;color:#d5d0ca;
+  background:#0F0906;line-height:1.7;overflow-x:hidden;
 }
 
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Exo 2', sans-serif;
-  background: var(--bg-deep);
-  color: var(--text-primary);
-  line-height: 1.7;
-  overflow-x: hidden;
+/* ===== BRAND TOKENS ===== */
+:root{
+  --ember-700:#3A251A;--ember-900:#1A120B;--basalt-950:#0F0906;
+  --limestone-50:#F3E8D8;--sandstone-200:#C1A07A;--silt-300:#AE8D67;
+  --bg:#0e0d0c;--panel:#171615;--border:#2a2826;
+  --text-primary:#d5d0ca;--text-secondary:#858280;
+  --accent:#a89060;--warning:#b89848;--error:#b85048;--success:#48986a;
+  --border-subtle:rgba(243,232,216,0.18);--border-strong:rgba(243,232,216,0.60);
+  --glow:rgba(168,144,96,0.4);--glow-bright:rgba(193,160,122,0.6);
 }
 
-/* ===================== DOT MATRIX BACKGROUND ===================== */
-.dot-matrix {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  pointer-events: none;
-  z-index: 0;
-  background-image: radial-gradient(circle, rgba(20, 184, 166, 0.07) 1px, transparent 1px);
-  background-size: 30px 30px;
+/* ===== DOT MATRIX BACKGROUND ===== */
+body::before{
+  content:'';position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(circle 1px at center,rgba(168,144,96,0.08) 0%,transparent 100%);
+  background-size:24px 24px;
 }
 
-/* Scan line overlay */
-.scanline-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  pointer-events: none;
-  z-index: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(20, 184, 166, 0.015) 2px,
-    rgba(20, 184, 166, 0.015) 4px
-  );
+/* ===== SCAN LINE ===== */
+body::after{
+  content:'';position:fixed;top:-100%;left:0;right:0;height:200px;z-index:9998;
+  pointer-events:none;
+  background:linear-gradient(to bottom,transparent,rgba(168,144,96,0.03),transparent);
+  animation:scanline 8s linear infinite;
+}
+@keyframes scanline{
+  0%{top:-200px}
+  100%{top:100vh}
 }
 
-/* ===================== GLOBAL STYLES ===================== */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  line-height: 1.2;
-  color: var(--white);
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--basalt-950)}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
+
+/* ===== TYPOGRAPHY ===== */
+h1,h2,h3,h4,h5,h6{font-family:'JetBrains Mono',monospace;font-weight:700;line-height:1.3;color:var(--limestone-50)}
+.mono{font-family:'JetBrains Mono',monospace}
+.brand-wordmark{font-family:'Inter',sans-serif;font-weight:800}
+
+/* ===== NAV ===== */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  padding:.75rem 2rem;
+  background:rgba(15,9,6,0.85);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  transition:all .3s;
+}
+.nav.scrolled{border-bottom-color:var(--accent);box-shadow:0 1px 20px rgba(168,144,96,0.1)}
+.nav-logo{display:flex;align-items:center;gap:.75rem;text-decoration:none}
+.nav-logo svg{width:32px;height:32px}
+.nav-logo span{font-family:'Inter',sans-serif;font-weight:800;font-size:1.1rem;color:var(--limestone-50);letter-spacing:-0.02em}
+.nav-status{
+  display:flex;align-items:center;gap:.5rem;
+  font-family:'JetBrains Mono',monospace;font-size:.7rem;
+  color:var(--success);letter-spacing:.05em;
+}
+.nav-status .dot{
+  width:6px;height:6px;border-radius:50%;background:var(--success);
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{
+  font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-secondary);text-decoration:none;
+  padding:.4rem .75rem;border:1px solid transparent;
+  transition:all .3s;
+}
+.nav-links a:hover{color:var(--accent);border-color:var(--border)}
+.nav-cta{
+  font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:.5rem 1.25rem;
+  background:var(--accent);color:var(--basalt-950);
+  border:1px solid var(--accent);cursor:pointer;text-decoration:none;
+  transition:all .3s;
+}
+.nav-cta:hover{background:var(--sandstone-200);box-shadow:0 0 20px var(--glow)}
+
+/* ===== HERO ===== */
+.hero{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  position:relative;padding:6rem 2rem;
+  background:radial-gradient(circle at 50% 50%,rgba(58,37,26,0.3) 0%,#0F0906 70%);
+  overflow:hidden;
 }
 
-a { color: var(--teal); text-decoration: none; transition: all 0.3s; }
-a:hover { color: var(--cyan); text-shadow: var(--glow-teal); }
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  position: relative;
-  z-index: 1;
+/* Sonar rings */
+.sonar-container{
+  position:absolute;width:700px;height:700px;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;
 }
-
-/* Monospace data label */
-.data-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--teal);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+.sonar-ring{
+  position:absolute;inset:0;border-radius:50%;
+  border:1px solid rgba(168,144,96,0.1);
+  animation:sonar-expand 4s ease-out infinite;
+  opacity:0;
 }
-
-.data-label::before {
-  content: '>';
-  color: var(--emerald);
-  animation: cursorBlink 1.2s step-end infinite;
-}
-
-.data-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, var(--teal), transparent);
-  opacity: 0.3;
-}
-
-@keyframes cursorBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-/* HUD border style */
-.hud-border {
-  border: 1px solid var(--border);
-  position: relative;
-}
-
-.hud-border::before,
-.hud-border::after {
-  content: '';
-  position: absolute;
-  width: 16px;
-  height: 16px;
-}
-
-.hud-border::before {
-  top: -1px; left: -1px;
-  border-top: 2px solid var(--teal);
-  border-left: 2px solid var(--teal);
-}
-
-.hud-border::after {
-  bottom: -1px; right: -1px;
-  border-bottom: 2px solid var(--teal);
-  border-right: 2px solid var(--teal);
-}
-
-/* Status indicator */
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--emerald);
-  display: inline-block;
-  animation: statusPulse 2s ease-in-out infinite;
-  box-shadow: 0 0 6px var(--emerald);
-}
-
-@keyframes statusPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* Reveal animations */
-.reveal {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.reveal-delay-1 { transition-delay: 0.1s; }
-.reveal-delay-2 { transition-delay: 0.2s; }
-.reveal-delay-3 { transition-delay: 0.3s; }
-.reveal-delay-4 { transition-delay: 0.4s; }
-.reveal-delay-5 { transition-delay: 0.5s; }
-
-/* ===================== NAVIGATION ===================== */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
-  padding: 0.75rem 0;
-  transition: all 0.3s;
-  background: transparent;
-  border-bottom: 1px solid transparent;
-}
-
-nav.scrolled {
-  background: rgba(10, 14, 26, 0.92);
-  backdrop-filter: blur(16px);
-  border-bottom-color: var(--border);
-}
-
-nav .container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: var(--white);
-}
-
-.nav-logo svg { width: 32px; height: 32px; }
-
-.nav-logo-text {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  font-size: 1rem;
-  letter-spacing: 0.05em;
-}
-
-.nav-logo-version {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.55rem;
-  color: var(--teal);
-  background: var(--teal-dim);
-  padding: 0.15rem 0.5rem;
-  border-radius: 2px;
-  margin-left: 0.5rem;
-  letter-spacing: 0.1em;
-}
-
-.nav-links {
-  display: flex;
-  gap: 1.5rem;
-  list-style: none;
-  align-items: center;
-}
-
-.nav-links a {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  padding: 0.4rem 0;
-  position: relative;
-}
-
-.nav-links a:hover { color: var(--teal); }
-
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0;
-  width: 0;
-  height: 1px;
-  background: var(--teal);
-  transition: width 0.3s;
-  box-shadow: var(--glow-teal);
-}
-
-.nav-links a:hover::after { width: 100%; }
-
-.nav-cta {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  background: var(--teal);
-  color: var(--bg-deep) !important;
-  padding: 0.5rem 1.25rem;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.nav-cta:hover {
-  background: var(--cyan);
-  box-shadow: var(--glow-teal);
-  color: var(--bg-deep) !important;
-}
-
-/* ===================== HERO ===================== */
-.hero {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-  background: radial-gradient(ellipse at center, var(--bg-primary) 0%, var(--bg-deep) 70%);
-}
-
-/* Radar container */
-.radar-container {
-  position: absolute;
-  right: 5%;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 600px;
-  height: 600px;
-}
-
-.radar-ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(20, 184, 166, 0.1);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.radar-ring:nth-child(1) { width: 100%; height: 100%; }
-.radar-ring:nth-child(2) { width: 75%; height: 75%; }
-.radar-ring:nth-child(3) { width: 50%; height: 50%; }
-.radar-ring:nth-child(4) { width: 25%; height: 25%; }
-
-/* Radar crosshairs */
-.radar-cross-h, .radar-cross-v {
-  position: absolute;
-  background: rgba(20, 184, 166, 0.08);
-}
-
-.radar-cross-h {
-  width: 100%;
-  height: 1px;
-  top: 50%;
-  left: 0;
-}
-
-.radar-cross-v {
-  width: 1px;
-  height: 100%;
-  top: 0;
-  left: 50%;
+.sonar-ring:nth-child(2){animation-delay:1s}
+.sonar-ring:nth-child(3){animation-delay:2s}
+.sonar-ring:nth-child(4){animation-delay:3s}
+@keyframes sonar-expand{
+  0%{transform:scale(0.2);opacity:0.6;border-color:rgba(168,144,96,0.4)}
+  100%{transform:scale(1.2);opacity:0;border-color:rgba(168,144,96,0)}
 }
 
 /* Radar sweep */
-.radar-sweep {
-  position: absolute;
-  width: 50%;
-  height: 50%;
-  top: 0;
-  left: 50%;
-  transform-origin: bottom left;
-  animation: radarSweep 4s linear infinite;
-  background: conic-gradient(
-    from 0deg at 0% 100%,
-    transparent 0deg,
-    rgba(20, 184, 166, 0.25) 15deg,
-    rgba(20, 184, 166, 0.08) 30deg,
-    transparent 60deg
-  );
-  border-radius: 0 100% 0 0;
-}
-
-@keyframes radarSweep {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Radar blips */
-.radar-blip {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--teal);
-  box-shadow: 0 0 8px var(--teal), 0 0 16px rgba(20, 184, 166, 0.3);
-  opacity: 0;
-  animation: blipAppear 4s ease-in-out infinite;
-}
-
-.radar-blip:nth-child(7) { top: 22%; left: 62%; animation-delay: 0.5s; }
-.radar-blip:nth-child(8) { top: 35%; left: 78%; animation-delay: 1.2s; }
-.radar-blip:nth-child(9) { top: 55%; left: 58%; animation-delay: 2s; }
-.radar-blip:nth-child(10) { top: 40%; left: 40%; animation-delay: 2.8s; }
-.radar-blip:nth-child(11) { top: 68%; left: 72%; animation-delay: 3.5s; }
-.radar-blip:nth-child(12) { top: 28%; left: 45%; animation-delay: 1.8s; }
-
-@keyframes blipAppear {
-  0%, 15% { opacity: 0; transform: scale(0); }
-  20% { opacity: 1; transform: scale(1.5); }
-  30% { opacity: 0.8; transform: scale(1); }
-  70% { opacity: 0.4; }
-  100% { opacity: 0; }
-}
-
-/* Concentric pulse from center */
-.radar-pulse {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid var(--teal);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  animation: radarPulseOut 3s ease-out infinite;
-}
-
-.radar-pulse:nth-child(13) { animation-delay: 0s; }
-.radar-pulse:nth-child(14) { animation-delay: 1s; }
-.radar-pulse:nth-child(15) { animation-delay: 2s; }
-
-@keyframes radarPulseOut {
-  0% { width: 10px; height: 10px; opacity: 0.6; }
-  100% { width: 600px; height: 600px; opacity: 0; }
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-  max-width: 600px;
-  padding-top: 5rem;
-}
-
-.hero-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--emerald);
-  background: var(--emerald-dim);
-  padding: 0.4rem 1rem;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  margin-bottom: 2rem;
-}
-
-.hero h1 {
-  font-size: clamp(2.5rem, 5.5vw, 4.5rem);
-  font-weight: 800;
-  margin-bottom: 1.5rem;
-  line-height: 1.1;
-}
-
-.hero h1 .glow {
-  color: var(--teal);
-  text-shadow: 0 0 30px rgba(20, 184, 166, 0.4), 0 0 60px rgba(20, 184, 166, 0.1);
-}
-
-.hero-description {
-  font-size: 1.15rem;
-  color: var(--text-secondary);
-  margin-bottom: 2rem;
-  max-width: 480px;
-  line-height: 1.8;
-}
-
-.hero-metrics {
-  display: flex;
-  gap: 2.5rem;
-  margin-bottom: 2.5rem;
-  flex-wrap: wrap;
-}
-
-.hero-metric {
-  display: flex;
-  flex-direction: column;
-}
-
-.hero-metric-value {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--teal);
-  text-shadow: 0 0 10px rgba(20, 184, 166, 0.3);
-}
-
-.hero-metric-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin-top: 0.15rem;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.btn-primary {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  background: var(--teal);
-  color: var(--bg-deep);
-  padding: 0.9rem 2rem;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s;
-  position: relative;
-  display: inline-block;
-}
-
-.btn-primary:hover {
-  background: var(--cyan);
-  box-shadow: 0 0 30px rgba(20, 184, 166, 0.4);
-  color: var(--bg-deep);
-}
-
-.btn-secondary {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--teal);
-  padding: 0.9rem 2rem;
-  border: 1px solid var(--border);
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-secondary:hover {
-  border-color: var(--teal);
-  background: var(--teal-dim);
-  box-shadow: var(--glow-teal);
-}
-
-.hero-terminal {
-  margin-top: 2.5rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  color: var(--text-dim);
-  line-height: 1.8;
-}
-
-.hero-terminal .prompt {
-  color: var(--emerald);
-}
-
-.hero-terminal .cmd {
-  color: var(--text-secondary);
-}
-
-.hero-terminal .cursor {
-  display: inline-block;
-  width: 8px;
-  height: 14px;
-  background: var(--teal);
-  vertical-align: middle;
-  margin-left: 2px;
-  animation: cursorBlink 1s step-end infinite;
-}
-
-/* ===================== SCAN LINE DIVIDER ===================== */
-.scan-divider {
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--teal), transparent);
-  opacity: 0.3;
-  position: relative;
-}
-
-.scan-divider::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 80px;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, var(--teal), transparent);
-  animation: scanLineMove 3s linear infinite;
-}
-
-@keyframes scanLineMove {
-  0% { left: -80px; }
-  100% { left: 100%; }
-}
-
-/* ===================== FEATURES ===================== */
-.features {
-  padding: 7rem 0;
-  position: relative;
-  background: var(--bg-deep);
-}
-
-.features-header {
-  text-align: center;
-  margin-bottom: 4rem;
-}
-
-.features-header h2 {
-  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
-  margin-bottom: 1rem;
-}
-
-.features-header p {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  max-width: 550px;
-  margin: 0 auto;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
-.feature-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  padding: 2rem 1.75rem;
-  position: relative;
-  transition: all 0.4s ease;
-  overflow: hidden;
-}
-
-/* HUD corners */
-.feature-card::before,
-.feature-card::after {
-  content: '';
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  transition: all 0.4s;
-}
-
-.feature-card::before {
-  top: -1px; left: -1px;
-  border-top: 2px solid rgba(20, 184, 166, 0.3);
-  border-left: 2px solid rgba(20, 184, 166, 0.3);
-}
-
-.feature-card::after {
-  bottom: -1px; right: -1px;
-  border-bottom: 2px solid rgba(20, 184, 166, 0.3);
-  border-right: 2px solid rgba(20, 184, 166, 0.3);
-}
-
-.feature-card:hover {
-  border-color: var(--teal);
-  box-shadow: 0 0 30px rgba(20, 184, 166, 0.1), inset 0 0 30px rgba(20, 184, 166, 0.03);
-  transform: translateY(-2px);
-}
-
-.feature-card:hover::before,
-.feature-card:hover::after {
-  border-color: var(--teal);
-  width: 20px;
-  height: 20px;
-}
-
-/* Scan line inside card on hover */
-.feature-card .scan-line {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--teal), transparent);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.feature-card:hover .scan-line {
-  opacity: 0.5;
-  animation: cardScan 2s linear infinite;
-}
-
-@keyframes cardScan {
-  0% { top: 0; }
-  100% { top: 100%; }
-}
-
-.feature-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.25rem;
-}
-
-.feature-icon {
-  width: 44px;
-  height: 44px;
-  background: var(--teal-dim);
-  border: 1px solid rgba(20, 184, 166, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--teal);
-}
-
-.feature-status {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--emerald);
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.feature-card h3 {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  letter-spacing: 0.02em;
-}
-
-.feature-card p {
-  font-size: 0.95rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-}
-
-.feature-id {
-  display: block;
-  margin-top: 1.25rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.15em;
-  color: var(--text-dim);
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
-}
-
-/* ===================== HOW IT WORKS / ONBOARDING ===================== */
-.onboarding {
-  padding: 7rem 0;
-  background: var(--bg-primary);
-  position: relative;
-}
-
-/* Subtle grid lines */
-.onboarding::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image:
-    linear-gradient(rgba(20, 184, 166, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(20, 184, 166, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-  pointer-events: none;
-}
-
-.onboarding-header {
-  text-align: center;
-  margin-bottom: 5rem;
-  position: relative;
-  z-index: 1;
-}
-
-.onboarding-header h2 {
-  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
-  margin-bottom: 1rem;
-}
-
-.onboarding-header p {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  max-width: 550px;
-  margin: 0 auto;
-}
-
-.onboarding-steps {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  position: relative;
-  z-index: 1;
-}
-
-/* Connection line between steps */
-.onboarding-steps::before {
-  content: '';
-  position: absolute;
-  top: 50px;
-  left: 12.5%;
-  right: 12.5%;
-  height: 1px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--teal) 0px,
-    var(--teal) 6px,
-    transparent 6px,
-    transparent 12px
-  );
-  opacity: 0.3;
-}
-
-.onboarding-step {
-  text-align: center;
-  position: relative;
-  padding-top: 5rem;
-}
-
-.step-number {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 50px;
-  height: 50px;
-  background: var(--bg-primary);
-  border: 2px solid var(--teal);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--teal);
-  z-index: 2;
-  transition: all 0.4s;
-  box-shadow: 0 0 15px rgba(20, 184, 166, 0.15);
-}
-
-.onboarding-step:hover .step-number {
-  background: var(--teal);
-  color: var(--bg-deep);
-  box-shadow: 0 0 30px rgba(20, 184, 166, 0.4);
-}
-
-/* Pulse ring around number */
-.step-number::before {
-  content: '';
-  position: absolute;
-  top: -6px; left: -6px; right: -6px; bottom: -6px;
-  border: 1px solid var(--teal);
-  opacity: 0;
-  animation: stepPulseRing 3s ease-in-out infinite;
-}
-
-.onboarding-step:nth-child(1) .step-number::before { animation-delay: 0s; }
-.onboarding-step:nth-child(2) .step-number::before { animation-delay: 0.75s; }
-.onboarding-step:nth-child(3) .step-number::before { animation-delay: 1.5s; }
-.onboarding-step:nth-child(4) .step-number::before { animation-delay: 2.25s; }
-
-@keyframes stepPulseRing {
-  0%, 100% { opacity: 0; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(1.15); }
-}
-
-.onboarding-step h3 {
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  letter-spacing: 0.02em;
-}
-
-.onboarding-step p {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-}
-
-.step-cmd {
-  display: block;
-  margin-top: 0.75rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  color: var(--emerald);
-  opacity: 0.7;
-}
-
-/* ===================== FEATURE HIGHLIGHTS ===================== */
-.highlights {
-  padding: 7rem 0;
-  background: var(--bg-deep);
-  position: relative;
-}
-
-.highlight-block {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: center;
-  margin-bottom: 6rem;
-}
-
-.highlight-block:last-child { margin-bottom: 0; }
-
-.highlight-block.reverse { direction: rtl; }
-.highlight-block.reverse > * { direction: ltr; }
-
-.highlight-visual {
-  position: relative;
-  aspect-ratio: 4/3;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
-
-/* HUD corners on visual */
-.highlight-visual::before,
-.highlight-visual::after {
-  content: '';
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  z-index: 3;
-}
-
-.highlight-visual::before {
-  top: -1px; left: -1px;
-  border-top: 2px solid var(--teal);
-  border-left: 2px solid var(--teal);
-}
-
-.highlight-visual::after {
-  bottom: -1px; right: -1px;
-  border-bottom: 2px solid var(--teal);
-  border-right: 2px solid var(--teal);
-}
-
-/* Sonar visualization */
-.sonar-viz {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sonar-viz .ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(20, 184, 166, 0.12);
-}
-
-.sonar-viz .ring:nth-child(1) { width: 90%; height: 90%; }
-.sonar-viz .ring:nth-child(2) { width: 70%; height: 70%; }
-.sonar-viz .ring:nth-child(3) { width: 50%; height: 50%; }
-.sonar-viz .ring:nth-child(4) { width: 30%; height: 30%; }
-
-.sonar-viz .ping {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--teal);
-  box-shadow: 0 0 8px var(--teal);
-}
-
-.sonar-viz .ping:nth-child(5) { top: 20%; left: 55%; }
-.sonar-viz .ping:nth-child(6) { top: 40%; left: 30%; }
-.sonar-viz .ping:nth-child(7) { top: 65%; left: 60%; }
-.sonar-viz .ping:nth-child(8) { top: 35%; left: 70%; }
-.sonar-viz .ping:nth-child(9) { top: 55%; left: 45%; }
-
-.sonar-viz .scan-sweep {
-  position: absolute;
-  width: 45%;
-  height: 45%;
-  top: 5%;
-  left: 50%;
-  transform-origin: bottom left;
-  animation: radarSweep 5s linear infinite;
-  background: conic-gradient(
-    from 0deg at 0% 100%,
-    transparent 0deg,
-    rgba(20, 184, 166, 0.2) 20deg,
-    transparent 50deg
-  );
-  border-radius: 0 100% 0 0;
-}
-
-/* Dashboard data viz */
-.dashboard-viz {
-  width: 100%;
-  height: 100%;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.data-row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.data-row-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  width: 80px;
-  flex-shrink: 0;
-  text-align: right;
-}
-
-.data-row-bar {
-  flex: 1;
-  height: 4px;
-  background: rgba(20, 184, 166, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.data-row-fill {
-  height: 100%;
-  transition: width 1.5s ease;
-  box-shadow: 0 0 8px currentColor;
-}
-
-.data-row:nth-child(1) .data-row-fill { width: 87%; background: var(--teal); color: var(--teal); }
-.data-row:nth-child(2) .data-row-fill { width: 65%; background: var(--emerald); color: var(--emerald); }
-.data-row:nth-child(3) .data-row-fill { width: 92%; background: var(--cyan); color: var(--cyan); }
-.data-row:nth-child(4) .data-row-fill { width: 54%; background: var(--teal); color: var(--teal); }
-.data-row:nth-child(5) .data-row-fill { width: 78%; background: var(--emerald); color: var(--emerald); }
-.data-row:nth-child(6) .data-row-fill { width: 41%; background: var(--cyan); color: var(--cyan); }
-
-.data-row-value {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--teal);
-  width: 40px;
-  text-align: right;
-}
-
-/* Network graph viz */
-.network-viz {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.network-node {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--teal);
-  box-shadow: 0 0 10px rgba(20, 184, 166, 0.4);
-  animation: nodeGlow 3s ease-in-out infinite;
-}
-
-.network-node.main {
-  width: 16px;
-  height: 16px;
-  background: var(--emerald);
-  box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
-}
-
-.network-node:nth-child(1) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
-.network-node:nth-child(2) { top: 20%; left: 30%; animation-delay: 0.5s; }
-.network-node:nth-child(3) { top: 25%; left: 70%; animation-delay: 1s; }
-.network-node:nth-child(4) { top: 60%; left: 25%; animation-delay: 1.5s; }
-.network-node:nth-child(5) { top: 70%; left: 65%; animation-delay: 2s; }
-.network-node:nth-child(6) { top: 40%; left: 15%; animation-delay: 0.3s; }
-.network-node:nth-child(7) { top: 35%; left: 80%; animation-delay: 0.8s; }
-.network-node:nth-child(8) { top: 75%; left: 40%; animation-delay: 1.3s; }
-
-.network-line {
-  position: absolute;
-  height: 1px;
-  background: rgba(20, 184, 166, 0.2);
-  transform-origin: left center;
-}
-
-.network-line:nth-child(9) { top: 50%; left: 50%; width: 120px; transform: rotate(-40deg); }
-.network-line:nth-child(10) { top: 50%; left: 50%; width: 100px; transform: rotate(30deg); }
-.network-line:nth-child(11) { top: 50%; left: 50%; width: 140px; transform: rotate(-120deg); }
-.network-line:nth-child(12) { top: 50%; left: 50%; width: 110px; transform: rotate(160deg); }
-.network-line:nth-child(13) { top: 50%; left: 50%; width: 90px; transform: rotate(-80deg); }
-.network-line:nth-child(14) { top: 50%; left: 50%; width: 130px; transform: rotate(80deg); }
-.network-line:nth-child(15) { top: 50%; left: 50%; width: 100px; transform: rotate(220deg); }
-
-@keyframes nodeGlow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.highlight-text .data-label { margin-bottom: 0.75rem; }
-
-.highlight-text h3 {
-  font-size: clamp(1.3rem, 2.5vw, 1.8rem);
-  margin-bottom: 1rem;
-}
-
-.highlight-text p {
-  font-size: 1.05rem;
-  color: var(--text-secondary);
-  margin-bottom: 1.5rem;
-  line-height: 1.7;
-}
-
-.highlight-list {
-  list-style: none;
-  padding: 0;
-}
-
-.highlight-list li {
-  padding: 0.4rem 0 0.4rem 1.5rem;
-  position: relative;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-}
-
-.highlight-list li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 6px;
-  height: 6px;
-  background: var(--teal);
-  box-shadow: 0 0 6px var(--teal);
-}
-
-/* ===================== METRICS BANNER ===================== */
-.metrics-banner {
-  padding: 4rem 0;
-  background: var(--bg-primary);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  position: relative;
-}
-
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-}
-
-.metric-item {
-  text-align: center;
-  padding: 2rem 1rem;
-  border: 1px solid var(--border);
-  position: relative;
-  background: var(--bg-surface);
-  transition: all 0.3s;
-}
-
-.metric-item::before,
-.metric-item::after {
-  content: '';
-  position: absolute;
-  width: 10px;
-  height: 10px;
-}
-
-.metric-item::before {
-  top: -1px; left: -1px;
-  border-top: 2px solid rgba(20, 184, 166, 0.4);
-  border-left: 2px solid rgba(20, 184, 166, 0.4);
-}
-
-.metric-item::after {
-  bottom: -1px; right: -1px;
-  border-bottom: 2px solid rgba(20, 184, 166, 0.4);
-  border-right: 2px solid rgba(20, 184, 166, 0.4);
-}
-
-.metric-item:hover {
-  border-color: var(--teal);
-  box-shadow: 0 0 20px rgba(20, 184, 166, 0.1);
-}
-
-.metric-value {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: var(--teal);
-  text-shadow: 0 0 20px rgba(20, 184, 166, 0.3);
-  display: block;
-  margin-bottom: 0.3rem;
-}
-
-.metric-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-}
-
-.metric-sub {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  color: var(--emerald);
-  margin-top: 0.4rem;
-  display: block;
-}
-
-/* ===================== CTA ===================== */
-.cta {
-  padding: 8rem 0;
-  background: var(--bg-deep);
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Background concentric rings */
-.cta-rings {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 800px;
-  height: 800px;
-  pointer-events: none;
-}
-
-.cta-rings .ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(20, 184, 166, 0.06);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.cta-rings .ring:nth-child(1) { width: 100%; height: 100%; }
-.cta-rings .ring:nth-child(2) { width: 80%; height: 80%; }
-.cta-rings .ring:nth-child(3) { width: 60%; height: 60%; }
-.cta-rings .ring:nth-child(4) { width: 40%; height: 40%; }
-.cta-rings .ring:nth-child(5) { width: 20%; height: 20%; }
-
-.cta-content {
-  position: relative;
-  z-index: 1;
-}
-
-.cta h2 {
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  margin-bottom: 1rem;
-}
-
-.cta h2 .glow {
-  color: var(--teal);
-  text-shadow: 0 0 30px rgba(20, 184, 166, 0.4);
-}
-
-.cta p {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  max-width: 500px;
-  margin: 0 auto 2.5rem;
-}
-
-.cta-form {
-  display: flex;
-  gap: 0;
-  justify-content: center;
-  max-width: 480px;
-  margin: 0 auto 1.5rem;
-}
-
-.cta-form input {
-  flex: 1;
-  padding: 0.9rem 1.25rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-right: none;
-  color: var(--text-primary);
-  outline: none;
-  transition: border-color 0.3s;
-}
-
-.cta-form input::placeholder { color: var(--text-dim); }
-.cta-form input:focus { border-color: var(--teal); }
-
-.cta-form button {
-  flex-shrink: 0;
-}
-
-.cta-note {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  color: var(--text-dim);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-/* ===================== FOOTER ===================== */
-footer {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  padding: 4rem 0 2rem;
-  border-top: 1px solid var(--border);
-}
-
-.footer-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 3rem;
-  margin-bottom: 3rem;
-}
-
-.footer-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
-}
-
-.footer-brand svg { width: 28px; height: 28px; color: var(--teal); }
-
-.footer-brand-name {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: var(--white);
-}
-
-.footer-about p {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  max-width: 280px;
-  line-height: 1.6;
-}
-
-.footer-col h4 {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--teal);
-  margin-bottom: 1.25rem;
-}
-
-.footer-col ul { list-style: none; }
-
-.footer-col ul li { margin-bottom: 0.5rem; }
-
-.footer-col ul a {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  transition: color 0.3s;
-}
-
-.footer-col ul a:hover { color: var(--teal); }
-
-.footer-bottom {
-  border-top: 1px solid var(--border);
-  padding-top: 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.footer-bottom p {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  color: var(--text-dim);
-  letter-spacing: 0.05em;
-}
-
-.footer-status {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  color: var(--emerald);
-  letter-spacing: 0.1em;
-}
-
-/* ===================== RESPONSIVE ===================== */
-@media (max-width: 1024px) {
-  .features-grid { grid-template-columns: repeat(2, 1fr); }
-  .onboarding-steps { grid-template-columns: repeat(2, 1fr); gap: 2.5rem; }
-  .onboarding-steps::before { display: none; }
-  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
-  .radar-container { width: 450px; right: -5%; }
-}
-
-@media (max-width: 768px) {
-  .features-grid { grid-template-columns: 1fr; }
-  .highlight-block { grid-template-columns: 1fr; gap: 2rem; }
-  .highlight-block.reverse { direction: ltr; }
-  .onboarding-steps { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
-  .metrics-grid { grid-template-columns: 1fr 1fr; }
-  .footer-grid { grid-template-columns: 1fr; }
-  .nav-links { display: none; }
-  .radar-container { width: 350px; right: -15%; opacity: 0.5; }
-  .cta-form { flex-direction: column; }
-  .cta-form input { border-right: 1px solid var(--border); }
-}
-
-@media (max-width: 480px) {
-  .hero h1 { font-size: 2.2rem; }
-  .hero-metrics { flex-direction: column; gap: 1rem; }
-  .hero-actions { flex-direction: column; width: 100%; }
-  .hero-actions .btn-primary,
-  .hero-actions .btn-secondary { width: 100%; text-align: center; }
-  .radar-container { display: none; }
-  .hero-terminal { display: none; }
+.radar-sweep{
+  position:absolute;width:600px;height:600px;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;
+  animation:radar-rotate 6s linear infinite;
+}
+@keyframes radar-rotate{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+.radar-sweep::before{
+  content:'';position:absolute;
+  top:50%;left:50%;width:50%;height:2px;
+  transform-origin:left center;
+  background:linear-gradient(90deg,rgba(168,144,96,0.8),transparent);
+  box-shadow:0 0 15px rgba(168,144,96,0.3);
+}
+.radar-sweep::after{
+  content:'';position:absolute;
+  top:50%;left:50%;width:50%;height:50%;
+  transform-origin:left top;
+  background:conic-gradient(from 0deg,rgba(168,144,96,0.12),transparent 40deg);
+  border-radius:0 100% 0 0;
+}
+
+/* Static concentric rings for the sonar display */
+.sonar-static-rings{
+  position:absolute;width:600px;height:600px;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+.sonar-static-ring{
+  position:absolute;border-radius:50%;
+  border:1px solid rgba(168,144,96,0.06);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+}
+.sonar-static-ring:nth-child(1){width:150px;height:150px}
+.sonar-static-ring:nth-child(2){width:300px;height:300px}
+.sonar-static-ring:nth-child(3){width:450px;height:450px}
+.sonar-static-ring:nth-child(4){width:600px;height:600px}
+
+/* Cross hairs */
+.crosshair{
+  position:absolute;width:600px;height:600px;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+.crosshair::before,.crosshair::after{
+  content:'';position:absolute;background:rgba(168,144,96,0.06);
+}
+.crosshair::before{top:0;left:50%;width:1px;height:100%;transform:translateX(-0.5px)}
+.crosshair::after{top:50%;left:0;width:100%;height:1px;transform:translateY(-0.5px)}
+
+/* Brand mark as sonar target center */
+.sonar-center{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:2;pointer-events:none;opacity:.15;
+  filter:drop-shadow(0 0 20px rgba(168,144,96,0.3));
+}
+.sonar-center svg{width:120px;height:120px}
+
+.hero-content{
+  position:relative;z-index:5;text-align:center;max-width:800px;
+}
+.hero-readout{
+  font-family:'JetBrains Mono',monospace;font-size:.7rem;
+  color:var(--accent);letter-spacing:.15em;text-transform:uppercase;
+  margin-bottom:1.5rem;display:flex;align-items:center;justify-content:center;gap:1rem;
+}
+.hero-readout .blink{animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.hero-title{
+  font-family:'JetBrains Mono',monospace;font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800;
+  color:var(--limestone-50);letter-spacing:-.02em;
+  margin-bottom:1rem;
+  text-shadow:0 0 40px rgba(168,144,96,0.3);
+}
+.hero-title .wordmark{font-family:'Inter',sans-serif;font-weight:800}
+.hero-tagline{
+  font-family:'Exo 2',sans-serif;font-size:clamp(1rem,2vw,1.3rem);
+  color:var(--sandstone-200);margin-bottom:.5rem;font-weight:300;
+}
+.hero-sub{
+  font-family:'JetBrains Mono',monospace;font-size:.75rem;
+  color:var(--text-secondary);letter-spacing:.1em;
+  margin-bottom:3rem;
+}
+.hero-cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+/* Buttons */
+.btn-sonar{
+  font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:.85rem 2rem;cursor:pointer;text-decoration:none;
+  position:relative;overflow:hidden;
+  transition:all .3s;
+}
+.btn-sonar.primary{
+  background:var(--accent);color:var(--basalt-950);border:1px solid var(--accent);
+}
+.btn-sonar.primary:hover{
+  background:var(--sandstone-200);border-color:var(--sandstone-200);
+  box-shadow:0 0 30px var(--glow),inset 0 0 30px rgba(168,144,96,0.1);
+}
+.btn-sonar.secondary{
+  background:transparent;color:var(--accent);border:1px solid var(--accent);
+}
+.btn-sonar.secondary:hover{
+  background:rgba(168,144,96,0.1);
+  box-shadow:0 0 20px rgba(168,144,96,0.1);
+}
+
+/* Scroll indicator */
+.scroll-indicator{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  color:var(--text-secondary);letter-spacing:.2em;text-transform:uppercase;
+}
+.scroll-indicator .chevrons{display:flex;flex-direction:column;gap:2px}
+.scroll-indicator .chevron{
+  width:16px;height:8px;border-right:1px solid var(--text-secondary);border-bottom:1px solid var(--text-secondary);
+  transform:rotate(45deg);opacity:.5;
+  animation:chevron-down 1.5s ease-in-out infinite;
+}
+.scroll-indicator .chevron:nth-child(2){animation-delay:.15s}
+.scroll-indicator .chevron:nth-child(3){animation-delay:.3s}
+@keyframes chevron-down{0%,100%{transform:rotate(45deg) translateY(0);opacity:.3}50%{transform:rotate(45deg) translateY(4px);opacity:.8}}
+
+/* ===== SECTION SHARED ===== */
+section{padding:6rem 2rem;position:relative}
+.section-inner{max-width:1200px;margin:0 auto}
+.section-header{text-align:center;margin-bottom:4rem}
+.section-tag{
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.75rem;display:inline-block;
+  padding:.3rem 1rem;border:1px solid rgba(168,144,96,0.2);
+  background:rgba(168,144,96,0.05);
+}
+.section-title{
+  font-size:clamp(1.6rem,3.5vw,2.5rem);margin-top:1rem;margin-bottom:.75rem;
+  letter-spacing:-.01em;
+}
+.section-desc{
+  font-size:1rem;color:var(--text-secondary);max-width:600px;margin:0 auto;
+  font-weight:300;
+}
+.section-line{
+  width:60px;height:1px;margin:1.5rem auto 0;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+}
+
+/* ===== HUD CARD ===== */
+.hud-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  position:relative;overflow:hidden;
+  transition:all .4s cubic-bezier(.4,0,.2,1);
+  opacity:0;transform:translateY(20px);
+}
+.hud-card.revealed{opacity:1;transform:translateY(0)}
+.hud-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:0;transition:opacity .4s;
+}
+.hud-card:hover::before{opacity:1}
+.hud-card:hover{
+  border-color:rgba(168,144,96,0.3);
+  box-shadow:0 0 30px rgba(168,144,96,0.05),inset 0 1px 0 rgba(168,144,96,0.1);
+}
+
+/* Corner brackets */
+.hud-card::after{
+  content:'';position:absolute;top:6px;left:6px;right:6px;bottom:6px;
+  border:1px solid transparent;pointer-events:none;transition:border-color .4s;
+}
+.hud-card:hover::after{
+  border-color:rgba(168,144,96,0.08);
+}
+
+/* ===== FEATURES ===== */
+.features{background:transparent}
+.features-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
+}
+.feature-card{padding:2rem 1.75rem}
+.feature-card .feature-id{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  color:var(--accent);letter-spacing:.15em;margin-bottom:1.25rem;
+  display:flex;align-items:center;gap:.5rem;
+}
+.feature-card .feature-id::before{
+  content:'';width:8px;height:8px;border:1px solid var(--accent);
+  display:inline-block;
+}
+.feature-card h3{
+  font-size:1rem;margin-bottom:.75rem;letter-spacing:.02em;
+}
+.feature-card p{
+  font-size:.9rem;color:var(--text-secondary);line-height:1.7;font-weight:300;
+}
+
+/* ===== DATA READOUT STRIP ===== */
+.data-strip{
+  background:var(--bg);border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:1.5rem 2rem;overflow:hidden;
+}
+.data-strip-inner{
+  max-width:1200px;margin:0 auto;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem;
+}
+.data-readout{text-align:center;min-width:120px}
+.data-value{
+  font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;
+  color:var(--accent);display:block;
+  text-shadow:0 0 20px rgba(168,144,96,0.3);
+}
+.data-value .unit{font-size:.7rem;font-weight:400;color:var(--text-secondary);margin-left:.25rem}
+.data-label{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--text-secondary);margin-top:.25rem;
+}
+
+/* ===== HOW IT WORKS / ONBOARDING ===== */
+.onboarding{
+  background:linear-gradient(180deg,var(--basalt-950) 0%,rgba(26,18,11,0.5) 50%,var(--basalt-950) 100%);
+  position:relative;overflow:hidden;
+}
+/* Faint grid */
+.onboarding::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(rgba(168,144,96,0.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(168,144,96,0.02) 1px,transparent 1px);
+  background-size:80px 80px;
+}
+
+.steps-timeline{
+  display:flex;flex-direction:column;gap:0;max-width:800px;margin:0 auto;
+  position:relative;
+}
+/* Vertical scan line */
+.steps-timeline::before{
+  content:'';position:absolute;left:28px;top:0;bottom:0;width:1px;
+  background:linear-gradient(to bottom,transparent,var(--accent),transparent);
+  opacity:.2;
+}
+
+.step{
+  display:flex;gap:2rem;align-items:flex-start;padding:2rem 0;
+  position:relative;
+  opacity:0;transform:translateX(-30px);transition:all .6s cubic-bezier(.4,0,.2,1);
+}
+.step.revealed{opacity:1;transform:translateX(0)}
+
+.step-marker{
+  flex-shrink:0;width:56px;height:56px;
+  border:1px solid var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;
+  color:var(--accent);background:var(--basalt-950);
+  position:relative;z-index:2;
+  transition:all .4s;
+}
+.step:hover .step-marker{
+  box-shadow:0 0 20px var(--glow);
+  background:rgba(168,144,96,0.08);
+}
+.step-marker::before{
+  content:'';position:absolute;inset:-4px;
+  border:1px solid rgba(168,144,96,0.15);
+}
+
+.step-content{flex:1;padding-top:.25rem}
+.step-content h3{
+  font-size:.95rem;margin-bottom:.5rem;letter-spacing:.05em;
+}
+.step-content p{
+  font-size:.9rem;color:var(--text-secondary);line-height:1.7;font-weight:300;
+}
+.step-tag{
+  display:inline-block;margin-top:.75rem;
+  font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--accent);padding:.2rem .6rem;
+  border:1px solid rgba(168,144,96,0.2);
+}
+
+/* ===== HIGHLIGHTS / DASHBOARD ===== */
+.highlights{background:transparent}
+.highlights-grid{
+  display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;
+}
+.highlight-main{
+  padding:0;display:grid;grid-template-rows:auto 1fr;
+  background:var(--panel);border:1px solid var(--border);
+  overflow:hidden;
+  opacity:0;transform:translateY(20px);transition:all .6s;
+}
+.highlight-main.revealed{opacity:1;transform:translateY(0)}
+
+.highlight-main-header{
+  padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.highlight-main-header h3{font-size:.85rem;letter-spacing:.05em}
+.highlight-main-header .status{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  color:var(--success);display:flex;align-items:center;gap:.4rem;
+}
+.highlight-main-header .status .dot{
+  width:5px;height:5px;border-radius:50%;background:var(--success);
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+
+.highlight-viz{
+  position:relative;padding:2rem;min-height:300px;
+  display:flex;align-items:center;justify-content:center;
+}
+/* Animated survey visualization */
+.viz-svg{width:100%;max-width:500px;aspect-ratio:5/3}
+.viz-svg .survey-line{
+  stroke:var(--accent);stroke-width:2;fill:none;
+  stroke-dasharray:600;stroke-dashoffset:600;
+  filter:drop-shadow(0 0 4px rgba(168,144,96,0.4));
+  transition:stroke-dashoffset 2.5s cubic-bezier(.4,0,.2,1);
+}
+.viz-svg.revealed .survey-line{stroke-dashoffset:0}
+.viz-svg .survey-loop{
+  stroke:var(--sandstone-200);stroke-width:1.5;fill:none;stroke-dasharray:4 4;
+  opacity:0;transition:opacity 1s .8s;
+}
+.viz-svg.revealed .survey-loop{opacity:.5}
+.viz-svg .station{
+  fill:var(--accent);opacity:0;
+  transition:opacity .3s;
+  filter:drop-shadow(0 0 6px rgba(168,144,96,0.5));
+}
+.viz-svg.revealed .station{opacity:1}
+.viz-svg.revealed .station:nth-child(3){transition-delay:.2s}
+.viz-svg.revealed .station:nth-child(4){transition-delay:.4s}
+.viz-svg.revealed .station:nth-child(5){transition-delay:.6s}
+.viz-svg.revealed .station:nth-child(6){transition-delay:.8s}
+.viz-svg.revealed .station:nth-child(7){transition-delay:1s}
+.viz-svg.revealed .station:nth-child(8){transition-delay:1.2s}
+.viz-svg.revealed .station:nth-child(9){transition-delay:1.4s}
+.viz-svg .station-label{
+  font-family:'JetBrains Mono',monospace;font-size:7px;
+  fill:var(--text-secondary);opacity:0;
+  transition:opacity .4s;
+}
+.viz-svg.revealed .station-label{opacity:.7}
+
+/* Side panels */
+.highlight-side{display:flex;flex-direction:column;gap:1.5rem}
+.highlight-panel{
+  padding:1.5rem;
+  opacity:0;transform:translateX(20px);transition:all .5s;
+}
+.highlight-panel.revealed{opacity:1;transform:translateX(0)}
+.highlight-panel h4{
+  font-family:'JetBrains Mono',monospace;font-size:.75rem;
+  letter-spacing:.05em;margin-bottom:1rem;
+  display:flex;align-items:center;gap:.5rem;
+}
+.highlight-panel h4::before{
+  content:'//';color:var(--accent);font-weight:400;
+}
+.highlight-panel p{
+  font-size:.85rem;color:var(--text-secondary);line-height:1.7;font-weight:300;
+}
+.highlight-panel .tech-badge{
+  display:inline-flex;align-items:center;gap:.4rem;
+  margin-top:.75rem;
+  font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);padding:.25rem .6rem;
+  border:1px solid rgba(168,144,96,0.2);
+}
+
+/* ===== EXPORT FORMATS ===== */
+.formats{background:transparent}
+.formats-grid{
+  display:flex;justify-content:center;gap:1.25rem;flex-wrap:wrap;
+}
+.format-tile{
+  width:140px;padding:1.75rem 1.25rem;text-align:center;
+  opacity:0;transform:translateY(20px);transition:all .5s;
+}
+.format-tile.revealed{opacity:1;transform:translateY(0)}
+.format-tile .ext{
+  font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:700;
+  color:var(--accent);margin-bottom:.5rem;
+  text-shadow:0 0 15px rgba(168,144,96,0.3);
+}
+.format-tile .desc{
+  font-size:.75rem;color:var(--text-secondary);
+  font-family:'JetBrains Mono',monospace;
+}
+.format-tile:hover{
+  border-color:rgba(168,144,96,0.3);
+  box-shadow:0 0 25px rgba(168,144,96,0.08);
+}
+
+/* ===== CTA ===== */
+.cta-section{
+  background:radial-gradient(circle at 50% 50%,rgba(58,37,26,0.4) 0%,#0F0906 70%);
+  text-align:center;padding:8rem 2rem;position:relative;overflow:hidden;
+}
+/* Pulsing rings behind CTA */
+.cta-rings{
+  position:absolute;width:500px;height:500px;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+.cta-ring{
+  position:absolute;inset:0;border-radius:50%;
+  border:1px solid rgba(168,144,96,0.06);
+  animation:cta-pulse 3s ease-in-out infinite;
+}
+.cta-ring:nth-child(1){animation-delay:0s}
+.cta-ring:nth-child(2){inset:40px;animation-delay:.5s}
+.cta-ring:nth-child(3){inset:80px;animation-delay:1s}
+.cta-ring:nth-child(4){inset:120px;animation-delay:1.5s}
+@keyframes cta-pulse{
+  0%,100%{opacity:.3;transform:scale(1)}
+  50%{opacity:.8;transform:scale(1.03)}
+}
+
+.cta-content{position:relative;z-index:2}
+.cta-content h2{margin-bottom:1rem}
+.cta-text{
+  font-size:1rem;color:var(--text-secondary);max-width:550px;margin:0 auto 2.5rem;
+  font-weight:300;line-height:1.8;
+}
+.cta-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem}
+.cta-platform{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  color:var(--text-secondary);letter-spacing:.15em;text-transform:uppercase;
+}
+
+/* ===== FOOTER ===== */
+.footer{
+  background:var(--bg);border-top:1px solid var(--border);
+  padding:4rem 2rem 2rem;
+}
+.footer-inner{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;
+  padding-bottom:3rem;border-bottom:1px solid var(--border);
+}
+.footer-brand{display:flex;flex-direction:column;gap:1rem}
+.footer-brand-logo{display:flex;align-items:center;gap:.75rem}
+.footer-brand-logo svg{width:28px;height:28px}
+.footer-brand-logo span{font-family:'Inter',sans-serif;font-weight:800;font-size:1rem;color:var(--limestone-50)}
+.footer-brand p{font-size:.85rem;color:var(--text-secondary);max-width:280px;font-weight:300}
+.footer-col h5{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:1rem;
+}
+.footer-col a{
+  display:block;font-size:.85rem;color:var(--text-secondary);
+  text-decoration:none;padding:.2rem 0;transition:color .3s;font-weight:300;
+}
+.footer-col a:hover{color:var(--limestone-50)}
+.footer-bottom{
+  max-width:1200px;margin:0 auto;padding-top:2rem;
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text-secondary);
+}
+.footer-bottom a{color:var(--text-secondary);text-decoration:none;transition:color .3s}
+.footer-bottom a:hover{color:var(--accent)}
+
+/* ===== TYPING EFFECT ===== */
+.typing-stat{
+  display:inline-block;overflow:hidden;
+  border-right:2px solid var(--accent);
+  white-space:nowrap;
+  animation:typing-cursor .7s step-end infinite;
+}
+@keyframes typing-cursor{0%,100%{border-color:var(--accent)}50%{border-color:transparent}}
+
+/* ===== REVEAL ===== */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.4,0,.2,1),transform .6s cubic-bezier(.4,0,.2,1)}
+.reveal.revealed{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}
+.reveal-delay-5{transition-delay:.5s}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .features-grid{grid-template-columns:repeat(2,1fr)}
+  .highlights-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .features-grid{grid-template-columns:1fr}
+  .footer-inner{grid-template-columns:1fr 1fr;gap:2rem}
+  .nav-links{display:none}
+  .data-strip-inner{justify-content:center}
+  .sonar-container,.radar-sweep,.sonar-static-rings,.crosshair{width:400px;height:400px}
+  .sonar-static-ring:nth-child(1){width:100px;height:100px}
+  .sonar-static-ring:nth-child(2){width:200px;height:200px}
+  .sonar-static-ring:nth-child(3){width:300px;height:300px}
+  .sonar-static-ring:nth-child(4){width:400px;height:400px}
+}
+@media(max-width:500px){
+  .hero-cta-group{flex-direction:column;align-items:center}
+  .footer-inner{grid-template-columns:1fr}
+  .step{flex-direction:column;align-items:center;text-align:center}
+  .steps-timeline::before{display:none}
+  .data-strip-inner{flex-direction:column;align-items:center}
 }
 </style>
 </head>
 <body>
 
-<div class="dot-matrix"></div>
-<div class="scanline-overlay"></div>
-
-<!-- ========== NAVIGATION ========== -->
-<nav id="nav">
-  <div class="container">
-    <a href="#" class="nav-logo">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462" width="32" height="32">
-        <path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/>
-      </svg>
-      <span class="nav-logo-text">Stalagmight</span>
-      <span class="nav-logo-version">v2.4</span>
-    </a>
-    <ul class="nav-links">
-      <li><a href="#features">Systems</a></li>
-      <li><a href="#onboarding">Protocol</a></li>
-      <li><a href="#highlights">Modules</a></li>
-      <li><a href="#cta" class="nav-cta">Initialize</a></li>
-    </ul>
+<!-- ===== NAV ===== -->
+<nav class="nav" id="nav">
+  <a href="#" class="nav-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="32" height="32">
+      <defs><linearGradient id="nav-a" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs>
+      <g transform="translate(512 512) scale(1.18) translate(-512 -512)">
+        <circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity="0.20"/>
+        <circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity="0.12"/>
+        <g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity="0.32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g>
+        <g fill="none" stroke="url(#nav-a)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g>
+        <g fill="#F3E8D8" opacity="0.98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g>
+      </g>
+    </svg>
+    <span>StalagMight</span>
+  </a>
+  <div class="nav-status">
+    <span class="dot"></span>
+    <span>SYSTEM ONLINE</span>
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#onboarding">Protocol</a>
+    <a href="#highlights">Analysis</a>
+    <a href="#formats">Export</a>
+    <a href="#download" class="nav-cta">Download</a>
   </div>
 </nav>
 
-<!-- ========== HERO ========== -->
+<!-- ===== HERO ===== -->
 <section class="hero" id="hero">
-  <div class="radar-container" id="radarContainer">
-    <div class="radar-ring"></div>
-    <div class="radar-ring"></div>
-    <div class="radar-ring"></div>
-    <div class="radar-ring"></div>
-    <div class="radar-cross-h"></div>
-    <div class="radar-cross-v"></div>
-    <div class="radar-sweep"></div>
-    <div class="radar-blip"></div>
-    <div class="radar-blip"></div>
-    <div class="radar-blip"></div>
-    <div class="radar-blip"></div>
-    <div class="radar-blip"></div>
-    <div class="radar-blip"></div>
-    <div class="radar-pulse"></div>
-    <div class="radar-pulse"></div>
-    <div class="radar-pulse"></div>
+  <!-- Sonar animation layers -->
+  <div class="sonar-static-rings">
+    <div class="sonar-static-ring"></div>
+    <div class="sonar-static-ring"></div>
+    <div class="sonar-static-ring"></div>
+    <div class="sonar-static-ring"></div>
+  </div>
+  <div class="crosshair"></div>
+  <div class="sonar-container">
+    <div class="sonar-ring"></div>
+    <div class="sonar-ring"></div>
+    <div class="sonar-ring"></div>
+    <div class="sonar-ring"></div>
+  </div>
+  <div class="radar-sweep"></div>
+
+  <!-- Brand mark as sonar center target -->
+  <div class="sonar-center">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="120" height="120">
+      <defs><linearGradient id="hero-a" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs>
+      <g transform="translate(512 512) scale(1.18) translate(-512 -512)">
+        <circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity="0.20"/>
+        <circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity="0.12"/>
+        <g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity="0.32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g>
+        <g fill="none" stroke="url(#hero-a)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g>
+        <g fill="#F3E8D8" opacity="0.98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g>
+      </g>
+    </svg>
   </div>
 
-  <div class="container">
-    <div class="hero-content">
-      <div class="hero-status">
-        <span class="status-dot"></span>
-        System Online &mdash; All Modules Active
-      </div>
-      <h1>Map the Deep.<br><span class="glow">See Everything.</span></h1>
-      <p class="hero-description">
-        Stalagmight is the precision survey platform for cave exploration teams. Map underground systems, manage GIS data, track equipment, and collaborate in real time.
-      </p>
+  <div class="hero-content">
+    <div class="hero-readout">
+      <span>SYS.INIT</span>
+      <span class="blink">_</span>
+      <span>SURVEY MODULE ACTIVE</span>
+    </div>
+    <h1 class="hero-title"><span class="wordmark">StalagMight</span></h1>
+    <p class="hero-tagline">Underwater cave survey and mapping</p>
+    <p class="hero-sub">DESKTOP APPLICATION // TAURI + REACT + RUST</p>
+    <div class="hero-cta-group">
+      <a href="#download" class="btn-sonar primary">Initialize Download</a>
+      <a href="#features" class="btn-sonar secondary">Scan Features</a>
+    </div>
+  </div>
 
-      <div class="hero-metrics">
-        <div class="hero-metric">
-          <span class="hero-metric-value" id="heroStat1">0</span>
-          <span class="hero-metric-label">Active Surveys</span>
-        </div>
-        <div class="hero-metric">
-          <span class="hero-metric-value" id="heroStat2">0</span>
-          <span class="hero-metric-label">Stations Mapped</span>
-        </div>
-        <div class="hero-metric">
-          <span class="hero-metric-value" id="heroStat3">0m</span>
-          <span class="hero-metric-label">Deepest Scan</span>
-        </div>
-      </div>
-
-      <div class="hero-actions">
-        <a href="#cta" class="btn-primary">Deploy Platform</a>
-        <a href="#features" class="btn-secondary">Scan Systems</a>
-      </div>
-
-      <div class="hero-terminal">
-        <span class="prompt">$</span> <span class="cmd">stalagmight init --project "Sierra Madre" --datum WGS84</span><span class="cursor"></span><br>
-        <span class="prompt">$</span> <span class="cmd" style="opacity: 0.5;">importing survey_data.svx ... 2,847 stations loaded</span>
-      </div>
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="chevrons">
+      <div class="chevron"></div>
+      <div class="chevron"></div>
+      <div class="chevron"></div>
     </div>
   </div>
 </section>
 
-<div class="scan-divider"></div>
-
-<!-- ========== FEATURES ========== -->
+<!-- ===== FEATURES ===== -->
 <section class="features" id="features">
-  <div class="container">
-    <div class="features-header reveal">
-      <div class="data-label">System Modules</div>
-      <h2>Core Detection Systems</h2>
-      <p>Six precision-engineered modules for complete subterranean survey operations.</p>
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-tag">SCAN.MODULES</span>
+      <h2 class="section-title">System Capabilities</h2>
+      <p class="section-desc">Six core modules for processing underwater cave survey data from field collection through final export.</p>
+      <div class="section-line"></div>
     </div>
-
     <div class="features-grid">
-      <div class="feature-card reveal reveal-delay-1">
-        <div class="scan-line"></div>
-        <div class="feature-header">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          </div>
-          <span class="feature-status"><span class="status-dot"></span> Active</span>
-        </div>
-        <h3>Cave System Mapping</h3>
-        <p>Build precise 2D and 3D passage models from survey data with automatic loop closure and error distribution.</p>
-        <span class="feature-id">SYS::MAP-01 // PASSAGE_SURVEY</span>
+      <div class="feature-card hud-card reveal">
+        <div class="feature-id">MOD.01 <span style="color:var(--text-secondary)">// IMPORT</span></div>
+        <h3>DMP File Import</h3>
+        <p>Direct ingestion of survey data from mNemo diving instruments. Automatic parsing of compass bearings, distances, and depth measurements from field expeditions.</p>
       </div>
-
-      <div class="feature-card reveal reveal-delay-2">
-        <div class="scan-line"></div>
-        <div class="feature-header">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-          </div>
-          <span class="feature-status"><span class="status-dot"></span> Active</span>
-        </div>
-        <h3>GIS Station Network</h3>
-        <p>Full geodetic survey integration. Manage stations with coordinate transforms, datum conversions, and spatial queries.</p>
-        <span class="feature-id">SYS::GIS-02 // GEODETIC_NET</span>
+      <div class="feature-card hud-card reveal reveal-delay-1">
+        <div class="feature-id">MOD.02 <span style="color:var(--text-secondary)">// INPUT</span></div>
+        <h3>Spreadsheet Entry</h3>
+        <p>Manual data input through an integrated spreadsheet with full validation. Station names, compass bearings, tape distances, and inclination data entry.</p>
       </div>
-
-      <div class="feature-card reveal reveal-delay-3">
-        <div class="scan-line"></div>
-        <div class="feature-header">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-          </div>
-          <span class="feature-status"><span class="status-dot"></span> Active</span>
-        </div>
-        <h3>Equipment Tracking</h3>
-        <p>Monitor sensors, gas cylinders, rope inventories, and instrument calibration across all active field deployments.</p>
-        <span class="feature-id">SYS::EQP-03 // ASSET_TRACK</span>
+      <div class="feature-card hud-card reveal reveal-delay-2">
+        <div class="feature-id">MOD.03 <span style="color:var(--text-secondary)">// RENDER</span></div>
+        <h3>2D Visualization</h3>
+        <p>Real-time rendering of cave survey networks as 2D plan views with satellite imagery overlay. Pan, zoom, and inspect every passage connection.</p>
       </div>
-
-      <div class="feature-card reveal reveal-delay-1">
-        <div class="scan-line"></div>
-        <div class="feature-header">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-          </div>
-          <span class="feature-status"><span class="status-dot"></span> Active</span>
-        </div>
-        <h3>Team Collaboration</h3>
-        <p>Role-based access control for surveyors, researchers, and admins. Real-time sync and conflict resolution on shared data.</p>
-        <span class="feature-id">SYS::COL-04 // TEAM_SYNC</span>
+      <div class="feature-card hud-card reveal reveal-delay-3">
+        <div class="feature-id">MOD.04 <span style="color:var(--text-secondary)">// MANAGE</span></div>
+        <h3>Section Management</h3>
+        <p>Organize complex cave systems into hierarchical sections. Group survey legs, assign identifiers, and manage relationships between interconnected passages.</p>
       </div>
-
-      <div class="feature-card reveal reveal-delay-2">
-        <div class="scan-line"></div>
-        <div class="feature-header">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          </div>
-          <span class="feature-status"><span class="status-dot"></span> Active</span>
-        </div>
-        <h3>Science Experiments</h3>
-        <p>Track research projects, environmental sensors, biological surveys, and geological sampling with structured data protocols.</p>
-        <span class="feature-id">SYS::SCI-05 // RESEARCH_LOG</span>
+      <div class="feature-card hud-card reveal reveal-delay-4">
+        <div class="feature-id">MOD.05 <span style="color:var(--text-secondary)">// DETECT</span></div>
+        <h3>Loop Closure Detection</h3>
+        <p>Automated identification of closed loops within the survey network. Essential for error analysis and validation of survey data integrity.</p>
       </div>
-
-      <div class="feature-card reveal reveal-delay-3">
-        <div class="scan-line"></div>
-        <div class="feature-header">
-          <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-          </div>
-          <span class="feature-status"><span class="status-dot"></span> Active</span>
-        </div>
-        <h3>GPS Track Import</h3>
-        <p>Ingest GPS tracks and waypoints from field devices. Correlate surface traces with subsurface passage geometry.</p>
-        <span class="feature-id">SYS::GPS-06 // TRACK_INGEST</span>
+      <div class="feature-card hud-card reveal reveal-delay-5">
+        <div class="feature-id">MOD.06 <span style="color:var(--text-secondary)">// ADJUST</span></div>
+        <h3>Error Distribution</h3>
+        <p>Least-squares adjustment engine distributes measurement discrepancies optimally across loop closures for maximum geometric accuracy.</p>
       </div>
     </div>
   </div>
 </section>
 
-<div class="scan-divider"></div>
+<!-- ===== DATA READOUT STRIP ===== -->
+<div class="data-strip">
+  <div class="data-strip-inner">
+    <div class="data-readout reveal">
+      <span class="data-value" id="stat-formats">5<span class="unit">fmt</span></span>
+      <span class="data-label">Export Formats</span>
+    </div>
+    <div class="data-readout reveal reveal-delay-1">
+      <span class="data-value">Rust<span class="unit">core</span></span>
+      <span class="data-label">Backend Engine</span>
+    </div>
+    <div class="data-readout reveal reveal-delay-2">
+      <span class="data-value">React<span class="unit">ui</span></span>
+      <span class="data-label">Frontend Layer</span>
+    </div>
+    <div class="data-readout reveal reveal-delay-3">
+      <span class="data-value">Tauri<span class="unit">fw</span></span>
+      <span class="data-label">Framework</span>
+    </div>
+    <div class="data-readout reveal reveal-delay-4">
+      <span class="data-value">3<span class="unit">os</span></span>
+      <span class="data-label">Platforms</span>
+    </div>
+  </div>
+</div>
 
-<!-- ========== ONBOARDING / HOW IT WORKS ========== -->
+<!-- ===== HOW IT WORKS / ONBOARDING ===== -->
 <section class="onboarding" id="onboarding">
-  <div class="container">
-    <div class="onboarding-header reveal">
-      <div class="data-label">Deployment Protocol</div>
-      <h2>System Initialization Sequence</h2>
-      <p>From project creation to first survey export in four operational phases.</p>
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-tag">PROTOCOL.SEQ</span>
+      <h2 class="section-title">Operational Sequence</h2>
+      <p class="section-desc">Five-phase workflow from raw field data to publication-ready cave maps.</p>
+      <div class="section-line"></div>
     </div>
-
-    <div class="onboarding-steps">
-      <div class="onboarding-step reveal reveal-delay-1">
-        <div class="step-number">01</div>
-        <h3>Initialize Project</h3>
-        <p>Create your project workspace, set coordinate reference system, and configure team access roles.</p>
-        <span class="step-cmd">$ stalagmight init</span>
+    <div class="steps-timeline">
+      <div class="step reveal">
+        <div class="step-marker">01</div>
+        <div class="step-content">
+          <h3>Data Acquisition</h3>
+          <p>Import DMP files from mNemo dive instruments or manually enter survey measurements through the integrated spreadsheet interface. All standard cave survey parameters supported.</p>
+          <span class="step-tag">INPUT PHASE</span>
+        </div>
       </div>
-
-      <div class="onboarding-step reveal reveal-delay-2">
-        <div class="step-number">02</div>
-        <h3>Ingest Survey Data</h3>
-        <p>Import existing cave surveys in Survex, Therion, or Compass formats. Upload GPS tracks and station coordinates.</p>
-        <span class="step-cmd">$ stalagmight import *.svx</span>
+      <div class="step reveal reveal-delay-1">
+        <div class="step-marker">02</div>
+        <div class="step-content">
+          <h3>Section Organization</h3>
+          <p>Structure your cave survey into logical sections and passages. Create hierarchies, name stations, annotate legs, and build the topology of your underwater cave network.</p>
+          <span class="step-tag">STRUCTURE PHASE</span>
+        </div>
       </div>
-
-      <div class="onboarding-step reveal reveal-delay-3">
-        <div class="step-number">03</div>
-        <h3>Process &amp; Map</h3>
-        <p>Run loop closure, generate passage walls, build 3D models. Add geological annotations and scientific observations.</p>
-        <span class="step-cmd">$ stalagmight process --3d</span>
+      <div class="step reveal reveal-delay-2">
+        <div class="step-marker">03</div>
+        <div class="step-content">
+          <h3>Loop Analysis &amp; Correction</h3>
+          <p>Automated loop closure detection identifies closed circuits in your survey. The least-squares engine then optimally distributes measurement errors across the entire network.</p>
+          <span class="step-tag">ANALYSIS PHASE</span>
+        </div>
       </div>
-
-      <div class="onboarding-step reveal reveal-delay-4">
-        <div class="step-number">04</div>
-        <h3>Export &amp; Share</h3>
-        <p>Generate publication-ready maps and data exports. Share with team members or the wider speleological community.</p>
-        <span class="step-cmd">$ stalagmight export --fmt svg</span>
+      <div class="step reveal reveal-delay-3">
+        <div class="step-marker">04</div>
+        <div class="step-content">
+          <h3>Visualization &amp; Mapping</h3>
+          <p>Render your corrected survey as a 2D plan view with optional satellite imagery overlay. Examine passage geometry, verify connectivity, and review the complete cave map.</p>
+          <span class="step-tag">RENDER PHASE</span>
+        </div>
+      </div>
+      <div class="step reveal reveal-delay-4">
+        <div class="step-marker">05</div>
+        <div class="step-content">
+          <h3>Export &amp; Distribution</h3>
+          <p>Generate outputs in PNG, SVG, or PDF for visual presentations and print-ready maps. Export structured data as CSV or JSON for analysis and collaboration.</p>
+          <span class="step-tag">OUTPUT PHASE</span>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="scan-divider"></div>
-
-<!-- ========== FEATURE HIGHLIGHTS ========== -->
+<!-- ===== HIGHLIGHTS / DASHBOARD ===== -->
 <section class="highlights" id="highlights">
-  <div class="container">
-
-    <div class="highlight-block reveal">
-      <div class="highlight-visual">
-        <div class="sonar-viz">
-          <div class="ring"></div>
-          <div class="ring"></div>
-          <div class="ring"></div>
-          <div class="ring"></div>
-          <div class="ping"></div>
-          <div class="ping"></div>
-          <div class="ping"></div>
-          <div class="ping"></div>
-          <div class="ping"></div>
-          <div class="scan-sweep"></div>
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-tag">SYS.ANALYSIS</span>
+      <h2 class="section-title">Technical Highlights</h2>
+      <p class="section-desc">Built for performance, precision, and professional cave cartography.</p>
+      <div class="section-line"></div>
+    </div>
+    <div class="highlights-grid">
+      <!-- Main visualization panel -->
+      <div class="highlight-main" id="vizPanel">
+        <div class="highlight-main-header">
+          <h3>Survey Network Visualization</h3>
+          <div class="status"><span class="dot"></span> RENDERING</div>
         </div>
-      </div>
-      <div class="highlight-text">
-        <div class="data-label">Mapping Engine</div>
-        <h3>Survey-Grade Precision</h3>
-        <p>Process raw survey legs with least-squares loop closure, automatic LRUD wall generation, and multi-view rendering for publication-quality cave maps.</p>
-        <ul class="highlight-list">
-          <li>Least-squares error distribution algorithm</li>
-          <li>Automatic passage cross-section generation</li>
-          <li>Plan, elevation, and extended elevation views</li>
-          <li>Layer-based feature management</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="highlight-block reverse reveal">
-      <div class="highlight-visual">
-        <div class="dashboard-viz">
-          <div class="data-row">
-            <span class="data-row-label">Sensors</span>
-            <div class="data-row-bar"><div class="data-row-fill"></div></div>
-            <span class="data-row-value">87%</span>
-          </div>
-          <div class="data-row">
-            <span class="data-row-label">Cylinders</span>
-            <div class="data-row-bar"><div class="data-row-fill"></div></div>
-            <span class="data-row-value">65%</span>
-          </div>
-          <div class="data-row">
-            <span class="data-row-label">Rope</span>
-            <div class="data-row-bar"><div class="data-row-fill"></div></div>
-            <span class="data-row-value">92%</span>
-          </div>
-          <div class="data-row">
-            <span class="data-row-label">Bolts</span>
-            <div class="data-row-bar"><div class="data-row-fill"></div></div>
-            <span class="data-row-value">54%</span>
-          </div>
-          <div class="data-row">
-            <span class="data-row-label">Lighting</span>
-            <div class="data-row-bar"><div class="data-row-fill"></div></div>
-            <span class="data-row-value">78%</span>
-          </div>
-          <div class="data-row">
-            <span class="data-row-label">First Aid</span>
-            <div class="data-row-bar"><div class="data-row-fill"></div></div>
-            <span class="data-row-value">41%</span>
-          </div>
-        </div>
-      </div>
-      <div class="highlight-text">
-        <div class="data-label">Equipment Module</div>
-        <h3>Total Asset Visibility</h3>
-        <p>Track every sensor, cylinder, rope segment, and scientific instrument from warehouse to cave. Monitor calibration status, deployment history, and stock levels.</p>
-        <ul class="highlight-list">
-          <li>Real-time equipment status dashboard</li>
-          <li>Calibration and certification tracking</li>
-          <li>Per-expedition deployment assignment</li>
-          <li>Automated restock threshold alerts</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="highlight-block reveal">
-      <div class="highlight-visual">
-        <div class="network-viz">
-          <div class="network-node main"></div>
-          <div class="network-node"></div>
-          <div class="network-node"></div>
-          <div class="network-node"></div>
-          <div class="network-node"></div>
-          <div class="network-node"></div>
-          <div class="network-node"></div>
-          <div class="network-node"></div>
-          <div class="network-line"></div>
-          <div class="network-line"></div>
-          <div class="network-line"></div>
-          <div class="network-line"></div>
-          <div class="network-line"></div>
-          <div class="network-line"></div>
-          <div class="network-line"></div>
-        </div>
-      </div>
-      <div class="highlight-text">
-        <div class="data-label">Collaboration Engine</div>
-        <h3>Synchronized Field Operations</h3>
-        <p>Multi-user real-time collaboration with role-based permissions. Surveyors, researchers, and administrators work simultaneously with automatic conflict resolution.</p>
-        <ul class="highlight-list">
-          <li>Role-based access: Surveyor, Researcher, Admin</li>
-          <li>Real-time data synchronization</li>
-          <li>Offline mode with smart conflict merge</li>
-          <li>Audit trail and change history</li>
-        </ul>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ========== METRICS BANNER ========== -->
-<section class="metrics-banner">
-  <div class="container">
-    <div class="metrics-grid">
-      <div class="metric-item reveal">
-        <span class="metric-value" data-target="2847">0</span>
-        <span class="metric-label">Caves Scanned</span>
-        <span class="metric-sub">+127 this quarter</span>
-      </div>
-      <div class="metric-item reveal reveal-delay-1">
-        <span class="metric-value" data-target="156">0</span>
-        <span class="metric-label">Active Teams</span>
-        <span class="metric-sub">across 31 countries</span>
-      </div>
-      <div class="metric-item reveal reveal-delay-2">
-        <span class="metric-value" data-target="94200">0</span>
-        <span class="metric-label">Survey Stations</span>
-        <span class="metric-sub">99.97% accuracy</span>
-      </div>
-      <div class="metric-item reveal reveal-delay-3">
-        <span class="metric-value" data-target="1247">0</span>
-        <span class="metric-label">Max Depth (m)</span>
-        <span class="metric-sub">deepest mapped system</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="scan-divider"></div>
-
-<!-- ========== CTA ========== -->
-<section class="cta" id="cta">
-  <div class="cta-rings">
-    <div class="ring"></div>
-    <div class="ring"></div>
-    <div class="ring"></div>
-    <div class="ring"></div>
-    <div class="ring"></div>
-  </div>
-  <div class="container">
-    <div class="cta-content reveal">
-      <div class="data-label" style="justify-content: center;">System Access</div>
-      <h2>Ready to <span class="glow">Deploy</span>?</h2>
-      <p>Initialize your Stalagmight instance and start mapping cave systems with survey-grade precision.</p>
-      <form class="cta-form" onsubmit="event.preventDefault();">
-        <input type="email" placeholder="team@expedition.org" aria-label="Email address">
-        <button type="submit" class="btn-primary">Initialize</button>
-      </form>
-      <p class="cta-note"><span class="status-dot"></span> Free for teams up to 5. No credit card required.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ========== FOOTER ========== -->
-<footer>
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-about">
-        <div class="footer-brand">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462" width="28" height="28">
-            <path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/>
+        <div class="highlight-viz">
+          <svg class="viz-svg" id="vizSvg" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- Grid -->
+            <defs>
+              <pattern id="grid" width="25" height="25" patternUnits="userSpaceOnUse">
+                <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(168,144,96,0.05)" stroke-width="0.5"/>
+              </pattern>
+            </defs>
+            <rect width="500" height="300" fill="url(#grid)"/>
+            <!-- Survey lines -->
+            <path class="survey-line" d="M40,250 L100,190 L160,210 L220,150 L280,170 L340,110 L400,130 L460,60"/>
+            <path class="survey-line" style="stroke-dasharray:350;stroke-dashoffset:350;opacity:0.6" d="M160,210 L180,270 L260,250 L280,170"/>
+            <path class="survey-loop" d="M160,210 L180,270 L260,250 L280,170"/>
+            <!-- Stations -->
+            <circle class="station" cx="40" cy="250" r="4"/>
+            <circle class="station" cx="100" cy="190" r="4"/>
+            <circle class="station" cx="160" cy="210" r="4"/>
+            <circle class="station" cx="220" cy="150" r="4"/>
+            <circle class="station" cx="280" cy="170" r="4"/>
+            <circle class="station" cx="340" cy="110" r="4"/>
+            <circle class="station" cx="400" cy="130" r="3.5"/>
+            <circle class="station" cx="460" cy="60" r="3.5"/>
+            <circle class="station" cx="180" cy="270" r="3"/>
+            <circle class="station" cx="260" cy="250" r="3"/>
+            <!-- Station labels -->
+            <text class="station-label" x="35" y="268">STN-A0</text>
+            <text class="station-label" x="95" y="185">STN-A1</text>
+            <text class="station-label" x="155" y="205">STN-B0</text>
+            <text class="station-label" x="215" y="145">STN-B1</text>
+            <text class="station-label" x="275" y="165">STN-C0</text>
+            <text class="station-label" x="335" y="105">STN-C1</text>
+            <text class="station-label" x="395" y="148">STN-C2</text>
+            <text class="station-label" x="450" y="55">STN-D0</text>
+            <!-- Loop closure marker -->
+            <g class="survey-loop" transform="translate(220,225)">
+              <circle r="12" fill="none" stroke="var(--warning)" stroke-width="1" stroke-dasharray="3 2"/>
+              <text fill="var(--warning)" font-family="JetBrains Mono,monospace" font-size="6" text-anchor="middle" dy="2">LOOP</text>
+            </g>
           </svg>
-          <span class="footer-brand-name">Stalagmight</span>
         </div>
-        <p>Precision cave mapping and speleological survey management platform for modern exploration teams.</p>
       </div>
-
-      <div class="footer-col">
-        <h4>Platform</h4>
-        <ul>
-          <li><a href="#">Cave Mapping</a></li>
-          <li><a href="#">GIS Stations</a></li>
-          <li><a href="#">Equipment</a></li>
-          <li><a href="#">GPS Import</a></li>
-          <li><a href="#">Collaboration</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4>Resources</h4>
-        <ul>
-          <li><a href="#">Documentation</a></li>
-          <li><a href="#">API Reference</a></li>
-          <li><a href="#">Data Formats</a></li>
-          <li><a href="#">Community</a></li>
-          <li><a href="#">Tutorials</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4>Company</h4>
-        <ul>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Contact</a></li>
-          <li><a href="#">Privacy</a></li>
-          <li><a href="#">Terms</a></li>
-        </ul>
+      <!-- Side panels -->
+      <div class="highlight-side">
+        <div class="highlight-panel hud-card reveal">
+          <h4>Native Performance</h4>
+          <p>Tauri + Rust backend delivers near-native speed with minimal memory footprint. No Electron overhead. Runs on Windows, macOS, and Linux.</p>
+          <span class="tech-badge">TAURI 2.x // RUST // REACT</span>
+        </div>
+        <div class="highlight-panel hud-card reveal reveal-delay-1">
+          <h4>Satellite Overlay</h4>
+          <p>Layer 2D cave survey plans over satellite imagery to correlate underground passages with surface geography and entry points.</p>
+          <span class="tech-badge">GEOSPATIAL // TILE RENDER</span>
+        </div>
+        <div class="highlight-panel hud-card reveal reveal-delay-2">
+          <h4>Least-Squares Engine</h4>
+          <p>Industry-standard adjustment algorithm distributes measurement errors optimally across closed loops for maximum geometric fidelity.</p>
+          <span class="tech-badge">LSQ ADJUSTMENT // PRECISION</span>
+        </div>
+        <div class="highlight-panel hud-card reveal reveal-delay-3">
+          <h4>Multi-Format Output</h4>
+          <p>Export survey maps as PNG, SVG, or PDF. Extract structured data as CSV or JSON for interchange with other cave survey platforms.</p>
+          <span class="tech-badge">5 FORMATS // INTEROP</span>
+        </div>
       </div>
     </div>
+  </div>
+</section>
 
-    <div class="footer-bottom">
-      <p>&copy; 2026 Stalagmight. All rights reserved.</p>
-      <div class="footer-status">
-        <span class="status-dot"></span>
-        ALL SYSTEMS OPERATIONAL
+<!-- ===== EXPORT FORMATS ===== -->
+<section class="formats" id="formats">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-tag">OUTPUT.FMT</span>
+      <h2 class="section-title">Export Targets</h2>
+      <p class="section-desc">Generate publication-ready maps and machine-readable data.</p>
+      <div class="section-line"></div>
+    </div>
+    <div class="formats-grid">
+      <div class="format-tile hud-card reveal">
+        <div class="ext">.PNG</div>
+        <div class="desc">Raster output</div>
       </div>
+      <div class="format-tile hud-card reveal reveal-delay-1">
+        <div class="ext">.SVG</div>
+        <div class="desc">Vector graphics</div>
+      </div>
+      <div class="format-tile hud-card reveal reveal-delay-2">
+        <div class="ext">.PDF</div>
+        <div class="desc">Print-ready</div>
+      </div>
+      <div class="format-tile hud-card reveal reveal-delay-3">
+        <div class="ext">.CSV</div>
+        <div class="desc">Tabular data</div>
+      </div>
+      <div class="format-tile hud-card reveal reveal-delay-4">
+        <div class="ext">.JSON</div>
+        <div class="desc">Structured data</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta-section" id="download">
+  <div class="cta-rings">
+    <div class="cta-ring"></div>
+    <div class="cta-ring"></div>
+    <div class="cta-ring"></div>
+    <div class="cta-ring"></div>
+  </div>
+  <div class="cta-content">
+    <div class="reveal">
+      <span class="section-tag">SYS.DEPLOY</span>
+      <h2 class="section-title" style="margin-top:1rem;margin-bottom:1rem">Initialize Your Survey Station</h2>
+    </div>
+    <p class="cta-text reveal reveal-delay-1">
+      Deploy StalagMight on your system and transform raw survey data into precision cave maps. Free and open to all cave divers and cartographers.
+    </p>
+    <div class="cta-buttons reveal reveal-delay-2">
+      <a href="#" class="btn-sonar primary">Download Now</a>
+      <a href="#" class="btn-sonar secondary">View Documentation</a>
+    </div>
+    <p class="cta-platform reveal reveal-delay-3">COMPATIBLE // WINDOWS // MACOS // LINUX</p>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-brand-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="28" height="28">
+          <defs><linearGradient id="ft-a" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs>
+          <g transform="translate(512 512) scale(1.18) translate(-512 -512)">
+            <circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity="0.20"/>
+            <circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity="0.12"/>
+            <g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity="0.32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g>
+            <g fill="none" stroke="url(#ft-a)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g>
+            <g fill="#F3E8D8" opacity="0.98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g>
+          </g>
+        </svg>
+        <span class="brand-wordmark">StalagMight</span>
+      </div>
+      <p>Desktop application for processing underwater cave survey data. Built with Tauri, React, and Rust for maximum performance.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Product</h5>
+      <a href="#features">Features</a>
+      <a href="#download">Download</a>
+      <a href="#">Changelog</a>
+      <a href="#">Roadmap</a>
+    </div>
+    <div class="footer-col">
+      <h5>Resources</h5>
+      <a href="#">Documentation</a>
+      <a href="#">Tutorials</a>
+      <a href="#">DMP Format</a>
+      <a href="#">API Reference</a>
+    </div>
+    <div class="footer-col">
+      <h5>Community</h5>
+      <a href="#">GitHub</a>
+      <a href="#">Discussions</a>
+      <a href="#">Cave Diving</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 StalagMight // All systems operational</span>
+    <div style="display:flex;gap:1.5rem">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">License</a>
     </div>
   </div>
 </footer>
 
 <script>
-(function() {
-  'use strict';
+(function(){
+  /* ===== Intersection Observer for reveals ===== */
+  const allRevealable = document.querySelectorAll('.reveal, .hud-card, .step, .format-tile, .highlight-main, .highlight-panel, .viz-svg');
 
-  // ===== Nav scroll =====
-  var nav = document.getElementById('nav');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+      }
+    });
+  }, {
+    threshold: 0.12,
+    rootMargin: '0px 0px -40px 0px'
+  });
 
-  function handleNavScroll() {
+  allRevealable.forEach(el => observer.observe(el));
+
+  /* ===== Nav scroll effect ===== */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 60);
-  }
-
-  // ===== Scroll reveal =====
-  var revealElements = document.querySelectorAll('.reveal');
-  var revealObserver = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-  revealElements.forEach(function(el) {
-    revealObserver.observe(el);
-  });
-
-  // ===== Counter animation =====
-  function animateCounter(el, target, suffix) {
-    var duration = 2000;
-    var startTime = performance.now();
-    suffix = suffix || '';
-
-    function update(currentTime) {
-      var elapsed = currentTime - startTime;
-      var progress = Math.min(elapsed / duration, 1);
-      var eased = 1 - Math.pow(1 - progress, 3);
-      var current = Math.floor(eased * target);
-
-      if (target >= 1000) {
-        el.textContent = current.toLocaleString() + suffix;
-      } else {
-        el.textContent = current + suffix;
-      }
-
-      if (progress < 1) {
-        requestAnimationFrame(update);
-      } else {
-        el.textContent = (target >= 1000 ? target.toLocaleString() : target) + suffix;
-      }
-    }
-
-    requestAnimationFrame(update);
-  }
-
-  // Hero stat counters
-  var heroStatsStarted = false;
-  var heroSection = document.getElementById('hero');
-  var heroObserver = new IntersectionObserver(function(entries) {
-    if (entries[0].isIntersecting && !heroStatsStarted) {
-      heroStatsStarted = true;
-      setTimeout(function() {
-        animateCounter(document.getElementById('heroStat1'), 2847, '');
-        animateCounter(document.getElementById('heroStat2'), 94200, '');
-        animateCounter(document.getElementById('heroStat3'), 1247, 'm');
-      }, 500);
-    }
-  }, { threshold: 0.3 });
-
-  heroObserver.observe(heroSection);
-
-  // Metric counters
-  var metricValues = document.querySelectorAll('.metric-value[data-target]');
-  var metricObserver = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (entry.isIntersecting) {
-        var el = entry.target;
-        var target = parseInt(el.getAttribute('data-target'), 10);
-        animateCounter(el, target, '');
-        metricObserver.unobserve(el);
-      }
-    });
-  }, { threshold: 0.5 });
-
-  metricValues.forEach(function(el) {
-    metricObserver.observe(el);
-  });
-
-  // ===== Typing effect for hero terminal =====
-  var cmds = document.querySelectorAll('.hero-terminal .cmd');
-  if (cmds.length > 0) {
-    var firstCmd = cmds[0];
-    var fullText = firstCmd.textContent;
-    firstCmd.textContent = '';
-    var charIndex = 0;
-
-    function typeChar() {
-      if (charIndex < fullText.length) {
-        firstCmd.textContent += fullText.charAt(charIndex);
-        charIndex++;
-        setTimeout(typeChar, 30 + Math.random() * 40);
-      }
-    }
-
-    setTimeout(typeChar, 1200);
-  }
-
-  // ===== Scroll handler =====
-  var ticking = false;
-  window.addEventListener('scroll', function() {
-    if (!ticking) {
-      requestAnimationFrame(function() {
-        handleNavScroll();
-        ticking = false;
-      });
-      ticking = true;
-    }
   }, { passive: true });
 
-  handleNavScroll();
+  /* ===== Smooth scrolling ===== */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', function(e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
 
+  /* ===== Typing effect for hero readout ===== */
+  const heroReadout = document.querySelector('.hero-readout');
+  if (heroReadout) {
+    const texts = ['SYS.INIT', 'SURVEY MODULE ACTIVE', 'SONAR CALIBRATED', 'AWAITING INPUT'];
+    let textIdx = 0;
+    const spans = heroReadout.querySelectorAll('span:not(.blink)');
+    if (spans.length >= 2) {
+      setInterval(() => {
+        textIdx = (textIdx + 1) % texts.length;
+        const target = textIdx % 2 === 0 ? spans[0] : spans[1];
+        target.style.opacity = '0';
+        setTimeout(() => {
+          target.textContent = texts[textIdx];
+          target.style.opacity = '1';
+          target.style.transition = 'opacity .4s';
+        }, 300);
+      }, 3000);
+    }
+  }
+
+  /* ===== Glow effect on mouse move over hero ===== */
+  const hero = document.querySelector('.hero');
+  if (hero) {
+    hero.addEventListener('mousemove', (e) => {
+      const rect = hero.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      hero.style.background = `radial-gradient(circle at ${x}% ${y}%,rgba(58,37,26,0.4) 0%,#0F0906 70%)`;
+    });
+  }
+
+  /* ===== Randomized blips on the sonar ===== */
+  const sonarContainer = document.querySelector('.sonar-container');
+  if (sonarContainer) {
+    function createBlip() {
+      const blip = document.createElement('div');
+      const angle = Math.random() * 360;
+      const distance = 40 + Math.random() * 220;
+      const rad = angle * Math.PI / 180;
+      const x = 350 + Math.cos(rad) * distance;
+      const y = 350 + Math.sin(rad) * distance;
+      blip.style.cssText = `
+        position:absolute;width:4px;height:4px;border-radius:50%;
+        background:var(--accent);left:${x}px;top:${y}px;
+        opacity:0;transition:opacity .3s;
+        box-shadow:0 0 8px var(--glow);
+        pointer-events:none;
+      `;
+      sonarContainer.appendChild(blip);
+      requestAnimationFrame(() => {
+        blip.style.opacity = '0.7';
+      });
+      setTimeout(() => {
+        blip.style.opacity = '0';
+        setTimeout(() => blip.remove(), 400);
+      }, 1500 + Math.random() * 2000);
+    }
+
+    // Create initial blips
+    for (let i = 0; i < 5; i++) {
+      setTimeout(createBlip, Math.random() * 2000);
+    }
+    // Ongoing blips
+    setInterval(() => {
+      if (Math.random() > 0.3) createBlip();
+    }, 800);
+  }
 })();
 </script>
 </body>
