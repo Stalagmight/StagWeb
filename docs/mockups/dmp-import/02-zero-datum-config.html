@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StalagMight — Zero Datum Configuration (Step 2)</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0e0d0c;
+  --panel: #171615;
+  --border: #2a2826;
+  --text-primary: #d5d0ca;
+  --text-secondary: #858280;
+  --accent: #a89060;
+  --warning: #b89848;
+  --error: #b85048;
+  --success: #48986a;
+  --input-bg: #171615;
+  --input-border: #2a2826;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== BACKDROP OVERLAY ===== */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* ===== DIALOG ===== */
+.dialog {
+  width: 1100px;
+  height: 800px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.3),
+    0 24px 80px rgba(0,0,0,0.6),
+    0 8px 24px rgba(0,0,0,0.4);
+}
+
+/* ===== TITLE BAR ===== */
+.title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 44px;
+  min-height: 44px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  user-select: none;
+}
+
+.title-bar h1 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.title-bar-step {
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+
+.title-close {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
+}
+
+.title-close:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--text-primary);
+}
+
+/* ===== MAIN BODY ===== */
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ===== LEFT COLUMN — MAP ===== */
+.col-left {
+  width: 380px;
+  min-width: 380px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+.map-header {
+  padding: 14px 16px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.map-canvas {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.map-canvas svg {
+  width: 340px;
+  height: 340px;
+}
+
+.map-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.map-footer-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.map-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.map-legend-dot.anchor {
+  background: var(--success);
+  box-shadow: 0 0 0 2px rgba(72,152,106,0.3);
+}
+
+/* ===== RIGHT COLUMN ===== */
+.col-right {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.col-right::-webkit-scrollbar {
+  width: 6px;
+}
+
+.col-right::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.col-right::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.col-right::-webkit-scrollbar-thumb:hover {
+  background: #3a3836;
+}
+
+/* ===== CARD COMPONENTS ===== */
+.card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.card-accent {
+  border-color: rgba(168, 144, 96, 0.3);
+  background: rgba(168, 144, 96, 0.03);
+}
+
+.card-body {
+  padding: 16px;
+}
+
+/* ===== SECTION HEADINGS ===== */
+.section-heading {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  padding-bottom: 4px;
+}
+
+/* ===== ZERO DATUM CARD ===== */
+.datum-heading {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.datum-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  line-height: 1.45;
+}
+
+/* ===== FORM ELEMENTS ===== */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+input[type="text"],
+input[type="date"],
+select {
+  height: 30px;
+  padding: 0 10px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 5px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+select:focus {
+  border-color: var(--accent);
+}
+
+select {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23858280' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+
+select option {
+  background: var(--panel);
+  color: var(--text-primary);
+}
+
+input[type="color"] {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--input-border);
+  border-radius: 5px;
+  background: var(--input-bg);
+  cursor: pointer;
+  padding: 2px;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 3px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.badge-accent {
+  background: rgba(168, 144, 96, 0.12);
+  color: var(--accent);
+}
+
+.gps-resolved {
+  font-size: 12px;
+  color: var(--success);
+  margin-top: 6px;
+  padding-left: 110px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gps-resolved::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--success);
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
+/* ===== METADATA GRID ===== */
+.meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.meta-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.meta-field .field-label {
+  min-width: 0;
+}
+
+.meta-field input,
+.meta-field select {
+  width: 100%;
+}
+
+.color-field-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-hex {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
+}
+
+/* ===== SHOT TABLE ===== */
+.shot-table-wrapper {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.shot-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.shot-table-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+.shot-count {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+table.shots {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+table.shots thead {
+  background: rgba(255,255,255,0.02);
+}
+
+table.shots th {
+  padding: 7px 10px;
+  text-align: right;
+  font-weight: 600;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+table.shots th:first-child {
+  text-align: center;
+  width: 36px;
+}
+
+table.shots td {
+  padding: 6px 10px;
+  text-align: right;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(42, 40, 38, 0.5);
+  position: relative;
+}
+
+table.shots td:first-child {
+  text-align: center;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+table.shots tbody tr {
+  transition: background 0.1s;
+}
+
+table.shots tbody tr:hover {
+  background: rgba(255,255,255,0.025);
+}
+
+table.shots tbody tr:last-child td {
+  border-bottom: none;
+}
+
+table.shots .row-action {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.1s, background 0.1s;
+  font-size: 14px;
+  line-height: 1;
+}
+
+table.shots tbody tr:hover .row-action {
+  opacity: 1;
+}
+
+table.shots .row-action:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--error);
+}
+
+/* ===== FOOTER ===== */
+.dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+  min-height: 56px;
+}
+
+.footer-left {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  height: 32px;
+  padding: 0 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+  border-color: #3a3836;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0e0d0c;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: #b99c6a;
+  border-color: #b99c6a;
+  color: #0e0d0c;
+}
+
+.btn-icon {
+  font-size: 14px;
+  opacity: 0.7;
+}
+</style>
+</head>
+<body>
+
+<div class="backdrop">
+  <div class="dialog">
+
+    <!-- TITLE BAR -->
+    <div class="title-bar">
+      <h1>Zero Datum Configuration <span class="title-bar-step">(Step 2)</span></h1>
+      <button class="title-close" title="Close">&times;</button>
+    </div>
+
+    <!-- MAIN BODY -->
+    <div class="body">
+
+      <!-- LEFT COLUMN — MAP -->
+      <div class="col-left">
+        <div class="map-header">Section Preview</div>
+        <div class="map-canvas">
+          <svg viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">
+            <!-- Grid dots -->
+            <defs>
+              <pattern id="grid" width="34" height="34" patternUnits="userSpaceOnUse">
+                <circle cx="17" cy="17" r="0.6" fill="#2a2826"/>
+              </pattern>
+            </defs>
+            <rect width="340" height="340" fill="#0e0d0c"/>
+            <rect width="340" height="340" fill="url(#grid)"/>
+
+            <!-- Cave passage polyline -->
+            <polyline
+              points="80,42 110,78 96,124 130,162 156,148 178,198 210,236 244,278"
+              fill="none"
+              stroke="#a89060"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              opacity="0.85"
+            />
+
+            <!-- Passage width hint lines (subtle) -->
+            <g stroke="#a89060" stroke-width="0.5" opacity="0.18">
+              <line x1="70" y1="38" x2="90" y2="46"/>
+              <line x1="100" y1="73" x2="120" y2="83"/>
+              <line x1="86" y1="119" x2="106" y2="129"/>
+              <line x1="120" y1="157" x2="140" y2="167"/>
+              <line x1="146" y1="143" x2="166" y2="153"/>
+              <line x1="168" y1="193" x2="188" y2="203"/>
+              <line x1="200" y1="231" x2="220" y2="241"/>
+              <line x1="234" y1="273" x2="254" y2="283"/>
+            </g>
+
+            <!-- Station dots -->
+            <!-- Station 0 — GPS Anchor (selected) -->
+            <circle cx="80" cy="42" r="8" fill="none" stroke="#48986a" stroke-width="1.5" opacity="0.4"/>
+            <circle cx="80" cy="42" r="12" fill="none" stroke="#48986a" stroke-width="1" opacity="0.15"/>
+            <circle cx="80" cy="42" r="4.5" fill="#48986a"/>
+
+            <!-- Station 1 -->
+            <circle cx="110" cy="78" r="3.5" fill="#a89060"/>
+            <!-- Station 2 -->
+            <circle cx="96" cy="124" r="3.5" fill="#a89060"/>
+            <!-- Station 3 -->
+            <circle cx="130" cy="162" r="3.5" fill="#a89060"/>
+            <!-- Station 4 -->
+            <circle cx="156" cy="148" r="3.5" fill="#a89060"/>
+            <!-- Station 5 -->
+            <circle cx="178" cy="198" r="3.5" fill="#a89060"/>
+            <!-- Station 6 -->
+            <circle cx="210" cy="236" r="3.5" fill="#a89060"/>
+            <!-- Station 7 -->
+            <circle cx="244" cy="278" r="3.5" fill="#a89060"/>
+
+            <!-- Station labels -->
+            <g font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="500">
+              <text x="68" y="36" fill="#48986a">0</text>
+              <text x="118" y="76" fill="#858280">1</text>
+              <text x="82" y="120" fill="#858280">2</text>
+              <text x="138" y="160" fill="#858280">3</text>
+              <text x="164" y="144" fill="#858280">4</text>
+              <text x="186" y="196" fill="#858280">5</text>
+              <text x="218" y="234" fill="#858280">6</text>
+              <text x="252" y="276" fill="#858280">7</text>
+            </g>
+
+            <!-- North indicator -->
+            <g transform="translate(300, 30)" opacity="0.5">
+              <line x1="0" y1="14" x2="0" y2="-6" stroke="#858280" stroke-width="1.2"/>
+              <polygon points="0,-8 -3,-2 3,-2" fill="#858280"/>
+              <text x="0" y="-12" text-anchor="middle" font-size="9" font-weight="600" fill="#858280" font-family="system-ui">N</text>
+            </g>
+
+            <!-- Scale bar -->
+            <g transform="translate(20, 320)" opacity="0.4">
+              <line x1="0" y1="0" x2="50" y2="0" stroke="#858280" stroke-width="1"/>
+              <line x1="0" y1="-3" x2="0" y2="3" stroke="#858280" stroke-width="1"/>
+              <line x1="50" y1="-3" x2="50" y2="3" stroke="#858280" stroke-width="1"/>
+              <text x="25" y="12" text-anchor="middle" font-size="8" fill="#858280" font-family="system-ui">10 m</text>
+            </g>
+          </svg>
+        </div>
+        <div class="map-footer">
+          <div class="map-footer-label">
+            <span class="map-legend-dot anchor"></span>
+            GPS Anchor
+          </div>
+          <div class="map-footer-label">
+            <span class="map-legend-dot"></span>
+            Station
+          </div>
+          <span>8 stations</span>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="col-right">
+
+        <!-- 1. Zero Datum Location -->
+        <div class="card card-accent">
+          <div class="card-body">
+            <div class="datum-heading">Zero Datum Location</div>
+            <div class="datum-desc">Select the station to anchor with GPS coordinates</div>
+
+            <div class="field" style="margin-bottom: 12px;">
+              <div class="field-row">
+                <span class="field-label">Station:</span>
+                <select style="width: 160px;">
+                  <option selected>Station 0</option>
+                  <option>Station 1</option>
+                  <option>Station 2</option>
+                  <option>Station 3</option>
+                  <option>Station 4</option>
+                  <option>Station 5</option>
+                  <option>Station 6</option>
+                  <option>Station 7</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-row">
+                <span class="field-label">GPS Coordinates:</span>
+                <input type="text" value="19.326744, -87.389611" style="flex: 1;">
+                <span class="badge badge-accent">decimal</span>
+              </div>
+              <div class="gps-resolved">Lat: 19.326744, Lon: -87.389611</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Section Metadata heading -->
+        <div class="section-heading">Section Metadata</div>
+
+        <!-- 3. Name input -->
+        <div class="field">
+          <div class="field-row">
+            <span class="field-label">Name:</span>
+            <input type="text" value="Main Passage" style="flex: 1;">
+          </div>
+        </div>
+
+        <!-- 4. Metadata grid -->
+        <div class="meta-grid">
+          <div class="meta-field">
+            <span class="field-label">Surveyor</span>
+            <input type="text" value="J. Martinez">
+          </div>
+          <div class="meta-field">
+            <span class="field-label">Date</span>
+            <input type="date" value="2024-03-15">
+          </div>
+          <div class="meta-field">
+            <span class="field-label">Color</span>
+            <div class="color-field-row">
+              <input type="color" value="#4ecdc4">
+              <span class="color-hex">#4ecdc4</span>
+            </div>
+          </div>
+          <div class="meta-field">
+            <span class="field-label">Direction</span>
+            <select>
+              <option selected>In</option>
+              <option>Out</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 5. Shot Table -->
+        <div class="shot-table-wrapper">
+          <div class="shot-table-header">
+            <span class="shot-table-title">Shots</span>
+            <span class="shot-count">6 shots</span>
+          </div>
+          <table class="shots">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Az In</th>
+                <th>Az Out</th>
+                <th>Length</th>
+                <th>Depth In</th>
+                <th>Depth Out</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>245.5</td>
+                <td>66.0</td>
+                <td>4.82</td>
+                <td>-1.20</td>
+                <td style="padding-right: 30px;">-2.45<button class="row-action" title="Remove">&times;</button></td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>198.0</td>
+                <td>18.5</td>
+                <td>6.37</td>
+                <td>-2.45</td>
+                <td style="padding-right: 30px;">-3.10<button class="row-action" title="Remove">&times;</button></td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>232.0</td>
+                <td>52.5</td>
+                <td>3.94</td>
+                <td>-3.10</td>
+                <td style="padding-right: 30px;">-4.68<button class="row-action" title="Remove">&times;</button></td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>280.5</td>
+                <td>101.0</td>
+                <td>5.15</td>
+                <td>-4.68</td>
+                <td style="padding-right: 30px;">-3.92<button class="row-action" title="Remove">&times;</button></td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>215.0</td>
+                <td>35.5</td>
+                <td>7.23</td>
+                <td>-3.92</td>
+                <td style="padding-right: 30px;">-6.40<button class="row-action" title="Remove">&times;</button></td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>238.5</td>
+                <td>59.0</td>
+                <td>5.68</td>
+                <td>-6.40</td>
+                <td style="padding-right: 30px;">-8.15<button class="row-action" title="Remove">&times;</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="dialog-footer">
+      <div class="footer-left">
+        <button class="btn">Cancel</button>
+        <button class="btn"><span class="btn-icon">&larr;</span> Back</button>
+      </div>
+      <button class="btn btn-primary">Confirm &amp; Start Import <span class="btn-icon">&rarr;</span></button>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
