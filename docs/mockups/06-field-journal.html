@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stalagmight - Field Journal | Cave Mapping Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --deep-bg: #0F172A;
+  --deep-bg-2: #1E293B;
+  --blue-primary: #3852fc;
+  --blue-mid: #1D63ED;
+  --indigo: #6366F1;
+  --purple: #A855F7;
+  --purple-deep: #784FAF;
+  --purple-mid: #8b5cf6;
+  --orange: #FF8C17;
+  --emerald: #10b981;
+  --teal: #14b8a6;
+  --beige: #F1D6A2;
+  --light-surface: #F1F5F9;
+  --lavender: #E9D5FF;
+  --white: #FFFFFD;
+
+  /* Field journal specific */
+  --paper: #faf6ee;
+  --paper-dark: #f0e8d8;
+  --paper-line: #c8d8e8;
+  --pencil: #4a5568;
+  --pencil-light: #94a3b8;
+  --ink: var(--indigo);
+  --red-markup: #ef4444;
+  --grid-color: rgba(99, 102, 241, 0.08);
+  --margin-line: rgba(239, 68, 68, 0.2);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'IBM Plex Serif', Georgia, serif;
+  background: var(--paper);
+  color: var(--pencil);
+  line-height: 1.8;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── Grid Paper Background ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 24px 24px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Coffee Stain Watermarks ── */
+.coffee-stain {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.coffee-stain-1 {
+  width: 120px; height: 110px;
+  top: 15%; right: 8%;
+  background: radial-gradient(ellipse at 45% 50%,
+    transparent 55%,
+    rgba(160, 120, 70, 0.06) 56%,
+    rgba(160, 120, 70, 0.09) 62%,
+    rgba(160, 120, 70, 0.04) 68%,
+    transparent 70%);
+  transform: rotate(-15deg);
+}
+
+.coffee-stain-2 {
+  width: 90px; height: 85px;
+  top: 55%; left: 5%;
+  background: radial-gradient(ellipse at 50% 50%,
+    transparent 50%,
+    rgba(140, 100, 55, 0.07) 52%,
+    rgba(140, 100, 55, 0.1) 58%,
+    rgba(140, 100, 55, 0.05) 64%,
+    transparent 66%);
+  transform: rotate(20deg);
+}
+
+/* ── Container ── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Typography ── */
+h1, h2, h3 {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  color: var(--deep-bg);
+}
+
+.mono {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ── Handwritten Annotation ── */
+.annotation {
+  font-family: 'Caveat', cursive;
+  color: var(--red-markup);
+  font-size: 1.1rem;
+  transform: rotate(-2deg);
+  display: inline-block;
+}
+
+.annotation-arrow {
+  display: inline-block;
+  font-family: 'Caveat', cursive;
+  color: var(--red-markup);
+  font-size: 1.3rem;
+}
+
+/* ── Red Circle Number ── */
+.red-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  border: 2.5px solid var(--red-markup);
+  border-radius: 50%;
+  font-family: 'Caveat', cursive;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--red-markup);
+  /* Slightly imperfect circle */
+  border-radius: 48% 52% 50% 50% / 52% 48% 52% 48%;
+}
+
+/* ── Wavy/Rough Underline ── */
+.hand-underline {
+  text-decoration: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='8' viewBox='0 0 200 8'%3E%3Cpath d='M0 6 Q25 2 50 5 Q75 8 100 4 Q125 1 150 6 Q175 8 200 4' fill='none' stroke='%236366F1' stroke-width='2' opacity='0.5'/%3E%3C/svg%3E");
+  background-position: bottom;
+  background-repeat: repeat-x;
+  background-size: 200px 8px;
+  padding-bottom: 6px;
+}
+
+/* ── Sketch-style border ── */
+.sketch-border {
+  border: 2px solid var(--pencil-light);
+  border-radius: 3px 8px 5px 10px / 8px 3px 10px 5px;
+}
+
+/* ── Taped Card Effect ── */
+.taped-card {
+  position: relative;
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 2px 3px 8px rgba(0,0,0,0.06);
+  padding: 1.5rem;
+}
+
+.taped-card::before,
+.taped-card::after {
+  content: '';
+  position: absolute;
+  width: 50px; height: 20px;
+  background: rgba(241, 214, 162, 0.55);
+  border: 1px solid rgba(200, 180, 140, 0.3);
+  z-index: 2;
+}
+
+.taped-card::before {
+  top: -10px; left: 20px;
+  transform: rotate(-3deg);
+}
+
+.taped-card::after {
+  bottom: -10px; right: 20px;
+  transform: rotate(2deg);
+}
+
+/* ── Sticky Note ── */
+.sticky-note {
+  background: #fff9c4;
+  padding: 1.25rem;
+  box-shadow: 2px 3px 6px rgba(0,0,0,0.08);
+  transform: rotate(-1.5deg);
+  font-family: 'Caveat', cursive;
+  font-size: 1.15rem;
+  color: var(--pencil);
+  position: relative;
+}
+
+.sticky-note::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: rgba(0,0,0,0.04);
+}
+
+/* ── Navigation ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 0.8rem 0;
+  background: rgba(250, 246, 238, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 2px solid var(--paper-dark);
+  transition: all 0.3s;
+}
+
+nav.scrolled {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--deep-bg);
+  text-decoration: none;
+}
+
+.nav-logo svg {
+  color: var(--indigo);
+}
+
+.nav-logo-text {
+  font-family: 'Caveat', cursive;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.8rem;
+  list-style: none;
+  align-items: center;
+}
+
+.nav-links a {
+  color: var(--pencil);
+  font-family: 'IBM Plex Serif', serif;
+  font-size: 0.88rem;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover { color: var(--indigo); }
+
+.nav-cta {
+  padding: 0.45rem 1.2rem;
+  background: var(--indigo);
+  color: var(--white) !important;
+  border-radius: 4px;
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 0.82rem !important;
+  letter-spacing: 0.03em;
+  transition: all 0.3s;
+}
+
+.nav-cta:hover {
+  background: var(--purple-deep);
+  transform: translateY(-1px);
+}
+
+.mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--pencil);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* ── Journal Page Margin ── */
+.page-margin {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 80px;
+  border-right: 2px solid var(--margin-line);
+  z-index: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .page-margin { display: none; }
+}
+
+/* ── Margin Notes ── */
+.margin-note {
+  position: absolute;
+  left: -120px;
+  width: 100px;
+  font-family: 'Caveat', cursive;
+  font-size: 0.95rem;
+  color: var(--red-markup);
+  transform: rotate(-2deg);
+  text-align: right;
+  opacity: 0.7;
+}
+
+@media (max-width: 1300px) {
+  .margin-note { display: none; }
+}
+
+/* ── Scroll Reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Hero Section ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 8rem 0 6rem;
+  position: relative;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-date {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--pencil-light);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.hero-entry-label {
+  font-family: 'Caveat', cursive;
+  font-size: 1.2rem;
+  color: var(--red-markup);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  line-height: 1.05;
+  color: var(--deep-bg);
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.hero h1 .ink-word {
+  color: var(--indigo);
+  position: relative;
+}
+
+.hero h1 .ink-word::after {
+  content: '';
+  position: absolute;
+  bottom: 2px; left: 0; right: 0;
+  height: 8px;
+  background: rgba(99, 102, 241, 0.12);
+  z-index: -1;
+  transform: skewX(-3deg);
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  color: var(--pencil);
+  max-width: 580px;
+  margin-bottom: 2rem;
+  line-height: 1.9;
+}
+
+.hero-annotation {
+  position: absolute;
+  top: 0; right: 0;
+  transform: rotate(3deg);
+  max-width: 200px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.8rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.btn-field-primary {
+  background: var(--indigo);
+  color: var(--white);
+  box-shadow: 3px 3px 0 var(--deep-bg-2);
+}
+
+.btn-field-primary:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--deep-bg-2);
+  color: var(--white);
+}
+
+.btn-field-outline {
+  background: transparent;
+  color: var(--pencil);
+  border: 2px solid var(--pencil-light);
+  border-radius: 3px 6px 4px 7px / 6px 3px 7px 4px;
+}
+
+.btn-field-outline:hover {
+  border-color: var(--indigo);
+  color: var(--indigo);
+}
+
+/* Sketch in hero */
+.hero-sketch {
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 380px;
+  opacity: 0.85;
+}
+
+@media (max-width: 1024px) {
+  .hero-sketch { display: none; }
+}
+
+.hero-sketch svg {
+  width: 100%;
+  height: auto;
+}
+
+/* ── Features Section ── */
+.features {
+  padding: 6rem 0;
+  position: relative;
+}
+
+.section-date {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--pencil-light);
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  color: var(--deep-bg);
+  margin-bottom: 0.5rem;
+  line-height: 1.15;
+}
+
+.section-subtitle {
+  font-family: 'IBM Plex Serif', serif;
+  font-size: 1.05rem;
+  color: var(--pencil);
+  max-width: 600px;
+  margin-bottom: 3rem;
+}
+
+.section-divider {
+  width: 100%;
+  height: 2px;
+  margin: 1.5rem 0 3rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='4' viewBox='0 0 400 4'%3E%3Cpath d='M0 2 Q50 0 100 2 Q150 4 200 2 Q250 0 300 2 Q350 4 400 2' fill='none' stroke='%2394a3b8' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 400px 4px;
+  background-position: center;
+  border: none;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.feature-card {
+  position: relative;
+  transition: transform 0.4s;
+}
+
+.feature-card:nth-child(even) { transform: rotate(0.5deg); }
+.feature-card:nth-child(odd) { transform: rotate(-0.3deg); }
+.feature-card:hover { transform: rotate(0deg) translateY(-4px) !important; }
+
+.feature-card-inner {
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 2rem 1.5rem;
+  position: relative;
+  box-shadow: 2px 3px 8px rgba(0,0,0,0.05);
+}
+
+/* Tape strips on cards */
+.feature-card-inner::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-1deg);
+  width: 60px; height: 18px;
+  background: rgba(241, 214, 162, 0.5);
+  border: 1px solid rgba(200, 180, 140, 0.25);
+  z-index: 2;
+}
+
+.feature-icon {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--deep-bg);
+}
+
+.feature-card p {
+  font-size: 0.93rem;
+  color: var(--pencil);
+  line-height: 1.8;
+}
+
+.feature-tag {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  margin-top: 1rem;
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--indigo);
+  border-radius: 2px;
+}
+
+/* ── How It Works (Journal Entry Style) ── */
+.how-it-works {
+  padding: 6rem 0;
+  position: relative;
+}
+
+.journal-entries {
+  position: relative;
+  margin-top: 2rem;
+}
+
+/* Vertical timeline line (pencil-drawn style) */
+.journal-entries::before {
+  content: '';
+  position: absolute;
+  left: 28px;
+  top: 0; bottom: 0;
+  width: 2px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='200' viewBox='0 0 2 200'%3E%3Cpath d='M1 0 Q0 50 1.5 100 Q2 150 0.5 200' fill='none' stroke='%2394a3b8' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: repeat-y;
+  background-size: 2px 200px;
+}
+
+.journal-entry {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.entry-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0.5rem;
+}
+
+.entry-content {
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-left: 3px solid var(--indigo);
+  padding: 2rem;
+  position: relative;
+  box-shadow: 1px 2px 6px rgba(0,0,0,0.04);
+}
+
+.entry-content::before {
+  content: '';
+  position: absolute;
+  left: -12px; top: 18px;
+  width: 0; height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 9px solid var(--indigo);
+}
+
+.entry-content h3 {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+  color: var(--deep-bg);
+}
+
+.entry-content p {
+  font-size: 0.95rem;
+  color: var(--pencil);
+  margin-bottom: 0.75rem;
+}
+
+.entry-annotation {
+  font-family: 'Caveat', cursive;
+  font-size: 1rem;
+  color: var(--red-markup);
+  transform: rotate(-1deg);
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+.entry-content:nth-child(odd) { border-left-color: var(--indigo); }
+
+.journal-entry:nth-child(2) .entry-content { border-left-color: var(--purple); }
+.journal-entry:nth-child(2) .entry-content::before { border-right-color: var(--purple); }
+.journal-entry:nth-child(3) .entry-content { border-left-color: var(--teal); }
+.journal-entry:nth-child(3) .entry-content::before { border-right-color: var(--teal); }
+.journal-entry:nth-child(4) .entry-content { border-left-color: var(--orange); }
+.journal-entry:nth-child(4) .entry-content::before { border-right-color: var(--orange); }
+
+/* ── Feature Highlights ── */
+.highlights {
+  padding: 6rem 0;
+  position: relative;
+}
+
+.highlight-block {
+  margin-bottom: 5rem;
+  position: relative;
+}
+
+.highlight-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.highlight-block:nth-child(even) .highlight-inner {
+  direction: rtl;
+}
+
+.highlight-block:nth-child(even) .highlight-inner > * {
+  direction: ltr;
+}
+
+.highlight-visual {
+  position: relative;
+}
+
+/* Notebook-style visualization */
+.notebook-viz {
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  position: relative;
+  box-shadow: 3px 4px 10px rgba(0,0,0,0.06);
+  transform: rotate(-1deg);
+}
+
+.notebook-viz::before {
+  content: '';
+  position: absolute;
+  top: -10px; right: 30px;
+  width: 55px; height: 20px;
+  background: rgba(241, 214, 162, 0.5);
+  border: 1px solid rgba(200, 180, 140, 0.25);
+  transform: rotate(2deg);
+}
+
+.notebook-viz::after {
+  content: '';
+  position: absolute;
+  bottom: -8px; left: 25px;
+  width: 45px; height: 18px;
+  background: rgba(241, 214, 162, 0.5);
+  border: 1px solid rgba(200, 180, 140, 0.25);
+  transform: rotate(-1deg);
+}
+
+/* Sketch-style cave map */
+.sketch-map {
+  width: 100%;
+  aspect-ratio: 4/3;
+  position: relative;
+  background:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 20px 20px;
+  overflow: hidden;
+}
+
+.sketch-map svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Data table visualization */
+.data-table-viz {
+  width: 100%;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  border-collapse: collapse;
+}
+
+.data-table-viz th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 2px solid var(--pencil-light);
+  color: var(--pencil);
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.data-table-viz td {
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px dashed rgba(0,0,0,0.08);
+  color: var(--pencil);
+}
+
+.data-table-viz tr:hover td { background: rgba(99, 102, 241, 0.04); }
+
+.data-table-viz .highlight-cell {
+  color: var(--indigo);
+  font-weight: 600;
+}
+
+.highlight-text h2 {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  color: var(--deep-bg);
+  margin-bottom: 0.75rem;
+}
+
+.highlight-text p {
+  font-size: 1rem;
+  color: var(--pencil);
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+
+/* Checklist */
+.checklist {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--pencil);
+}
+
+.check-mark {
+  flex-shrink: 0;
+  font-family: 'Caveat', cursive;
+  font-size: 1.4rem;
+  color: var(--emerald);
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+/* ── Stats Section ── */
+.stats-section {
+  padding: 4rem 0;
+  position: relative;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 1.5rem;
+  text-align: center;
+  position: relative;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.04);
+  transform: rotate(-0.5deg);
+}
+
+.stat-card:nth-child(even) { transform: rotate(0.5deg); }
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: -8px; left: 50%;
+  transform: translateX(-50%);
+  width: 40px; height: 16px;
+  background: rgba(241, 214, 162, 0.5);
+  border: 1px solid rgba(200, 180, 140, 0.25);
+}
+
+.stat-value {
+  font-family: 'Caveat', cursive;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--indigo);
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--pencil-light);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 0.4rem;
+}
+
+/* ── CTA Section ── */
+.cta-section {
+  padding: 6rem 0;
+  position: relative;
+}
+
+.cta-card {
+  background: var(--white);
+  border: 2px solid var(--pencil-light);
+  border-radius: 3px 8px 5px 10px / 8px 3px 10px 5px;
+  padding: 4rem 3rem;
+  text-align: center;
+  position: relative;
+  box-shadow: 4px 5px 0 rgba(0,0,0,0.06);
+}
+
+/* Corner tape */
+.cta-card::before {
+  content: '';
+  position: absolute;
+  top: -10px; left: 30px;
+  width: 60px; height: 22px;
+  background: rgba(241, 214, 162, 0.55);
+  border: 1px solid rgba(200, 180, 140, 0.3);
+  transform: rotate(-4deg);
+}
+
+.cta-card::after {
+  content: '';
+  position: absolute;
+  top: -8px; right: 40px;
+  width: 55px; height: 20px;
+  background: rgba(241, 214, 162, 0.55);
+  border: 1px solid rgba(200, 180, 140, 0.3);
+  transform: rotate(3deg);
+}
+
+.cta-card h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 1rem;
+}
+
+.cta-card > p {
+  font-size: 1.1rem;
+  color: var(--pencil);
+  max-width: 500px;
+  margin: 0 auto 2rem;
+}
+
+.cta-form {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 480px;
+  margin: 0 auto 1.5rem;
+}
+
+.cta-form input {
+  flex: 1;
+  min-width: 240px;
+  padding: 0.75rem 1.2rem;
+  background: var(--paper);
+  border: 2px solid var(--pencil-light);
+  border-radius: 3px;
+  color: var(--pencil);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.cta-form input::placeholder {
+  color: var(--pencil-light);
+  font-style: italic;
+}
+
+.cta-form input:focus {
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.cta-note {
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  color: var(--pencil-light);
+}
+
+.cta-note .arrow-hint {
+  display: inline-block;
+  transform: rotate(-10deg);
+  margin-right: 4px;
+}
+
+/* ── Footer ── */
+footer {
+  padding: 3rem 0 2rem;
+  border-top: 2px solid var(--paper-dark);
+  position: relative;
+  z-index: 1;
+  background: var(--paper-dark);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.footer-brand .nav-logo {
+  margin-bottom: 0.75rem;
+}
+
+.footer-brand p {
+  font-size: 0.88rem;
+  color: var(--pencil-light);
+  max-width: 260px;
+}
+
+.footer-col h4 {
+  font-family: 'Caveat', cursive;
+  font-size: 1.2rem;
+  color: var(--deep-bg);
+  margin-bottom: 1rem;
+}
+
+.footer-col ul { list-style: none; }
+
+.footer-col ul li { margin-bottom: 0.5rem; }
+
+.footer-col ul a {
+  color: var(--pencil-light);
+  font-size: 0.88rem;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-col ul a:hover { color: var(--indigo); }
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  border-top: 1px dashed var(--pencil-light);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--pencil-light);
+}
+
+.footer-bottom-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-bottom-links a {
+  color: var(--pencil-light);
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+
+.footer-bottom-links a:hover { color: var(--indigo); }
+
+/* ── Pencil Drawing Animation ── */
+@keyframes drawLine {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+
+.draw-on-scroll {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+
+.draw-on-scroll.animate {
+  animation: drawLine 2s ease-out forwards;
+}
+
+/* ── Pin-bounce for cards ── */
+@keyframes pinBounce {
+  0% { opacity: 0; transform: translateY(-20px) rotate(-2deg); }
+  60% { transform: translateY(4px) rotate(0.5deg); }
+  80% { transform: translateY(-2px) rotate(-0.3deg); }
+  100% { opacity: 1; transform: translateY(0) rotate(0deg); }
+}
+
+.reveal.pin-bounce.visible {
+  animation: pinBounce 0.7s ease-out forwards;
+}
+
+/* ── Writing animation for annotations ── */
+@keyframes writeIn {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.write-in {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.write-in.animate {
+  animation: writeIn 1s ease-out forwards;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .highlight-inner { grid-template-columns: 1fr; gap: 2rem; }
+  .highlight-block:nth-child(even) .highlight-inner { direction: ltr; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .mobile-toggle { display: block; }
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    background: rgba(250, 246, 238, 0.97);
+    padding: 1.5rem 2rem;
+    gap: 1rem;
+    border-bottom: 2px solid var(--paper-dark);
+  }
+  .features-grid { grid-template-columns: 1fr; }
+  .journal-entry { grid-template-columns: 40px 1fr; gap: 1rem; }
+  .journal-entries::before { left: 20px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .cta-card { padding: 2.5rem 1.5rem; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 0.75rem; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- Coffee stain watermarks -->
+<div class="coffee-stain coffee-stain-1"></div>
+<div class="coffee-stain coffee-stain-2"></div>
+
+<!-- Page margin line -->
+<div class="page-margin"></div>
+
+<!-- Navigation -->
+<nav id="mainNav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462" width="32" height="32">
+        <path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/>
+      </svg>
+      <span class="nav-logo-text">Stalagmight</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#features">Field Notes</a></li>
+      <li><a href="#how-it-works">Method</a></li>
+      <li><a href="#highlights">Observations</a></li>
+      <li><a href="#cta">Join Study</a></li>
+      <li><a href="#cta" class="nav-cta">Start Logging</a></li>
+    </ul>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">&#9776;</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-date">2026-03-06 &mdash; Field Notebook Entry #001</div>
+      <div class="hero-entry-label">
+        <span class="red-circle" style="width:28px;height:28px;font-size:1rem;">!</span>
+        <span class="annotation">Important &mdash; read this first</span>
+      </div>
+      <h1>
+        Map Every<br>
+        <span class="ink-word">Passage Below</span>
+      </h1>
+      <p class="hero-subtitle">
+        Stalagmight is the collaborative field platform for cave mapping and
+        speleological survey management. Track stations, manage equipment,
+        run experiments, and coordinate your team &mdash; all from one logbook.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#cta" class="btn-field btn-field-primary">$ start_survey --new</a>
+        <a href="#how-it-works" class="btn-field btn-field-outline">Read the Method</a>
+      </div>
+
+      <!-- Sticky note annotation -->
+      <div class="sticky-note" style="position: absolute; top: 20px; right: -30px; max-width: 190px; z-index: 3;">
+        "Best mapping tool since the compass & tape!" <br>
+        <span style="font-size: 0.9rem; color: var(--pencil-light);">&mdash; Dr. K, UIS 2025</span>
+      </div>
+    </div>
+
+    <!-- Hero sketch: hand-drawn cave cross-section -->
+    <div class="hero-sketch" aria-hidden="true">
+      <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Cave outline (sketchy) -->
+        <path class="draw-on-scroll" d="M40 80 Q60 40 120 55 Q160 30 200 50 Q240 25 280 45 Q330 35 360 75 Q375 110 370 160 Q380 200 360 240 Q330 270 280 260 Q240 280 200 265 Q150 275 100 255 Q60 270 45 230 Q25 190 30 140 Q20 110 40 80Z" stroke="#6366F1" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+        <!-- Passage lines -->
+        <path class="draw-on-scroll" d="M100 100 Q130 95 160 105 Q190 115 220 108 Q250 100 270 110" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.6"/>
+        <path class="draw-on-scroll" d="M120 150 Q150 140 180 155 Q210 165 240 150 Q260 140 290 155" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.6"/>
+        <!-- Survey stations -->
+        <circle cx="130" cy="102" r="4" fill="#6366F1" opacity="0.8"/>
+        <circle cx="190" cy="112" r="4" fill="#6366F1" opacity="0.8"/>
+        <circle cx="260" cy="107" r="4" fill="#6366F1" opacity="0.8"/>
+        <circle cx="155" cy="148" r="4" fill="#14b8a6" opacity="0.8"/>
+        <circle cx="230" cy="153" r="4" fill="#14b8a6" opacity="0.8"/>
+        <!-- Station labels -->
+        <text x="120" y="90" font-family="Caveat" font-size="14" fill="#6366F1" opacity="0.7">S1</text>
+        <text x="180" y="100" font-family="Caveat" font-size="14" fill="#6366F1" opacity="0.7">S2</text>
+        <text x="252" y="95" font-family="Caveat" font-size="14" fill="#6366F1" opacity="0.7">S3</text>
+        <text x="145" y="138" font-family="Caveat" font-size="14" fill="#14b8a6" opacity="0.7">A1</text>
+        <text x="222" y="143" font-family="Caveat" font-size="14" fill="#14b8a6" opacity="0.7">A2</text>
+        <!-- Annotations -->
+        <text x="60" y="200" font-family="Caveat" font-size="13" fill="#ef4444" opacity="0.6" transform="rotate(-5, 60, 200)">Main chamber</text>
+        <text x="240" y="210" font-family="Caveat" font-size="12" fill="#ef4444" opacity="0.6" transform="rotate(3, 240, 210)">Narrow squeeze</text>
+        <!-- North arrow -->
+        <text x="330" y="60" font-family="Caveat" font-size="16" fill="#94a3b8">N</text>
+        <path d="M338 65 L338 85" stroke="#94a3b8" stroke-width="1.5"/>
+        <path d="M335 72 L338 65 L341 72" stroke="#94a3b8" stroke-width="1.5" fill="none"/>
+        <!-- Scale bar -->
+        <line x1="50" y1="270" x2="150" y2="270" stroke="#94a3b8" stroke-width="1.5"/>
+        <line x1="50" y1="265" x2="50" y2="275" stroke="#94a3b8" stroke-width="1"/>
+        <line x1="150" y1="265" x2="150" y2="275" stroke="#94a3b8" stroke-width="1"/>
+        <text x="75" y="285" font-family="IBM Plex Mono" font-size="10" fill="#94a3b8">50m</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-date">Field Notes &mdash; Capabilities Inventory</div>
+      <h2 class="section-title"><span class="hand-underline">Essential Field Equipment</span></h2>
+      <p class="section-subtitle">Everything a survey team needs, distilled into a single digital field notebook.</p>
+      <div class="section-divider"></div>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card reveal pin-bounce" style="transition-delay: 0s;">
+        <div class="feature-card-inner">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <h3>Cave Mapping</h3>
+          <p>Interactive 2D and 3D maps of cave passages, chambers, and geological formations. Precision survey data rendered beautifully.</p>
+          <span class="feature-tag">core feature</span>
+        </div>
+      </div>
+
+      <div class="feature-card reveal pin-bounce" style="transition-delay: 0.1s;">
+        <div class="feature-card-inner">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <h3>Survey Stations</h3>
+          <p>Full GIS-enabled station management. Multiple coordinate systems, datums, and precise positional data for every point.</p>
+          <span class="feature-tag">gis-enabled</span>
+        </div>
+      </div>
+
+      <div class="feature-card reveal pin-bounce" style="transition-delay: 0.2s;">
+        <div class="feature-card-inner">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <h3>Equipment Logs</h3>
+          <p>Track sensors, gas cylinders, ropes, and instruments. Calibration schedules, battery levels, deployment history.</p>
+          <span class="feature-tag">field ops</span>
+        </div>
+      </div>
+
+      <div class="feature-card reveal pin-bounce" style="transition-delay: 0.3s;">
+        <div class="feature-card-inner">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF8C17" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <h3>Experiments</h3>
+          <p>Design and track research studies. Structured data collection, environmental monitoring, and analysis workflows.</p>
+          <span class="feature-tag">research</span>
+        </div>
+      </div>
+
+      <div class="feature-card reveal pin-bounce" style="transition-delay: 0.4s;">
+        <div class="feature-card-inner">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3852fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <h3>GPS Tracks</h3>
+          <p>Import GPX files from surface surveys. Overlay topography with underground passages for complete spatial context.</p>
+          <span class="feature-tag">import</span>
+        </div>
+      </div>
+
+      <div class="feature-card reveal pin-bounce" style="transition-delay: 0.5s;">
+        <div class="feature-card-inner">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <h3>Team Roles</h3>
+          <p>Role-based permissions for surveyors, scientists, and administrators. Real-time sync across your entire expedition.</p>
+          <span class="feature-tag">collaboration</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works" id="how-it-works">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-date">Methodology &mdash; Getting Started</div>
+      <h2 class="section-title"><span class="hand-underline">The Survey Method</span></h2>
+      <p class="section-subtitle">Four entries in your logbook and you're mapping underground. Here's the procedure.</p>
+      <div class="section-divider"></div>
+    </div>
+
+    <div class="journal-entries">
+      <!-- Step 1 -->
+      <div class="journal-entry reveal">
+        <div class="entry-marker">
+          <div class="red-circle">1</div>
+        </div>
+        <div class="entry-content">
+          <h3>Establish Base Camp</h3>
+          <p>Create your cave system project. Define the entrance coordinates, set your coordinate reference system, and establish the datum. This is your survey origin &mdash; everything references back here.</p>
+          <div class="entry-annotation">
+            &larr; Takes about 2 minutes!
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="journal-entry reveal">
+        <div class="entry-marker">
+          <div class="red-circle">2</div>
+        </div>
+        <div class="entry-content">
+          <h3>Assemble Your Team</h3>
+          <p>Invite team members by email. Assign roles: survey lead, data entry, equipment manager, or administrator. Everyone gets the access they need and nothing more.</p>
+          <div class="entry-annotation">
+            Supports unlimited collaborators ^
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="journal-entry reveal">
+        <div class="entry-marker">
+          <div class="red-circle">3</div>
+        </div>
+        <div class="entry-content">
+          <h3>Import Field Data</h3>
+          <p>Upload existing survey files (Therion, Compass, Walls), GPS tracks, and field notes. Or start fresh with our survey entry forms that mirror your paper logbook.</p>
+          <span class="mono" style="display:inline-block; margin-top:0.75rem; font-size:0.82rem; color:var(--indigo); background:rgba(99,102,241,0.06); padding:0.3rem 0.8rem; border-radius:2px;">$ stalagmight import --format therion survey_data.th</span>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="journal-entry reveal">
+        <div class="entry-marker">
+          <div class="red-circle">4</div>
+        </div>
+        <div class="entry-content">
+          <h3>Analyze & Publish</h3>
+          <p>Generate publication-ready maps, run spatial analyses, and share your findings. Export to SVG, PDF, or GIS formats. Your logbook becomes a research paper.</p>
+          <div class="entry-annotation">
+            See "Results" section below &darr;
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Feature Highlights -->
+<section class="highlights" id="highlights">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-date">Detailed Observations &mdash; Platform Deep Dive</div>
+      <h2 class="section-title"><span class="hand-underline">Key Observations</span></h2>
+      <div class="section-divider"></div>
+    </div>
+
+    <!-- Highlight 1: Mapping -->
+    <div class="highlight-block">
+      <div class="highlight-inner reveal">
+        <div class="highlight-visual">
+          <div class="notebook-viz">
+            <div class="sketch-map">
+              <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Grid emphasis lines -->
+                <line x1="0" y1="75" x2="400" y2="75" stroke="rgba(99,102,241,0.06)" stroke-width="1"/>
+                <line x1="0" y1="150" x2="400" y2="150" stroke="rgba(99,102,241,0.06)" stroke-width="1"/>
+                <line x1="0" y1="225" x2="400" y2="225" stroke="rgba(99,102,241,0.06)" stroke-width="1"/>
+                <line x1="100" y1="0" x2="100" y2="300" stroke="rgba(99,102,241,0.06)" stroke-width="1"/>
+                <line x1="200" y1="0" x2="200" y2="300" stroke="rgba(99,102,241,0.06)" stroke-width="1"/>
+                <line x1="300" y1="0" x2="300" y2="300" stroke="rgba(99,102,241,0.06)" stroke-width="1"/>
+                <!-- Cave passages (hand-drawn style) -->
+                <path d="M50 120 Q80 100 130 115 Q170 90 210 105 Q250 85 290 100 Q340 90 370 115" stroke="#6366F1" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+                <path d="M50 155 Q85 170 130 150 Q170 175 210 160 Q250 178 290 158 Q340 170 370 150" stroke="#6366F1" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+                <!-- Fill between passages -->
+                <path d="M50 120 Q80 100 130 115 Q170 90 210 105 Q250 85 290 100 Q340 90 370 115 L370 150 Q340 170 290 158 Q250 178 210 160 Q170 175 130 150 Q85 170 50 155Z" fill="rgba(99,102,241,0.06)"/>
+                <!-- Branch passage -->
+                <path d="M210 105 Q220 70 250 55 Q280 40 310 60" stroke="#A855F7" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+                <path d="M210 105 Q230 75 260 62 Q285 52 310 65" stroke="#A855F7" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+                <path d="M210 105 Q220 70 250 55 Q280 40 310 60 L310 65 Q285 52 260 62 Q230 75 210 105" fill="rgba(168,85,247,0.05)"/>
+                <!-- Stations -->
+                <circle cx="80" cy="135" r="5" fill="#6366F1" opacity="0.9"/>
+                <circle cx="170" cy="125" r="5" fill="#6366F1" opacity="0.9"/>
+                <circle cx="250" cy="118" r="5" fill="#6366F1" opacity="0.9"/>
+                <circle cx="330" cy="130" r="5" fill="#6366F1" opacity="0.9"/>
+                <circle cx="260" cy="55" r="4" fill="#A855F7" opacity="0.8"/>
+                <!-- Connecting survey lines -->
+                <line x1="80" y1="135" x2="170" y2="125" stroke="#94a3b8" stroke-width="1" stroke-dasharray="5 3" opacity="0.5"/>
+                <line x1="170" y1="125" x2="250" y2="118" stroke="#94a3b8" stroke-width="1" stroke-dasharray="5 3" opacity="0.5"/>
+                <line x1="250" y1="118" x2="330" y2="130" stroke="#94a3b8" stroke-width="1" stroke-dasharray="5 3" opacity="0.5"/>
+                <!-- Labels -->
+                <text x="65" y="128" font-family="Caveat" font-size="13" fill="#6366F1">S01</text>
+                <text x="158" y="116" font-family="Caveat" font-size="13" fill="#6366F1">S02</text>
+                <text x="237" y="110" font-family="Caveat" font-size="13" fill="#6366F1">S03</text>
+                <text x="317" y="122" font-family="Caveat" font-size="13" fill="#6366F1">S04</text>
+                <text x="268" y="50" font-family="Caveat" font-size="12" fill="#A855F7">B01</text>
+                <!-- Annotation -->
+                <text x="30" y="210" font-family="Caveat" font-size="14" fill="#ef4444" opacity="0.6" transform="rotate(-3, 30, 210)">Main gallery</text>
+                <text x="240" y="35" font-family="Caveat" font-size="12" fill="#ef4444" opacity="0.6">Upper level?</text>
+                <!-- Scale bar -->
+                <line x1="280" y1="270" x2="370" y2="270" stroke="#94a3b8" stroke-width="1.5"/>
+                <line x1="280" y1="266" x2="280" y2="274" stroke="#94a3b8" stroke-width="1"/>
+                <line x1="370" y1="266" x2="370" y2="274" stroke="#94a3b8" stroke-width="1"/>
+                <text x="310" y="285" font-family="IBM Plex Mono" font-size="9" fill="#94a3b8">25m</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="highlight-text">
+          <h2>Precision Cartography, Notebook-Ready</h2>
+          <p>
+            Our mapping engine turns your survey data into accurate, beautiful cave maps.
+            Import from standard formats, visualize in 2D or 3D, and export
+            publication-quality drawings.
+          </p>
+          <ul class="checklist">
+            <li><span class="check-mark">&#10003;</span> Therion, Compass, and Walls format import</li>
+            <li><span class="check-mark">&#10003;</span> Real-time 3D passage rendering</li>
+            <li><span class="check-mark">&#10003;</span> Cross-sections and profile generation</li>
+            <li><span class="check-mark">&#10003;</span> Georeferenced overlays on topo maps</li>
+            <li><span class="check-mark">&#10003;</span> SVG + PDF export for publication</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Highlight 2: Data Management -->
+    <div class="highlight-block">
+      <div class="highlight-inner reveal">
+        <div class="highlight-visual">
+          <div class="notebook-viz" style="transform: rotate(0.5deg);">
+            <table class="data-table-viz">
+              <thead>
+                <tr>
+                  <th>Station</th>
+                  <th>Easting</th>
+                  <th>Northing</th>
+                  <th>Elev.</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="highlight-cell">ENT-01</td>
+                  <td>456782.4</td>
+                  <td>5012438.1</td>
+                  <td>842.3m</td>
+                  <td style="color:var(--emerald)">active</td>
+                </tr>
+                <tr>
+                  <td class="highlight-cell">S-002</td>
+                  <td>456791.8</td>
+                  <td>5012445.6</td>
+                  <td>838.1m</td>
+                  <td style="color:var(--emerald)">active</td>
+                </tr>
+                <tr>
+                  <td class="highlight-cell">S-003</td>
+                  <td>456803.2</td>
+                  <td>5012451.9</td>
+                  <td>831.7m</td>
+                  <td style="color:var(--emerald)">active</td>
+                </tr>
+                <tr>
+                  <td class="highlight-cell">S-004</td>
+                  <td>456815.6</td>
+                  <td>5012448.3</td>
+                  <td>825.4m</td>
+                  <td style="color:var(--orange)">review</td>
+                </tr>
+                <tr>
+                  <td class="highlight-cell">B-001</td>
+                  <td>456808.1</td>
+                  <td>5012460.7</td>
+                  <td>829.9m</td>
+                  <td style="color:var(--emerald)">active</td>
+                </tr>
+                <tr>
+                  <td class="highlight-cell">S-005</td>
+                  <td>456827.3</td>
+                  <td>5012442.1</td>
+                  <td>818.2m</td>
+                  <td style="color:var(--pencil-light)">pending</td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="margin-top:1rem; text-align:right;">
+              <span class="annotation" style="font-size:0.95rem;">6 stations logged, 1 needs review &uarr;</span>
+            </div>
+          </div>
+        </div>
+        <div class="highlight-text">
+          <h2>Your Data Logbook, Digitized</h2>
+          <p>
+            Every measurement, coordinate, and environmental reading in a structured,
+            searchable format. Full version history so you never lose a field note.
+          </p>
+          <ul class="checklist">
+            <li><span class="check-mark">&#10003;</span> Multi-datum coordinate management</li>
+            <li><span class="check-mark">&#10003;</span> Environmental time-series logging</li>
+            <li><span class="check-mark">&#10003;</span> Equipment calibration tracking</li>
+            <li><span class="check-mark">&#10003;</span> Version-controlled survey data</li>
+            <li><span class="check-mark">&#10003;</span> Custom schemas for each project</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-row">
+      <div class="stat-card reveal pin-bounce">
+        <div class="stat-value">12,000+</div>
+        <div class="stat-label">Stations Logged</div>
+      </div>
+      <div class="stat-card reveal pin-bounce" style="transition-delay:0.1s">
+        <div class="stat-value">340+</div>
+        <div class="stat-label">Cave Systems</div>
+      </div>
+      <div class="stat-card reveal pin-bounce" style="transition-delay:0.2s">
+        <div class="stat-value">85</div>
+        <div class="stat-label">Research Teams</div>
+      </div>
+      <div class="stat-card reveal pin-bounce" style="transition-delay:0.3s">
+        <div class="stat-value">28</div>
+        <div class="stat-label">Countries</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="cta">
+  <div class="container">
+    <div class="cta-card reveal">
+      <h2>Open a New Logbook</h2>
+      <p>
+        Join the field teams, geologists, and speleologists who map the underground
+        with Stalagmight. Your first survey is free.
+      </p>
+      <div class="cta-form">
+        <input type="email" placeholder="your.email@university.edu" aria-label="Email address">
+        <button class="btn-field btn-field-primary">Get Field Access</button>
+      </div>
+      <p class="cta-note">
+        <span class="arrow-hint">&uarr;</span> No credit card required. Start logging immediately.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462" width="28" height="28">
+            <path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/>
+          </svg>
+          <span class="nav-logo-text">Stalagmight</span>
+        </a>
+        <p>The collaborative field platform for cave mapping and speleological survey management.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#">Mapping</a></li>
+          <li><a href="#">Survey Data</a></li>
+          <li><a href="#">Equipment</a></li>
+          <li><a href="#">Integrations</a></li>
+          <li><a href="#">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">API Reference</a></li>
+          <li><a href="#">Field Guides</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Blog</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Stalagmight. All rights reserved.</span>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Security</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Navigation Scroll Effect ──
+(function() {
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', function() {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
+})();
+
+// ── Mobile Menu Toggle ──
+(function() {
+  const toggle = document.getElementById('mobileToggle');
+  const links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function() {
+    links.classList.toggle('open');
+    toggle.textContent = links.classList.contains('open') ? '\u2715' : '\u2630';
+  });
+  links.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      links.classList.remove('open');
+      toggle.textContent = '\u2630';
+    });
+  });
+})();
+
+// ── Scroll Reveal with Pin Bounce ──
+(function() {
+  var reveals = document.querySelectorAll('.reveal');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+
+        // Trigger draw animations on SVG paths
+        var paths = entry.target.querySelectorAll('.draw-on-scroll');
+        paths.forEach(function(path) {
+          path.classList.add('animate');
+        });
+
+        // Trigger write-in animations
+        var writeIns = entry.target.querySelectorAll('.write-in');
+        writeIns.forEach(function(el) {
+          el.classList.add('animate');
+        });
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+  reveals.forEach(function(el) { observer.observe(el); });
+
+  // Also observe hero sketch SVGs directly
+  document.querySelectorAll('.hero-sketch .draw-on-scroll').forEach(function(path) {
+    var svgObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate');
+        }
+      });
+    }, { threshold: 0.3 });
+    svgObs.observe(path);
+  });
+})();
+
+// ── Pencil line drawing on page load for hero ──
+(function() {
+  // Trigger hero sketch animations after a short delay
+  setTimeout(function() {
+    document.querySelectorAll('.hero-sketch .draw-on-scroll').forEach(function(path) {
+      // Calculate actual path length for proper dash animation
+      var length = path.getTotalLength ? path.getTotalLength() : 1000;
+      path.style.strokeDasharray = length;
+      path.style.strokeDashoffset = length;
+      path.classList.add('animate');
+      path.style.animation = 'drawLine 2.5s ease-out forwards';
+    });
+  }, 500);
+})();
+
+// ── Subtle parallax on coffee stains ──
+(function() {
+  var stains = document.querySelectorAll('.coffee-stain');
+  window.addEventListener('scroll', function() {
+    var scrollY = window.scrollY;
+    stains.forEach(function(stain, i) {
+      var speed = (i + 1) * 0.02;
+      stain.style.transform = 'translateY(' + (scrollY * speed) + 'px) rotate(' + (i % 2 === 0 ? -15 : 20) + 'deg)';
+    });
+  });
+})();
+</script>
+</body>
+</html>

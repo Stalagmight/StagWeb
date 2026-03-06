@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stalagmight - Bioluminescent Cave Mapping Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --deep-bg: #0F172A;
+  --deep-bg-2: #1E293B;
+  --blue-primary: #3852fc;
+  --blue-mid: #1D63ED;
+  --indigo: #6366F1;
+  --purple: #A855F7;
+  --purple-deep: #784FAF;
+  --purple-mid: #8b5cf6;
+  --orange: #FF8C17;
+  --emerald: #10b981;
+  --teal: #14b8a6;
+  --beige: #F1D6A2;
+  --light-surface: #F1F5F9;
+  --lavender: #E9D5FF;
+  --white: #FFFFFD;
+  --glow-blue: rgba(56, 82, 252, 0.15);
+  --glow-purple: rgba(168, 85, 247, 0.12);
+  --glow-teal: rgba(20, 184, 166, 0.12);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Lora', Georgia, serif;
+  background: var(--deep-bg);
+  color: rgba(241, 245, 249, 0.85);
+  line-height: 1.7;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── Bioluminescent Particle Canvas ── */
+#bioCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Global Glow Utilities ── */
+.glow-text {
+  text-shadow:
+    0 0 20px rgba(56, 82, 252, 0.4),
+    0 0 60px rgba(56, 82, 252, 0.15);
+}
+
+.glow-text-purple {
+  text-shadow:
+    0 0 20px rgba(168, 85, 247, 0.4),
+    0 0 60px rgba(168, 85, 247, 0.15);
+}
+
+.glow-text-teal {
+  text-shadow:
+    0 0 20px rgba(20, 184, 166, 0.4),
+    0 0 60px rgba(20, 184, 166, 0.15);
+}
+
+/* ── Section Base ── */
+section {
+  position: relative;
+  z-index: 1;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Tenor Sans', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+a { color: var(--teal); text-decoration: none; transition: all 0.3s; }
+a:hover { color: var(--purple); }
+
+/* ── Organic Blob Shapes ── */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.blob-blue { background: var(--blue-primary); }
+.blob-purple { background: var(--purple); }
+.blob-teal { background: var(--teal); }
+.blob-orange { background: var(--orange); }
+
+/* ── Bioluminescent Veins ── */
+.vein-line {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--teal), transparent);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.vein-line::after {
+  content: '';
+  position: absolute;
+  top: -3px; left: 50%; right: 50%;
+  width: 8px; height: 8px;
+  background: var(--teal);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--teal);
+  animation: veinPulse 4s ease-in-out infinite;
+  transform: translateX(-50%);
+}
+
+@keyframes veinPulse {
+  0%, 100% { opacity: 0.3; box-shadow: 0 0 8px var(--teal); }
+  50% { opacity: 1; box-shadow: 0 0 20px var(--teal); }
+}
+
+/* ── Navigation ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 1rem 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(56, 82, 252, 0.08);
+  transition: all 0.4s;
+}
+
+nav.scrolled {
+  padding: 0.6rem 0;
+  background: rgba(15, 23, 42, 0.9);
+  border-bottom: 1px solid rgba(56, 82, 252, 0.15);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--white);
+}
+
+.nav-logo svg {
+  filter: drop-shadow(0 0 8px rgba(56, 82, 252, 0.5));
+  color: var(--blue-primary);
+}
+
+.nav-logo span {
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: 0.06em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  align-items: center;
+}
+
+.nav-links a {
+  color: rgba(241, 245, 249, 0.6);
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0; right: 0;
+  height: 1px;
+  background: var(--teal);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+  box-shadow: 0 0 8px var(--teal);
+}
+
+.nav-links a:hover { color: var(--white); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+.nav-cta {
+  padding: 0.5rem 1.4rem;
+  background: rgba(56, 82, 252, 0.15);
+  border: 1px solid rgba(56, 82, 252, 0.3);
+  border-radius: 100px;
+  color: var(--blue-primary) !important;
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  transition: all 0.3s;
+}
+
+.nav-cta:hover {
+  background: var(--blue-primary) !important;
+  color: var(--white) !important;
+  box-shadow: 0 0 30px rgba(56, 82, 252, 0.3);
+}
+
+.nav-cta::after { display: none !important; }
+
+.mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* ── Hero ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8rem 2rem 6rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero .blob-1 {
+  width: 600px; height: 600px;
+  top: -100px; right: -200px;
+}
+
+.hero .blob-2 {
+  width: 500px; height: 500px;
+  bottom: -150px; left: -150px;
+}
+
+.hero .blob-3 {
+  width: 350px; height: 350px;
+  top: 40%; left: 20%;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1.2rem;
+  background: rgba(20, 184, 166, 0.08);
+  border: 1px solid rgba(20, 184, 166, 0.2);
+  border-radius: 100px;
+  color: var(--teal);
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  animation: badgePulse 3s ease-in-out infinite;
+}
+
+.hero-badge .dot {
+  width: 6px; height: 6px;
+  background: var(--teal);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--teal);
+  animation: dotPulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { border-color: rgba(20, 184, 166, 0.2); }
+  50% { border-color: rgba(20, 184, 166, 0.4); }
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.hero h1 {
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  line-height: 1.1;
+  color: var(--white);
+  margin-bottom: 1.5rem;
+  animation: heroTitleIn 1.2s ease-out;
+}
+
+.hero h1 .glow-word {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--blue-primary), var(--purple), var(--teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: glowShift 6s ease-in-out infinite;
+}
+
+@keyframes glowShift {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+
+@keyframes heroTitleIn {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.hero p {
+  font-size: 1.2rem;
+  color: rgba(241, 245, 249, 0.6);
+  max-width: 600px;
+  margin: 0 auto 2.5rem;
+  animation: heroSubIn 1.2s ease-out 0.2s both;
+}
+
+@keyframes heroSubIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: heroActionsIn 1.2s ease-out 0.4s both;
+}
+
+@keyframes heroActionsIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.btn-glow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 2rem;
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.4s;
+  text-decoration: none;
+}
+
+.btn-glow-primary {
+  background: linear-gradient(135deg, var(--blue-primary), var(--indigo));
+  color: var(--white);
+  box-shadow: 0 0 30px rgba(56, 82, 252, 0.25), 0 0 60px rgba(56, 82, 252, 0.1);
+}
+
+.btn-glow-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px rgba(56, 82, 252, 0.4), 0 0 80px rgba(56, 82, 252, 0.2);
+  color: var(--white);
+}
+
+.btn-glow-ghost {
+  background: rgba(241, 245, 249, 0.04);
+  color: rgba(241, 245, 249, 0.7);
+  border: 1px solid rgba(241, 245, 249, 0.1);
+}
+
+.btn-glow-ghost:hover {
+  background: rgba(241, 245, 249, 0.08);
+  color: var(--white);
+  border-color: rgba(241, 245, 249, 0.2);
+  transform: translateY(-2px);
+}
+
+/* ── Scroll Reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Features Section ── */
+.features {
+  padding: 8rem 0;
+  position: relative;
+}
+
+.features .blob-feat {
+  width: 500px; height: 500px;
+  top: 50%; left: -200px;
+  transform: translateY(-50%);
+}
+
+.section-label {
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-label::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--teal);
+  box-shadow: 0 0 8px var(--teal);
+}
+
+.section-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--white);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  color: rgba(241, 245, 249, 0.5);
+  max-width: 600px;
+  margin-bottom: 4rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.feature-card {
+  position: relative;
+  background: rgba(30, 41, 59, 0.3);
+  border: 1px solid rgba(56, 82, 252, 0.06);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  transition: all 0.5s;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: radial-gradient(ellipse at 50% 0%, var(--glow-blue), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.feature-card:hover::before { opacity: 1; }
+
+.feature-card:hover {
+  border-color: rgba(56, 82, 252, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 0 40px rgba(56, 82, 252, 0.08);
+}
+
+.feature-card:nth-child(2)::before {
+  background: radial-gradient(ellipse at 50% 0%, var(--glow-purple), transparent 70%);
+}
+
+.feature-card:nth-child(2):hover { border-color: rgba(168, 85, 247, 0.15); box-shadow: 0 0 40px rgba(168, 85, 247, 0.08); }
+
+.feature-card:nth-child(3)::before {
+  background: radial-gradient(ellipse at 50% 0%, var(--glow-teal), transparent 70%);
+}
+
+.feature-card:nth-child(3):hover { border-color: rgba(20, 184, 166, 0.15); box-shadow: 0 0 40px rgba(20, 184, 166, 0.08); }
+
+.feature-card:nth-child(5)::before {
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 140, 23, 0.1), transparent 70%);
+}
+.feature-card:nth-child(5):hover { border-color: rgba(255, 140, 23, 0.15); box-shadow: 0 0 40px rgba(255, 140, 23, 0.08); }
+
+.feature-card:nth-child(6)::before {
+  background: radial-gradient(ellipse at 50% 0%, var(--glow-purple), transparent 70%);
+}
+.feature-card:nth-child(6):hover { border-color: rgba(168, 85, 247, 0.15); box-shadow: 0 0 40px rgba(168, 85, 247, 0.08); }
+
+.feature-icon {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+  font-size: 1.4rem;
+}
+
+.fi-blue { background: rgba(56, 82, 252, 0.12); color: var(--blue-primary); box-shadow: 0 0 20px rgba(56, 82, 252, 0.1); }
+.fi-purple { background: rgba(168, 85, 247, 0.12); color: var(--purple); box-shadow: 0 0 20px rgba(168, 85, 247, 0.1); }
+.fi-teal { background: rgba(20, 184, 166, 0.12); color: var(--teal); box-shadow: 0 0 20px rgba(20, 184, 166, 0.1); }
+.fi-orange { background: rgba(255, 140, 23, 0.12); color: var(--orange); box-shadow: 0 0 20px rgba(255, 140, 23, 0.1); }
+.fi-indigo { background: rgba(99, 102, 241, 0.12); color: var(--indigo); box-shadow: 0 0 20px rgba(99, 102, 241, 0.1); }
+
+.feature-card h3 {
+  font-size: 1.2rem;
+  color: var(--white);
+  margin-bottom: 0.75rem;
+  position: relative;
+  z-index: 1;
+}
+
+.feature-card p {
+  font-size: 0.95rem;
+  color: rgba(241, 245, 249, 0.5);
+  position: relative;
+  z-index: 1;
+  line-height: 1.7;
+}
+
+/* ── How It Works ── */
+.how-it-works {
+  padding: 8rem 0;
+  position: relative;
+}
+
+.how-it-works .blob-how {
+  width: 600px; height: 600px;
+  right: -250px; top: 0;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin-top: 4rem;
+  position: relative;
+}
+
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 40px;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(56, 82, 252, 0.2), rgba(168, 85, 247, 0.2), rgba(20, 184, 166, 0.2), transparent);
+  z-index: 0;
+}
+
+.step {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.step-orb {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: 1.5rem;
+  position: relative;
+  background: var(--deep-bg);
+}
+
+.step-orb::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--blue-primary), var(--purple));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.step-orb::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 82, 252, 0.15), transparent 70%);
+  animation: orbPulse 4s ease-in-out infinite;
+}
+
+.step:nth-child(2) .step-orb::after { animation-delay: 1s; }
+.step:nth-child(3) .step-orb::after { animation-delay: 2s; }
+.step:nth-child(4) .step-orb::after { animation-delay: 3s; }
+
+@keyframes orbPulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.15); }
+}
+
+.step-orb .num {
+  position: relative;
+  z-index: 2;
+  color: var(--white);
+}
+
+.step h3 {
+  font-size: 1.1rem;
+  color: var(--white);
+  margin-bottom: 0.75rem;
+}
+
+.step p {
+  font-size: 0.9rem;
+  color: rgba(241, 245, 249, 0.45);
+  line-height: 1.6;
+}
+
+/* ── Feature Highlights (Split Sections) ── */
+.highlights {
+  padding: 4rem 0;
+}
+
+.highlight-block {
+  padding: 6rem 0;
+  position: relative;
+}
+
+.highlight-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.highlight-block:nth-child(even) .highlight-inner {
+  direction: rtl;
+}
+
+.highlight-block:nth-child(even) .highlight-inner > * {
+  direction: ltr;
+}
+
+.highlight-visual {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  background: rgba(30, 41, 59, 0.3);
+  border: 1px solid rgba(56, 82, 252, 0.08);
+}
+
+.highlight-visual-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Cave Map Visualization */
+.cave-map-viz {
+  width: 80%;
+  height: 80%;
+  position: relative;
+}
+
+.cave-map-viz .passage {
+  position: absolute;
+  border-radius: 30px;
+  opacity: 0.6;
+}
+
+.cave-map-viz .passage-1 {
+  width: 60%; height: 20%;
+  top: 20%; left: 10%;
+  background: linear-gradient(90deg, rgba(56, 82, 252, 0.15), rgba(99, 102, 241, 0.2));
+  border: 1px solid rgba(56, 82, 252, 0.15);
+  animation: passagePulse 5s ease-in-out infinite;
+}
+
+.cave-map-viz .passage-2 {
+  width: 25%; height: 50%;
+  top: 30%; left: 55%;
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.15));
+  border: 1px solid rgba(168, 85, 247, 0.12);
+  animation: passagePulse 5s ease-in-out 1s infinite;
+}
+
+.cave-map-viz .passage-3 {
+  width: 50%; height: 18%;
+  top: 55%; left: 20%;
+  background: linear-gradient(90deg, rgba(20, 184, 166, 0.15), rgba(56, 82, 252, 0.15));
+  border: 1px solid rgba(20, 184, 166, 0.12);
+  animation: passagePulse 5s ease-in-out 2s infinite;
+}
+
+.cave-map-viz .station {
+  position: absolute;
+  width: 10px; height: 10px;
+  background: var(--teal);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--teal);
+  animation: stationBlink 3s ease-in-out infinite;
+}
+
+.cave-map-viz .station:nth-child(4) { top: 22%; left: 15%; animation-delay: 0s; }
+.cave-map-viz .station:nth-child(5) { top: 25%; left: 45%; animation-delay: 0.5s; }
+.cave-map-viz .station:nth-child(6) { top: 38%; left: 62%; animation-delay: 1s; }
+.cave-map-viz .station:nth-child(7) { top: 58%; left: 30%; animation-delay: 1.5s; }
+.cave-map-viz .station:nth-child(8) { top: 60%; left: 58%; animation-delay: 2s; }
+
+@keyframes passagePulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes stationBlink {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* Data Dashboard Visualization */
+.data-dash-viz {
+  width: 85%;
+  height: 85%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 12px;
+  padding: 12px;
+}
+
+.dash-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(56, 82, 252, 0.08);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.dash-card-label {
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(241, 245, 249, 0.35);
+}
+
+.dash-card-value {
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: 1.5rem;
+  color: var(--white);
+}
+
+.dash-card-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(56, 82, 252, 0.15);
+  overflow: hidden;
+}
+
+.dash-card-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  animation: barFill 3s ease-out infinite;
+}
+
+.bar-blue { background: var(--blue-primary); }
+.bar-teal { background: var(--teal); }
+.bar-purple { background: var(--purple); }
+.bar-orange { background: var(--orange); }
+
+@keyframes barFill {
+  0% { width: 0; }
+  50% { width: 80%; }
+  100% { width: 65%; }
+}
+
+.highlight-text .section-label { margin-bottom: 0.75rem; }
+
+.highlight-text h2 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  color: var(--white);
+  margin-bottom: 1rem;
+  line-height: 1.25;
+}
+
+.highlight-text p {
+  color: rgba(241, 245, 249, 0.5);
+  margin-bottom: 1.5rem;
+  font-size: 1.05rem;
+}
+
+.highlight-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.highlight-features li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(241, 245, 249, 0.65);
+  font-size: 0.95rem;
+}
+
+.highlight-features li .check {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: rgba(20, 184, 166, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--teal);
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(20, 184, 166, 0.1);
+}
+
+/* ── Testimonial / Stats ── */
+.social-proof {
+  padding: 6rem 0;
+  position: relative;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  text-align: center;
+}
+
+.stat-item {
+  padding: 2rem;
+}
+
+.stat-value {
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--white);
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--blue-primary), var(--teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: rgba(241, 245, 249, 0.4);
+}
+
+/* ── CTA Section ── */
+.cta-section {
+  padding: 8rem 0;
+  position: relative;
+}
+
+.cta-card {
+  position: relative;
+  background: rgba(30, 41, 59, 0.2);
+  border: 1px solid rgba(56, 82, 252, 0.1);
+  border-radius: 32px;
+  padding: 5rem 3rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.cta-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(56, 82, 252, 0.08), transparent 60%),
+              radial-gradient(ellipse at 20% 100%, rgba(20, 184, 166, 0.06), transparent 50%),
+              radial-gradient(ellipse at 80% 100%, rgba(168, 85, 247, 0.06), transparent 50%);
+  pointer-events: none;
+}
+
+.cta-card h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--white);
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-card p {
+  font-size: 1.15rem;
+  color: rgba(241, 245, 249, 0.5);
+  max-width: 550px;
+  margin: 0 auto 2.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-card .hero-actions {
+  position: relative;
+  z-index: 1;
+}
+
+.cta-form {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-form input {
+  flex: 1;
+  min-width: 240px;
+  padding: 0.85rem 1.5rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(56, 82, 252, 0.15);
+  border-radius: 100px;
+  color: var(--white);
+  font-family: 'Lora', serif;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.cta-form input::placeholder { color: rgba(241, 245, 249, 0.3); }
+
+.cta-form input:focus {
+  border-color: var(--blue-primary);
+  box-shadow: 0 0 20px rgba(56, 82, 252, 0.15);
+}
+
+/* ── Footer ── */
+footer {
+  padding: 4rem 0 2rem;
+  border-top: 1px solid rgba(56, 82, 252, 0.06);
+  position: relative;
+  z-index: 1;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footer-brand .nav-logo { margin-bottom: 0.5rem; }
+
+.footer-brand p {
+  font-size: 0.9rem;
+  color: rgba(241, 245, 249, 0.35);
+  max-width: 280px;
+  line-height: 1.7;
+}
+
+.footer-col h4 {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(241, 245, 249, 0.5);
+  margin-bottom: 1.25rem;
+}
+
+.footer-col ul { list-style: none; }
+
+.footer-col ul li { margin-bottom: 0.6rem; }
+
+.footer-col ul a {
+  color: rgba(241, 245, 249, 0.35);
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+
+.footer-col ul a:hover { color: var(--teal); }
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(56, 82, 252, 0.06);
+  font-size: 0.8rem;
+  color: rgba(241, 245, 249, 0.25);
+}
+
+.footer-bottom-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-bottom-links a {
+  color: rgba(241, 245, 249, 0.25);
+  font-size: 0.8rem;
+}
+
+.footer-bottom-links a:hover { color: rgba(241, 245, 249, 0.5); }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .steps { grid-template-columns: repeat(2, 1fr); gap: 3rem; }
+  .steps::before { display: none; }
+  .highlight-inner { grid-template-columns: 1fr; gap: 2rem; }
+  .highlight-block:nth-child(even) .highlight-inner { direction: ltr; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .mobile-toggle { display: block; }
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    padding: 1.5rem 2rem;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(56, 82, 252, 0.1);
+  }
+  .features-grid { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .cta-card { padding: 3rem 1.5rem; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- Bioluminescent Particle Canvas -->
+<canvas id="bioCanvas"></canvas>
+
+<!-- Navigation -->
+<nav id="mainNav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462" width="36" height="36">
+        <path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/>
+      </svg>
+      <span>Stalagmight</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#highlights">Platform</a></li>
+      <li><a href="#cta">Get Started</a></li>
+      <li><a href="#cta" class="nav-cta">Start Free</a></li>
+    </ul>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">&#9776;</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="blob blob-blue blob-1"></div>
+  <div class="blob blob-purple blob-2"></div>
+  <div class="blob blob-teal blob-3"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Now in Open Beta
+    </div>
+    <h1>
+      Illuminate the <span class="glow-word">Darkness Below</span>
+    </h1>
+    <p>
+      Collaborative cave mapping and speleological survey management.
+      Map cave systems, track experiments, and coordinate your team
+      from the surface to the deepest passages.
+    </p>
+    <div class="hero-actions">
+      <a href="#cta" class="btn-glow btn-glow-primary">Begin Exploring</a>
+      <a href="#how-it-works" class="btn-glow btn-glow-ghost">See How It Works</a>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+  <div class="blob blob-purple blob-feat"></div>
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Capabilities</div>
+      <h2 class="section-title glow-text">Everything You Need Underground</h2>
+      <p class="section-subtitle">
+        A complete toolkit for speleological teams, from initial survey to
+        published research. Every feature designed for the cave environment.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon fi-blue">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <h3>Cave System Mapping</h3>
+        <p>Interactive 2D and 3D mapping of cave passages, chambers, and geological features with precision survey data integration.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <div class="feature-icon fi-purple">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <h3>Survey Station Management</h3>
+        <p>Complete GIS-enabled station management with coordinate systems, datums, and precise positional data for every measurement point.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <div class="feature-icon fi-teal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <h3>Equipment Tracking</h3>
+        <p>Monitor sensors, gas cylinders, climbing gear, and instruments. Track calibration schedules, battery levels, and deployment locations.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <div class="feature-icon fi-teal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <h3>Scientific Experiments</h3>
+        <p>Design, track, and manage research studies with structured data collection, environmental monitoring, and result analysis tools.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <div class="feature-icon fi-orange">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h3>GPS Track Import</h3>
+        <p>Import GPX files and GPS tracks from surface surveys. Overlay surface topography with underground passages for complete spatial context.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <div class="feature-icon fi-purple">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <h3>Team Collaboration</h3>
+        <p>Role-based permissions, real-time data sync, team dashboards, and coordinated field sessions. Built for multi-party expeditions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works" id="how-it-works">
+  <div class="blob blob-teal blob-how"></div>
+  <div class="container">
+    <div class="reveal" style="text-align: center;">
+      <div class="section-label" style="justify-content: center;">Onboarding</div>
+      <h2 class="section-title glow-text-teal">Surface to Survey in Minutes</h2>
+      <p class="section-subtitle" style="margin-left: auto; margin-right: auto;">
+        Getting started is as natural as entering a cave. Four simple steps to illuminate your data.
+      </p>
+    </div>
+
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-orb"><span class="num">1</span></div>
+        <h3>Create Your Cave</h3>
+        <p>Name your cave system, set the coordinate reference, and define the entrance points. Your digital cave begins here.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-orb"><span class="num">2</span></div>
+        <h3>Build Your Team</h3>
+        <p>Invite surveyors, scientists, and collaborators. Assign roles for data entry, review, and administration.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-orb"><span class="num">3</span></div>
+        <h3>Import & Survey</h3>
+        <p>Upload existing data, GPS tracks, and field notes. Begin adding survey stations and mapping passages.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-orb"><span class="num">4</span></div>
+        <h3>Analyze & Share</h3>
+        <p>Generate maps, run analyses, and share findings. Export to standard formats or publish directly to your team.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Feature Highlights -->
+<section class="highlights" id="highlights">
+  <div class="container">
+    <!-- Highlight 1: Mapping -->
+    <div class="highlight-block">
+      <div class="highlight-inner reveal">
+        <div class="highlight-visual">
+          <div class="highlight-visual-inner">
+            <div class="cave-map-viz">
+              <div class="passage passage-1"></div>
+              <div class="passage passage-2"></div>
+              <div class="passage passage-3"></div>
+              <div class="station"></div>
+              <div class="station"></div>
+              <div class="station"></div>
+              <div class="station"></div>
+              <div class="station"></div>
+            </div>
+          </div>
+        </div>
+        <div class="highlight-text">
+          <div class="section-label">Mapping Engine</div>
+          <h2>Precision Cartography for the Underground</h2>
+          <p>
+            Our mapping engine renders survey data into beautiful, accurate cave maps.
+            Support for standard survey formats, line plots, cross-sections, and
+            full 3D models that you can explore from any angle.
+          </p>
+          <ul class="highlight-features">
+            <li><span class="check">&#10003;</span> Therion, Compass, and Walls import</li>
+            <li><span class="check">&#10003;</span> Real-time 3D passage rendering</li>
+            <li><span class="check">&#10003;</span> Cross-section and profile generation</li>
+            <li><span class="check">&#10003;</span> Georeferenced map overlays</li>
+            <li><span class="check">&#10003;</span> SVG and PDF export for publication</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Highlight 2: Data Management -->
+    <div class="highlight-block">
+      <div class="highlight-inner reveal">
+        <div class="highlight-visual">
+          <div class="highlight-visual-inner">
+            <div class="data-dash-viz">
+              <div class="dash-card">
+                <div class="dash-card-label">Survey Stations</div>
+                <div class="dash-card-value">2,847</div>
+                <div class="dash-card-bar"><div class="dash-card-bar-fill bar-blue" style="width:72%"></div></div>
+              </div>
+              <div class="dash-card">
+                <div class="dash-card-label">Total Length</div>
+                <div class="dash-card-value">14.3km</div>
+                <div class="dash-card-bar"><div class="dash-card-bar-fill bar-teal" style="width:58%"></div></div>
+              </div>
+              <div class="dash-card">
+                <div class="dash-card-label">Active Sensors</div>
+                <div class="dash-card-value">38</div>
+                <div class="dash-card-bar"><div class="dash-card-bar-fill bar-purple" style="width:85%"></div></div>
+              </div>
+              <div class="dash-card">
+                <div class="dash-card-label">Team Members</div>
+                <div class="dash-card-value">12</div>
+                <div class="dash-card-bar"><div class="dash-card-bar-fill bar-orange" style="width:45%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="highlight-text">
+          <div class="section-label">Data Platform</div>
+          <h2>Your Cave, Fully Quantified</h2>
+          <p>
+            Every measurement, observation, and environmental reading in one place.
+            Structured data management designed for speleological research with
+            full audit trails and versioning.
+          </p>
+          <ul class="highlight-features">
+            <li><span class="check">&#10003;</span> Multi-datum coordinate management</li>
+            <li><span class="check">&#10003;</span> Environmental time-series data</li>
+            <li><span class="check">&#10003;</span> Equipment calibration tracking</li>
+            <li><span class="check">&#10003;</span> Version-controlled survey data</li>
+            <li><span class="check">&#10003;</span> Custom data schemas per project</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Social Proof / Stats -->
+<section class="social-proof">
+  <div class="container">
+    <div class="stats-row reveal">
+      <div class="stat-item">
+        <div class="stat-value">12,000+</div>
+        <div class="stat-label">Survey stations managed</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">340+</div>
+        <div class="stat-label">Cave systems mapped</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">85</div>
+        <div class="stat-label">Research teams active</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">28</div>
+        <div class="stat-label">Countries represented</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="cta">
+  <div class="container">
+    <div class="cta-card reveal">
+      <h2>Ready to Map the Unknown?</h2>
+      <p>Join the community of speleologists, geologists, and explorers who trust Stalagmight to manage their underground world.</p>
+      <div class="cta-form">
+        <input type="email" placeholder="Enter your email address" aria-label="Email address">
+        <button class="btn-glow btn-glow-primary">Get Early Access</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462" width="32" height="32">
+            <path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/>
+          </svg>
+          <span>Stalagmight</span>
+        </a>
+        <p>The collaborative platform for cave mapping and speleological research. Illuminate the world beneath.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#">Features</a></li>
+          <li><a href="#">Mapping Engine</a></li>
+          <li><a href="#">Data Platform</a></li>
+          <li><a href="#">Integrations</a></li>
+          <li><a href="#">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">API Reference</a></li>
+          <li><a href="#">Field Guides</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Blog</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Stalagmight. All rights reserved.</span>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Security</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Bioluminescent Particle System ──
+(function() {
+  const canvas = document.getElementById('bioCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let w, h;
+
+  const COLORS = [
+    { r: 56, g: 82, b: 252 },    // blue
+    { r: 168, g: 85, b: 247 },   // purple
+    { r: 20, g: 184, b: 166 },   // teal
+    { r: 99, g: 102, b: 241 },   // indigo
+    { r: 255, g: 140, b: 23 },   // orange (rare)
+  ];
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = document.documentElement.scrollHeight;
+  }
+
+  function createParticle() {
+    const colorIdx = Math.random() < 0.08 ? 4 : Math.floor(Math.random() * 4);
+    const color = COLORS[colorIdx];
+    return {
+      x: Math.random() * w,
+      y: Math.random() * h,
+      radius: Math.random() * 3 + 1,
+      baseRadius: Math.random() * 3 + 1,
+      color: color,
+      alpha: Math.random() * 0.4 + 0.1,
+      baseAlpha: Math.random() * 0.4 + 0.1,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.2,
+      pulseSpeed: Math.random() * 0.02 + 0.005,
+      pulseOffset: Math.random() * Math.PI * 2,
+      glowSize: Math.random() * 20 + 10,
+    };
+  }
+
+  function init() {
+    resize();
+    const count = Math.min(Math.floor((w * h) / 8000), 200);
+    particles = [];
+    for (let i = 0; i < count; i++) {
+      particles.push(createParticle());
+    }
+  }
+
+  let time = 0;
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    time += 0.016;
+
+    for (const p of particles) {
+      // Pulse
+      const pulse = Math.sin(time * p.pulseSpeed * 60 + p.pulseOffset);
+      p.alpha = p.baseAlpha + pulse * 0.15;
+      p.radius = p.baseRadius + pulse * 0.8;
+
+      // Move
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // Wrap
+      if (p.x < -10) p.x = w + 10;
+      if (p.x > w + 10) p.x = -10;
+      if (p.y < -10) p.y = h + 10;
+      if (p.y > h + 10) p.y = -10;
+
+      // Draw glow
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.glowSize);
+      grad.addColorStop(0, `rgba(${p.color.r},${p.color.g},${p.color.b},${p.alpha * 0.3})`);
+      grad.addColorStop(1, `rgba(${p.color.r},${p.color.g},${p.color.b},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.glowSize, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Draw core
+      ctx.fillStyle = `rgba(${p.color.r},${p.color.g},${p.color.b},${p.alpha})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  init();
+  draw();
+
+  window.addEventListener('resize', () => {
+    resize();
+    // Recalculate particle count
+    const targetCount = Math.min(Math.floor((w * h) / 8000), 200);
+    while (particles.length < targetCount) particles.push(createParticle());
+    while (particles.length > targetCount) particles.pop();
+  });
+
+  // Update canvas height on scroll (for full-page coverage)
+  let resizeTimeout;
+  const observer = new ResizeObserver(() => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      h = canvas.height = document.documentElement.scrollHeight;
+    }, 200);
+  });
+  observer.observe(document.body);
+})();
+
+// ── Navigation Scroll Effect ──
+(function() {
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  });
+})();
+
+// ── Mobile Menu Toggle ──
+(function() {
+  const toggle = document.getElementById('mobileToggle');
+  const links = document.getElementById('navLinks');
+  toggle.addEventListener('click', () => {
+    links.classList.toggle('open');
+    toggle.textContent = links.classList.contains('open') ? '\u2715' : '\u2630';
+  });
+  // Close on link click
+  links.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      links.classList.remove('open');
+      toggle.textContent = '\u2630';
+    });
+  });
+})();
+
+// ── Scroll Reveal ──
+(function() {
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+})();
+</script>
+</body>
+</html>
