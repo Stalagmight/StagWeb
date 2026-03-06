@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stalagmight — Design Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,400&family=Instrument+Serif&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cave-abyss: #0F172A;
+    --cave-slate: #1E293B;
+    --cave-blue: #3852fc;
+    --cave-indigo: #6366F1;
+    --cave-purple: #A855F7;
+    --cave-orange: #FF8C17;
+    --cave-emerald: #10b981;
+    --cave-teal: #14b8a6;
+    --cave-beige: #F1D6A2;
+    --cave-light: #F1F5F9;
+    --cave-white: #FFFFFD;
+  }
+
+  body {
+    background: var(--cave-abyss);
+    color: var(--cave-white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Noise texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 256px;
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1.5rem 3rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(56, 82, 252, 0.15);
+  }
+
+  .header svg {
+    width: 36px;
+    height: 36px;
+    color: var(--cave-blue);
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+    color: var(--cave-white);
+  }
+
+  .header-subtitle {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 253, 0.4);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-left: auto;
+  }
+
+  .hero {
+    padding: 10rem 3rem 5rem;
+    text-align: center;
+    position: relative;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(56, 82, 252, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--cave-blue), var(--cave-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 1.15rem;
+    color: rgba(255, 255, 253, 0.5);
+    max-width: 540px;
+    margin: 0 auto;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding: 0.5rem 1.25rem;
+    background: rgba(56, 82, 252, 0.08);
+    border: 1px solid rgba(56, 82, 252, 0.2);
+    border-radius: 100px;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 253, 0.6);
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+
+  .count strong {
+    color: var(--cave-blue);
+    font-weight: 700;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 2rem;
+    padding: 0 3rem 6rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--cave-slate);
+    border: 1px solid rgba(255, 255, 253, 0.06);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.4s ease;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .card:nth-child(1) { animation-delay: 0.1s; }
+  .card:nth-child(2) { animation-delay: 0.15s; }
+  .card:nth-child(3) { animation-delay: 0.2s; }
+  .card:nth-child(4) { animation-delay: 0.25s; }
+  .card:nth-child(5) { animation-delay: 0.3s; }
+  .card:nth-child(6) { animation-delay: 0.35s; }
+  .card:nth-child(7) { animation-delay: 0.4s; }
+  .card:nth-child(8) { animation-delay: 0.45s; }
+  .card:nth-child(9) { animation-delay: 0.5s; }
+  .card:nth-child(10) { animation-delay: 0.55s; }
+
+  .card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(56, 82, 252, 0.3);
+    box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(56, 82, 252, 0.1);
+  }
+
+  .card-preview {
+    height: 220px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-preview-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card:hover .card-preview-inner {
+    transform: scale(1.05);
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .card-number {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 253, 0.3);
+    margin-bottom: 0.5rem;
+  }
+
+  .card-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
+  }
+
+  .card-desc {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 253, 0.5);
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  .tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    background: rgba(255, 255, 253, 0.05);
+    color: rgba(255, 255, 253, 0.4);
+  }
+
+  .card-arrow {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 253, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translate(-4px, 4px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .card:hover .card-arrow {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+
+  .card-arrow svg {
+    width: 14px;
+    height: 14px;
+    stroke: var(--cave-white);
+    fill: none;
+    stroke-width: 2;
+  }
+
+  /* Preview backgrounds per design */
+  .preview-01 {
+    background: linear-gradient(180deg, #0F172A 0%, #080c18 100%);
+  }
+  .preview-01::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60%;
+    background: linear-gradient(180deg, transparent, rgba(56, 82, 252, 0.1));
+  }
+  .preview-01 .preview-icon {
+    color: #3852fc;
+    filter: drop-shadow(0 0 30px rgba(56, 82, 252, 0.5));
+  }
+
+  .preview-02 {
+    background: linear-gradient(180deg, #1E293B 0%, #d4a96a 30%, #8b7355 50%, #4a5568 70%, #1E293B 100%);
+  }
+  .preview-02 .preview-icon { color: #F1D6A2; }
+
+  .preview-03 {
+    background: linear-gradient(135deg, #F1D6A2 0%, #d4b896 50%, #c9a87c 100%);
+  }
+  .preview-03 .preview-icon { color: #0F172A; }
+
+  .preview-04 {
+    background: radial-gradient(circle at center, rgba(20, 184, 166, 0.15) 0%, #0a0e1a 70%);
+    border-bottom: 1px solid rgba(20, 184, 166, 0.2);
+  }
+  .preview-04::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 50% 50%, transparent 30%, rgba(20, 184, 166, 0.05) 31%, transparent 32%),
+      radial-gradient(circle at 50% 50%, transparent 50%, rgba(20, 184, 166, 0.03) 51%, transparent 52%),
+      radial-gradient(circle at 50% 50%, transparent 70%, rgba(20, 184, 166, 0.02) 71%, transparent 72%);
+  }
+  .preview-04 .preview-icon { color: #14b8a6; filter: drop-shadow(0 0 20px rgba(20, 184, 166, 0.6)); }
+
+  .preview-05 {
+    background: #0F172A;
+  }
+  .preview-05::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(56, 82, 252, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 70% 60%, rgba(168, 85, 247, 0.12) 0%, transparent 35%),
+      radial-gradient(circle at 50% 80%, rgba(20, 184, 166, 0.1) 0%, transparent 30%);
+  }
+  .preview-05 .preview-icon { color: #A855F7; filter: drop-shadow(0 0 25px rgba(168, 85, 247, 0.5)); }
+
+  .preview-06 {
+    background:
+      linear-gradient(rgba(241, 214, 162, 0.95), rgba(241, 214, 162, 0.95)),
+      repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(0,0,0,0.06) 23px, rgba(0,0,0,0.06) 24px),
+      repeating-linear-gradient(90deg, transparent, transparent 23px, rgba(0,0,0,0.06) 23px, rgba(0,0,0,0.06) 24px);
+  }
+  .preview-06::before {
+    content: '';
+    position: absolute;
+    left: 60px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(239, 68, 68, 0.3);
+  }
+  .preview-06 .preview-icon { color: #6366F1; }
+
+  .preview-07 {
+    background: linear-gradient(135deg, #0F172A 0%, #1a1040 50%, #0F172A 100%);
+  }
+  .preview-07::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(60deg, transparent 45%, rgba(56, 82, 252, 0.08) 45.5%, rgba(56, 82, 252, 0.08) 46%, transparent 46.5%),
+      linear-gradient(-60deg, transparent 45%, rgba(168, 85, 247, 0.06) 45.5%, rgba(168, 85, 247, 0.06) 46%, transparent 46.5%),
+      linear-gradient(0deg, transparent 48%, rgba(99, 102, 241, 0.05) 48.5%, rgba(99, 102, 241, 0.05) 49%, transparent 49.5%);
+    background-size: 80px 140px;
+  }
+  .preview-07 .preview-icon { color: #6366F1; filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.4)); }
+
+  .preview-08 {
+    background: #1E293B;
+    border-bottom: 2px solid rgba(255, 140, 23, 0.3);
+  }
+  .preview-08::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.02) 39px, rgba(255,255,255,0.02) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.02) 39px, rgba(255,255,255,0.02) 40px);
+  }
+  .preview-08 .preview-icon { color: #FF8C17; filter: drop-shadow(0 0 15px rgba(255, 140, 23, 0.4)); }
+
+  .preview-09 {
+    background: #1E293B;
+  }
+  .preview-09::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.08;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 256px;
+  }
+  .preview-09 .preview-icon { color: #FF8C17; }
+
+  .preview-10 {
+    background: linear-gradient(180deg, #0F172A 0%, #2d2558 30%, #8b7355 60%, #F1D6A2 85%, #F1F5F9 100%);
+  }
+  .preview-10 .preview-icon { color: #FFFFFD; filter: drop-shadow(0 0 10px rgba(255, 255, 253, 0.3)); }
+
+  .preview-icon {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    z-index: 1;
+    opacity: 0.7;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .card:hover .preview-icon {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 860px) {
+    .grid { grid-template-columns: 1fr; padding: 0 1.5rem 4rem; }
+    .hero { padding: 8rem 1.5rem 3rem; }
+    .header { padding: 1rem 1.5rem; }
+    .header-subtitle { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462">
+    <path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/>
+  </svg>
+  <span class="header-title">Stalagmight</span>
+  <span class="header-subtitle">Design Mockups</span>
+</header>
+
+<section class="hero">
+  <h1>10 Visions for <span>Stalagmight</span></h1>
+  <p>Product and onboarding page mockups, each with a distinct aesthetic direction built on the Cave color scheme.</p>
+  <div class="count"><strong>10</strong> designs &middot; Cave palette &middot; Self-contained HTML</div>
+</section>
+
+<div class="grid">
+
+  <a href="01-abyssal-descent.html" class="card">
+    <div class="card-preview preview-01">
+      <div class="card-preview-inner">
+        <svg class="preview-icon" xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462"><path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/></svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Design 01</div>
+      <div class="card-name">Abyssal Descent</div>
+      <div class="card-desc">Ultra-dark vertical descent. Parallax depth layers, glowing accents, and a cave depth gauge that tracks your scroll.</div>
+      <div class="card-tags">
+        <span class="tag">Dark</span>
+        <span class="tag">Dramatic</span>
+        <span class="tag">Parallax</span>
+        <span class="tag">Particles</span>
+      </div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="02-stratum.html" class="card">
+    <div class="card-preview preview-02">
+      <div class="card-preview-inner">
+        <svg class="preview-icon" xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462"><path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/></svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Design 02</div>
+      <div class="card-name">Stratum</div>
+      <div class="card-desc">Geological strata layers. Each section is a distinct rock layer with wavy dividers, grain textures, and core sample cards.</div>
+      <div class="card-tags">
+        <span class="tag">Earthy</span>
+        <span class="tag">Scientific</span>
+        <span class="tag">Layered</span>
+        <span class="tag">Warm</span>
+      </div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="03-cartographer.html" class="card">
+    <div class="card-preview preview-03">
+      <div class="card-preview-inner">
+        <svg class="preview-icon" xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462"><path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/></svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Design 03</div>
+      <div class="card-name">Cartographer</div>
+      <div class="card-desc">Vintage exploration maps. Parchment textures, compass rose, contour lines, and expedition trail annotations.</div>
+      <div class="card-tags">
+        <span class="tag">Vintage</span>
+        <span class="tag">Cartography</span>
+        <span class="tag">Adventurous</span>
+        <span class="tag">Warm</span>
+      </div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="04-sonar-pulse.html" class="card">
+    <div class="card-preview preview-04">
+      <div class="card-preview-inner">
+        <svg class="preview-icon" xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462"><path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/></svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Design 04</div>
+      <div class="card-name">Sonar Pulse</div>
+      <div class="card-desc">Radar/sonar interface. Animated sweep, HUD-style panels, dot-matrix patterns, and terminal typing effects.</div>
+      <div class="card-tags">
+        <span class="tag">Tech</span>
+        <span class="tag">Futuristic</span>
+        <span class="tag">Dark</span>
+        <span class="tag">Animated</span>
+      </div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="05-bioluminescent.html" class="card">
+    <div class="card-preview preview-05">
+      <div class="card-preview-inner">
+        <svg class="preview-icon" xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462"><path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/></svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Design 05</div>
+      <div class="card-name">Bioluminescent</div>
+      <div class="card-desc">Ethereal cave glow. Floating luminous particles, organic blob shapes, and soft neon accents like glowworms.</div>
+      <div class="card-tags">
+        <span class="tag">Ethereal</span>
+        <span class="tag">Organic</span>
+        <span class="tag">Glowing</span>
+        <span class="tag">Magical</span>
+      </div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="06-field-journal.html" class="card">
+    <div class="card-preview preview-06">
+      <div class="card-preview-inner">
+        <svg class="preview-icon" xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462"><path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/></svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Design 06</div>
+      <div class="card-name">Field Journal</div>
+      <div class="card-desc">Explorer's notebook. Grid paper, handwritten annotations, coffee stains, taped cards, and sketched diagrams.</div>
+      <div class="card-tags">
+        <span class="tag">Handwritten</span>
+        <span class="tag">Notebook</span>
+        <span class="tag">Authentic</span>
+        <span class="tag">Light</span>
+      </div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="07-crystal-matrix.html" class="card">
+    <div class="card-preview preview-07">
+      <div class="card-preview-inner">
+        <svg class="preview-icon" xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462"><path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/></svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Design 07</div>
+      <div class="card-name">Crystal Matrix</div>
+      <div class="card-desc">Geometric crystalline patterns. Sharp angular layouts, prismatic refractions, faceted surfaces, and tessellating shapes.</div>
+      <div class="card-tags">
+        <span class="tag">Geometric</span>
+        <span class="tag">Angular</span>
+        <span class="tag">Prismatic</span>
+        <span class="tag">Modern</span>
+      </div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="08-expedition-hq.html" class="card">
+    <div class="card-preview preview-08">
+      <div class="card-preview-inner">
+        <svg class="preview-icon" xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462"><path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/></svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Design 08</div>
+      <div class="card-name">Expedition HQ</div>
+      <div class="card-desc">Mission control dashboard. Live data feeds, topographic contours, status indicators, and system status panels.</div>
+      <div class="card-tags">
+        <span class="tag">Dashboard</span>
+        <span class="tag">Command</span>
+        <span class="tag">Data-dense</span>
+        <span class="tag">Orange</span>
+      </div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="09-mineral-core.html" class="card">
+    <div class="card-preview preview-09">
+      <div class="card-preview-inner">
+        <svg class="preview-icon" xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462"><path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/></svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Design 09</div>
+      <div class="card-name">Mineral Core</div>
+      <div class="card-desc">Brutalist raw power. Oversized typography, thick asymmetric borders, noise textures, and monolithic section numbers.</div>
+      <div class="card-tags">
+        <span class="tag">Brutalist</span>
+        <span class="tag">Industrial</span>
+        <span class="tag">Bold</span>
+        <span class="tag">Raw</span>
+      </div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="10-emergence.html" class="card">
+    <div class="card-preview preview-10">
+      <div class="card-preview-inner">
+        <svg class="preview-icon" xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462"><path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/></svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Design 10</div>
+      <div class="card-name">Emergence</div>
+      <div class="card-desc">Dark to light transition. The page evolves from cave depths to daylight as you scroll — an elegant journey upward.</div>
+      <div class="card-tags">
+        <span class="tag">Elegant</span>
+        <span class="tag">Transitional</span>
+        <span class="tag">Editorial</span>
+        <span class="tag">Refined</span>
+      </div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+</div>
+
+</body>
+</html>
