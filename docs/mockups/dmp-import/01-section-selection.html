@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Import DMP File (Step 1) — StalagMight</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0e0d0c;
+    --panel: #171615;
+    --panel-raised: #1e1d1c;
+    --border: #2a2826;
+    --text-primary: #d5d0ca;
+    --text-secondary: #858280;
+    --accent: #a89060;
+    --warning: #b89848;
+    --error: #b85048;
+    --success: #48986a;
+    --input-bg: #171615;
+    --input-border: #2a2826;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ── Overlay ── */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  /* ── Dialog ── */
+  .dialog {
+    width: 100%;
+    max-width: 680px;
+    max-height: calc(100vh - 48px);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.3),
+      0 12px 40px rgba(0,0,0,0.5);
+  }
+
+  /* ── Title bar ── */
+  .titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .titlebar h1 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+  }
+
+  .titlebar .close-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 1;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .titlebar .close-btn:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text-primary);
+  }
+
+  /* ── Scrollable body ── */
+  .dialog-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 0;
+  }
+
+  .dialog-body::-webkit-scrollbar { width: 6px; }
+  .dialog-body::-webkit-scrollbar-track { background: transparent; }
+  .dialog-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── File metadata ── */
+  .file-meta {
+    background: var(--panel-raised);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .file-meta .filename {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-primary);
+  }
+
+  .file-meta .stats {
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* ── Warning banners ── */
+  .warning-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    padding: 9px 16px;
+    background: rgba(184, 152, 72, 0.07);
+    border-bottom: 1px solid rgba(184, 152, 72, 0.15);
+    font-size: 12px;
+    color: var(--warning);
+    line-height: 1.45;
+  }
+
+  .warning-banner .icon {
+    flex-shrink: 0;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  /* ── Section: Default Values ── */
+  .section {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .field input {
+    width: 100%;
+    height: 30px;
+    padding: 0 8px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 5px;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .field input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+  }
+
+  .field input:focus {
+    border-color: var(--accent);
+  }
+
+  .field input[type="date"] {
+    color-scheme: dark;
+  }
+
+  .field input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.6);
+  }
+
+  /* ── Bulk selection controls ── */
+  .bulk-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .bulk-buttons {
+    display: flex;
+    gap: 6px;
+  }
+
+  .bulk-btn {
+    height: 26px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-family: inherit;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .bulk-btn:hover {
+    background: rgba(255,255,255,0.04);
+    color: var(--text-primary);
+    border-color: #3a3836;
+  }
+
+  .selection-count {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* ── Section table ── */
+  .table-wrap {
+    max-height: 296px;
+    overflow-y: auto;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .table-wrap::-webkit-scrollbar { width: 6px; }
+  .table-wrap::-webkit-scrollbar-track { background: transparent; }
+  .table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  thead th {
+    background: var(--panel-raised);
+    padding: 7px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  thead th:first-child { padding-left: 16px; width: 36px; }
+  thead th:last-child { text-align: right; padding-right: 16px; }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(42, 40, 38, 0.5);
+    transition: background 0.1s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+
+  tbody tr.selected {
+    background: rgba(168, 144, 96, 0.06);
+  }
+
+  tbody tr.disabled {
+    opacity: 0.45;
+  }
+
+  tbody tr.imported {
+    opacity: 0.72;
+  }
+
+  tbody td {
+    padding: 7px 12px;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  tbody td:first-child { padding-left: 16px; }
+  tbody td:last-child { text-align: right; padding-right: 16px; }
+
+  .col-name { font-weight: 500; color: var(--text-primary); }
+  .col-date { color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .col-dir { color: var(--text-secondary); }
+  .col-shots { color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+
+  .imported-tag {
+    display: inline-block;
+    font-size: 11px;
+    color: var(--warning);
+    margin-left: 6px;
+    font-weight: 400;
+  }
+
+  .empty-val {
+    color: var(--text-secondary);
+    opacity: 0.5;
+  }
+
+  /* ── Checkbox ── */
+  .cb {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--input-bg);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.12s, border-color 0.12s;
+  }
+
+  .cb.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .cb.checked::after {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 8px;
+    border: solid #1a1816;
+    border-width: 0 1.8px 1.8px 0;
+    transform: rotate(45deg) translate(-0.5px, -0.5px);
+  }
+
+  .cb.disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  /* ── Footer ── */
+  .dialog-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .btn {
+    height: 32px;
+    padding: 0 16px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .btn-outline:hover {
+    border-color: #3a3836;
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    color: #1a1816;
+    font-weight: 600;
+  }
+
+  .btn-primary:hover {
+    background: #b8a070;
+    border-color: #b8a070;
+  }
+</style>
+</head>
+<body>
+
+<div class="overlay">
+  <div class="dialog">
+
+    <!-- Title bar -->
+    <div class="titlebar">
+      <h1>Import DMP File (Step 1)</h1>
+      <button class="close-btn" title="Close" aria-label="Close">&times;</button>
+    </div>
+
+    <div class="dialog-body">
+
+      <!-- File metadata -->
+      <div class="file-meta">
+        <div class="filename">File: survey_2024_cenote.dmp (v3)</div>
+        <div class="stats">247 shots &middot; 1,842.6 m &middot; Depth: &minus;3.2 to &minus;67.8 m</div>
+      </div>
+
+      <!-- Warning: duplicate file -->
+      <div class="warning-banner">
+        <span class="icon">&#9888;</span>
+        <span>File may have been imported before (same hash detected)</span>
+      </div>
+
+      <!-- Warning: duplicate sections -->
+      <div class="warning-banner">
+        <span class="icon">&#9888;</span>
+        <span>2 of 12 sections already imported (auto-deselected)</span>
+      </div>
+
+      <!-- Default Values -->
+      <div class="section">
+        <div class="section-title">Default Values (apply to all sections)</div>
+        <div class="input-row">
+          <div class="field">
+            <label>Surveyor</label>
+            <input type="text" value="J. Martinez" placeholder="Enter surveyor name...">
+          </div>
+          <div class="field">
+            <label>Date Override</label>
+            <input type="date" value="">
+          </div>
+        </div>
+      </div>
+
+      <!-- Bulk selection controls -->
+      <div class="bulk-controls">
+        <div class="bulk-buttons">
+          <button class="bulk-btn">Select All</button>
+          <button class="bulk-btn">Select None</button>
+          <button class="bulk-btn">Invert</button>
+        </div>
+        <span class="selection-count">8 of 10 sections selected</span>
+      </div>
+
+      <!-- Section table -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Date</th>
+              <th>Direction</th>
+              <th>Shots</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="selected">
+              <td><span class="cb checked"></span></td>
+              <td class="col-name">Main Passage</td>
+              <td class="col-date">2024-03-15</td>
+              <td class="col-dir">in</td>
+              <td class="col-shots">42</td>
+            </tr>
+            <tr class="selected">
+              <td><span class="cb checked"></span></td>
+              <td class="col-name">North Branch</td>
+              <td class="col-date">2024-03-15</td>
+              <td class="col-dir">out</td>
+              <td class="col-shots">28</td>
+            </tr>
+            <tr class="selected">
+              <td><span class="cb checked"></span></td>
+              <td class="col-name">Deep Chamber</td>
+              <td class="col-date">2024-03-16</td>
+              <td class="col-dir">in</td>
+              <td class="col-shots">35</td>
+            </tr>
+            <tr class="imported">
+              <td><span class="cb"></span></td>
+              <td class="col-name">Side Tunnel A <span class="imported-tag">(already imported)</span></td>
+              <td class="col-date">2024-03-16</td>
+              <td class="col-dir">in</td>
+              <td class="col-shots">18</td>
+            </tr>
+            <tr class="selected">
+              <td><span class="cb checked"></span></td>
+              <td class="col-name">Cathedral Hall</td>
+              <td class="col-date">2024-03-17</td>
+              <td class="col-dir">out</td>
+              <td class="col-shots">31</td>
+            </tr>
+            <tr class="selected">
+              <td><span class="cb checked"></span></td>
+              <td class="col-name">Sump Approach</td>
+              <td class="col-date">2024-03-17</td>
+              <td class="col-dir">in</td>
+              <td class="col-shots">24</td>
+            </tr>
+            <tr class="imported">
+              <td><span class="cb"></span></td>
+              <td class="col-name">Surface Reference <span class="imported-tag">(already imported)</span></td>
+              <td class="col-date">2024-03-14</td>
+              <td class="col-dir">out</td>
+              <td class="col-shots">12</td>
+            </tr>
+            <tr class="selected">
+              <td><span class="cb checked"></span></td>
+              <td class="col-name">Lower Gallery</td>
+              <td class="col-date">2024-03-18</td>
+              <td class="col-dir">in</td>
+              <td class="col-shots">57</td>
+            </tr>
+            <tr class="selected">
+              <td><span class="cb checked"></span></td>
+              <td class="col-name">Connection Passage</td>
+              <td class="col-date">2024-03-18</td>
+              <td class="col-dir">out</td>
+              <td class="col-shots">15</td>
+            </tr>
+            <tr class="disabled">
+              <td><span class="cb disabled"></span></td>
+              <td class="col-name">Empty Section</td>
+              <td class="col-date"><span class="empty-val">&mdash;</span></td>
+              <td class="col-dir">in</td>
+              <td class="col-shots"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /dialog-body -->
+
+    <!-- Footer -->
+    <div class="dialog-footer">
+      <button class="btn btn-outline">Cancel</button>
+      <button class="btn btn-primary">Continue to Section Setup</button>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
