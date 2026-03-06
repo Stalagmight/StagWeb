@@ -166,6 +166,10 @@
   .card:nth-child(8) { animation-delay: 0.4s; }
   .card:nth-child(9) { animation-delay: 0.45s; }
   .card:nth-child(10) { animation-delay: 0.5s; }
+  .card:nth-child(11) { animation-delay: 0.55s; }
+  .card:nth-child(12) { animation-delay: 0.6s; }
+  .card:nth-child(13) { animation-delay: 0.65s; }
+  .card:nth-child(14) { animation-delay: 0.7s; }
 
   .card:hover {
     transform: translateY(-4px);
@@ -289,6 +293,17 @@
   .p-10 { background: linear-gradient(180deg, #0F0906 0%, #1A120B 20%, #3A251A 40%, #AE8D67 60%, #C1A07A 80%, #F3E8D8 100%); }
   .p-10 svg { color: #F3E8D8 !important; filter: drop-shadow(0 0 6px rgba(243,232,216,0.2)); }
 
+  .p-v05 { background: radial-gradient(circle at 50% 50%, #3A251A 0%, #1A120B 50%, #0F0906 100%); }
+  .p-v05::before { content:''; position:absolute; inset:0; background: radial-gradient(circle at 40% 40%, rgba(193,160,122,0.15) 0%, transparent 50%); }
+
+  .p-v06 { background: #0e0d0c; }
+  .p-v06::before { content:''; position:absolute; inset:0; background: repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(243,232,216,0.03) 29px, rgba(243,232,216,0.03) 30px), repeating-linear-gradient(90deg, transparent, transparent 29px, rgba(243,232,216,0.03) 29px, rgba(243,232,216,0.03) 30px); }
+
+  .p-v07 { background: linear-gradient(135deg, #0F0906 0%, #171615 50%, #0F0906 100%); }
+  .p-v07::before { content:''; position:absolute; inset:0; background: linear-gradient(135deg, transparent 40%, rgba(193,160,122,0.06) 50%, transparent 60%); }
+
+  .p-v08 { background: #0e0d0c; border-bottom: 1px solid rgba(193,160,122,0.15); }
+
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: translateY(0); }
@@ -320,9 +335,9 @@
 </header>
 
 <section class="hero">
-  <h1>10 Visions for <span>StalagMight</span></h1>
+  <h1>14 Visions for <span>StalagMight</span></h1>
   <p>Product and onboarding page mockups built on the Cave color scheme. Underwater cave survey and mapping.</p>
-  <div class="pill"><strong>10</strong> designs &middot; Cave palette &middot; Self-contained HTML</div>
+  <div class="pill"><strong>14</strong> designs &middot; Cave palette &middot; Self-contained HTML</div>
 </section>
 
 <div class="grid">
@@ -453,6 +468,58 @@
       <div class="card-name">Emergence</div>
       <div class="card-desc">Elegant dark-to-light transition through the full Cave palette — ascending from basalt depths to limestone warmth.</div>
       <div class="card-tags"><span class="tag">Elegant</span><span class="tag">Transitional</span><span class="tag">Editorial</span><span class="tag">Refined</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="v05-ember-glow.html" class="card">
+    <div class="card-preview p-v05">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="av05" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#av05)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Variation 05</div>
+      <div class="card-name">Ember Glow</div>
+      <div class="card-desc">Warm emphasis with radial glows, gradient borders, S-curve workflow, and sandstone-hued feature icons. Inviting and luminous.</div>
+      <div class="card-tags"><span class="tag">Warm</span><span class="tag">Radial Glow</span><span class="tag">Gradient</span><span class="tag">Crystal Matrix</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="v06-lattice-dense.html" class="card">
+    <div class="card-preview p-v06">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="av06" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#av06)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Variation 06</div>
+      <div class="card-name">Lattice Dense</div>
+      <div class="card-desc">Information-dense dashboard layout with 3x3 grid, horizontal stepper workflow, stat panels, and compact sections.</div>
+      <div class="card-tags"><span class="tag">Dashboard</span><span class="tag">Dense</span><span class="tag">Stepper</span><span class="tag">Crystal Matrix</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="v07-shard-cascade.html" class="card">
+    <div class="card-preview p-v07">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="av07" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#av07)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Variation 07</div>
+      <div class="card-name">Shard Cascade</div>
+      <div class="card-desc">Cascading diagonal flow with staggered cards, 45-degree dividers, parallax shards, and asymmetric composition.</div>
+      <div class="card-tags"><span class="tag">Diagonal</span><span class="tag">Cascade</span><span class="tag">Parallax</span><span class="tag">Crystal Matrix</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="v08-crystal-minimal.html" class="card">
+    <div class="card-preview p-v08">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="av08" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity=".2"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity=".12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity=".32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#av08)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity=".98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Variation 08</div>
+      <div class="card-name">Crystal Minimal</div>
+      <div class="card-desc">Ultra-minimal design with pristine typography, clip-path cards, generous whitespace, and clean numbered workflow list.</div>
+      <div class="card-tags"><span class="tag">Minimal</span><span class="tag">Clean</span><span class="tag">Typography</span><span class="tag">Crystal Matrix</span></div>
     </div>
     <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>

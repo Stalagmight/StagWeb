@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StalagMight — Lattice Dense</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & TOKENS ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --cave-ember-700: #3A251A;
+  --cave-ember-900: #1A120B;
+  --basalt-950: #0F0906;
+  --limestone-50: #F3E8D8;
+  --sandstone-200: #C1A07A;
+  --silt-300: #AE8D67;
+  --bg: #0e0d0c;
+  --panel: #171615;
+  --border: #2a2826;
+  --text-primary: #d5d0ca;
+  --text-secondary: #858280;
+  --accent: #a89060;
+  --warning: #b89848;
+  --error: #b85048;
+  --success: #48986a;
+  --border-subtle: rgba(243,232,216,0.18);
+  --border-strong: rgba(243,232,216,0.60);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.5;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+
+a { color: var(--sandstone-200); text-decoration: none; transition: color 0.3s; }
+a:hover { color: var(--limestone-50); }
+
+/* ===== NAV — compact dashboard header ===== */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 0.6rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(14,13,12,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.nav-brand svg { width: 28px; height: 28px; }
+
+.nav-brand span {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--limestone-50);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+.nav-links a:hover {
+  color: var(--sandstone-200);
+  border-color: var(--border);
+  background: rgba(23,22,21,0.6);
+}
+
+.nav-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-family: 'Rajdhani', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.nav-status .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+/* ===== HERO — compact banner ===== */
+.hero {
+  display: flex;
+  align-items: center;
+  padding: 5rem 2rem 3rem;
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero-left {
+  flex: 1;
+}
+
+.hero-mark {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.hero-mark svg { width: 48px; height: 48px; }
+
+.hero h1 {
+  font-size: 2.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--limestone-50);
+  line-height: 1;
+}
+
+.hero-tagline {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--sandstone-200);
+  margin-bottom: 1rem;
+}
+
+.hero-desc {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 460px;
+  margin-bottom: 1.5rem;
+}
+
+.hero-cta-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.hero-right {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.stat-card {
+  padding: 1rem 1.25rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  min-width: 140px;
+}
+
+.stat-value {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--sandstone-200);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  border-radius: 2px;
+}
+
+.btn-primary {
+  background: var(--sandstone-200);
+  color: var(--basalt-950);
+}
+
+.btn-primary:hover {
+  background: var(--limestone-50);
+  color: var(--basalt-950);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--sandstone-200);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--sandstone-200);
+  background: rgba(193,160,122,0.06);
+  color: var(--limestone-50);
+}
+
+/* ===== SECTION WRAPPER ===== */
+.section {
+  padding: 3.5rem 1.5rem;
+  position: relative;
+}
+
+.section-header {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+}
+
+.section-header-col {
+  text-align: left;
+}
+
+.section-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--sandstone-200);
+  margin-bottom: 0.25rem;
+}
+
+.section-header h2 {
+  font-size: 1.6rem;
+  color: var(--limestone-50);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.section-header p {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  max-width: 400px;
+}
+
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ===== FEATURES — 3x3 grid (6 features + 3 stats) ===== */
+.features-dense {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feature-tile {
+  padding: 1.25rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.feature-tile:hover {
+  border-color: var(--accent);
+  background: rgba(23,22,21,0.9);
+}
+
+.feature-tile-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.feature-tile-header svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--sandstone-200);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.feature-tile h3 {
+  font-size: 0.85rem;
+  color: var(--limestone-50);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+}
+
+.feature-tile p {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* Stat tiles (fill the 3x3 grid) */
+.stat-tile {
+  padding: 1.25rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stat-tile .stat-big {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--sandstone-200);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+.stat-tile .stat-desc {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* ===== WORKFLOW — horizontal stepper ===== */
+.workflow-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.stepper {
+  display: flex;
+  gap: 0;
+  position: relative;
+}
+
+.stepper-line {
+  position: absolute;
+  top: 28px;
+  left: 40px;
+  right: 40px;
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+
+.stepper-line-fill {
+  position: absolute;
+  top: 28px;
+  left: 40px;
+  right: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--sandstone-200), var(--accent));
+  z-index: 1;
+  opacity: 0.4;
+}
+
+.stepper-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  padding: 0 0.5rem;
+  transition: all 0.3s;
+}
+
+.stepper-step:hover .stepper-num {
+  border-color: var(--sandstone-200);
+  background: rgba(58,37,26,0.6);
+  box-shadow: 0 0 16px rgba(193,160,122,0.15);
+}
+
+.stepper-num {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--limestone-50);
+  background: var(--panel);
+  border: 2px solid var(--border);
+  margin-bottom: 0.75rem;
+  transition: all 0.3s;
+}
+
+.stepper-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--limestone-50);
+  text-align: center;
+  margin-bottom: 0.4rem;
+}
+
+.stepper-desc {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  text-align: center;
+  max-width: 180px;
+}
+
+/* ===== HIGHLIGHTS — compact 3-col ===== */
+.highlights-dense {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.highlight-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+.highlight-row:hover {
+  border-color: var(--accent);
+}
+
+.highlight-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.highlight-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--sandstone-200);
+  fill: none;
+  stroke-width: 1.5;
+}
+
+.highlight-row h3 {
+  font-size: 0.8rem;
+  color: var(--limestone-50);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.2rem;
+}
+
+.highlight-row p {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+/* ===== CTA — compact bar ===== */
+.cta-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--cave-ember-700), var(--cave-ember-900));
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.cta-text h2 {
+  font-size: 1.4rem;
+  color: var(--limestone-50);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.cta-text p {
+  color: var(--silt-300);
+  font-size: 0.85rem;
+}
+
+.cta-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.cta-platforms {
+  display: flex;
+  gap: 1.5rem;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.cta-platforms span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* ===== FOOTER — minimal ===== */
+.footer {
+  background: var(--basalt-950);
+  border-top: 1px solid var(--border);
+  padding: 1.5rem;
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-brand svg { width: 22px; height: 22px; }
+
+.footer-brand span {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--limestone-50);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.footer-links a {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  transition: color 0.3s;
+}
+
+.footer-links a:hover { color: var(--limestone-50); }
+
+.footer-copy {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1000px) {
+  .features-dense { grid-template-columns: repeat(2, 1fr); }
+  .stepper { flex-wrap: wrap; justify-content: center; gap: 1.5rem; }
+  .stepper-line, .stepper-line-fill { display: none; }
+  .highlights-dense { grid-template-columns: repeat(2, 1fr); }
+  .hero { flex-direction: column; padding-top: 4rem; }
+  .hero-right { width: 100%; }
+}
+
+@media (max-width: 600px) {
+  .features-dense { grid-template-columns: 1fr; }
+  .highlights-dense { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 2rem; }
+  .cta-bar { flex-direction: column; text-align: center; }
+  .cta-actions { justify-content: center; flex-wrap: wrap; }
+  .nav-links { display: none; }
+  .nav-status { display: none; }
+}
+
+/* ===== REVEAL ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.05s; }
+.reveal-delay-2 { transition-delay: 0.1s; }
+.reveal-delay-3 { transition-delay: 0.15s; }
+.reveal-delay-4 { transition-delay: 0.2s; }
+.reveal-delay-5 { transition-delay: 0.25s; }
+.reveal-delay-6 { transition-delay: 0.3s; }
+.reveal-delay-7 { transition-delay: 0.35s; }
+.reveal-delay-8 { transition-delay: 0.4s; }
+.reveal-delay-9 { transition-delay: 0.45s; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+      <defs><linearGradient id="nav-accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs>
+      <g transform="translate(512 512) scale(1.18) translate(-512 -512)">
+        <circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity="0.20"/>
+        <circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity="0.12"/>
+        <g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity="0.32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g>
+        <g fill="none" stroke="url(#nav-accent)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g>
+        <g fill="#F3E8D8" opacity="0.98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g>
+      </g>
+    </svg>
+    <span>StalagMight</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Process</a></li>
+    <li><a href="#highlights">Highlights</a></li>
+    <li><a href="#download">Download</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="dot"></div>
+    <span>v1.0 Stable</span>
+  </div>
+</nav>
+
+<!-- HERO — compact dashboard banner -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-mark">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+        <defs><linearGradient id="hero-accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs>
+        <g transform="translate(512 512) scale(1.18) translate(-512 -512)">
+          <circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity="0.20"/>
+          <circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity="0.12"/>
+          <g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity="0.32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g>
+          <g fill="none" stroke="url(#hero-accent)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g>
+          <g fill="#F3E8D8" opacity="0.98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g>
+        </g>
+      </svg>
+      <h1>StalagMight</h1>
+    </div>
+    <div class="hero-tagline">Underwater Cave Survey &amp; Mapping</div>
+    <p class="hero-desc">
+      The precision desktop tool for cave divers. Import mNemo DMP data,
+      visualize surveys with satellite overlay, detect loop closures,
+      and export publication-ready maps.
+    </p>
+    <div class="hero-cta-group">
+      <a href="#download" class="btn btn-primary">Download Free</a>
+      <a href="#features" class="btn btn-secondary">Explore Features</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="stat-card">
+      <div class="stat-value">6</div>
+      <div class="stat-label">Core Tools</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">5</div>
+      <div class="stat-label">Export Formats</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Platforms</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">&lt;50</div>
+      <div class="stat-label">MB Footprint</div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- FEATURES — 3x3 dense grid: 6 features + 3 stat tiles -->
+<section id="features" class="section" style="background: var(--basalt-950);">
+  <div class="section-header reveal">
+    <div class="section-header-col">
+      <div class="section-label">Core Capabilities</div>
+      <h2>Feature Matrix</h2>
+    </div>
+    <p>Every tool for your underwater survey workflow, packed into a tight grid.</p>
+  </div>
+  <div class="features-dense">
+    <div class="feature-tile reveal reveal-delay-1">
+      <div class="feature-tile-header">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <h3>DMP File Import</h3>
+      </div>
+      <p>Direct import from mNemo dive computers. Parse DMP survey files with automatic station detection, compass bearings, and depth readings. Batch import supported.</p>
+    </div>
+    <div class="feature-tile reveal reveal-delay-2">
+      <div class="feature-tile-header">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="0"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+        <h3>Spreadsheet Entry</h3>
+      </div>
+      <p>Manual data entry via a built-in spreadsheet interface. Enter station names, azimuths, distances, and depths with validation, auto-complete, and undo history.</p>
+    </div>
+    <div class="feature-tile reveal reveal-delay-3">
+      <div class="feature-tile-header">
+        <svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+        <h3>2D Visualization</h3>
+      </div>
+      <p>Render surveys as interactive 2D plan and profile views. Overlay on satellite imagery with real-world coordinates. Pan, zoom, and measure with precision.</p>
+    </div>
+    <div class="feature-tile reveal reveal-delay-4">
+      <div class="feature-tile-header">
+        <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        <h3>Section Management</h3>
+      </div>
+      <p>Organize complex cave systems into logical sections. Color-code passages, manage branching networks, and merge independent survey trips seamlessly.</p>
+    </div>
+    <div class="feature-tile reveal reveal-delay-5">
+      <div class="feature-tile-header">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>
+        <h3>Loop Closure</h3>
+      </div>
+      <p>Automatic detection of loop closures in survey networks. Identify redundant paths, calculate misclosure vectors, and validate network consistency.</p>
+    </div>
+    <div class="feature-tile reveal reveal-delay-6">
+      <div class="feature-tile-header">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <h3>Error Distribution</h3>
+      </div>
+      <p>Distribute accumulated survey errors across loop closures using least-squares adjustment. Improve positional accuracy across your entire cave network.</p>
+    </div>
+    <!-- 3 stat tiles to fill the 3x3 -->
+    <div class="stat-tile reveal reveal-delay-7">
+      <div class="stat-big">DMP</div>
+      <div class="stat-desc">mNemo native format direct import with validation</div>
+    </div>
+    <div class="stat-tile reveal reveal-delay-8">
+      <div class="stat-big">LSQ</div>
+      <div class="stat-desc">Least-squares loop closure error distribution engine</div>
+    </div>
+    <div class="stat-tile reveal reveal-delay-9">
+      <div class="stat-big">SAT</div>
+      <div class="stat-desc">Satellite imagery overlay with georeferenced coordinates</div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- WORKFLOW — horizontal stepper bar -->
+<section id="workflow" class="section" style="background: var(--bg);">
+  <div class="section-header reveal">
+    <div class="section-header-col">
+      <div class="section-label">Workflow</div>
+      <h2>From Raw Data to Map</h2>
+    </div>
+    <p>Five steps from dive computer to publication-ready cartography.</p>
+  </div>
+  <div class="workflow-bar reveal">
+    <div class="stepper">
+      <div class="stepper-line"></div>
+      <div class="stepper-line-fill"></div>
+      <div class="stepper-step">
+        <div class="stepper-num">01</div>
+        <div class="stepper-title">Import Survey Data</div>
+        <div class="stepper-desc">Connect your mNemo device and import DMP files directly, or enter survey legs manually via the built-in spreadsheet. All data validated on entry.</div>
+      </div>
+      <div class="stepper-step">
+        <div class="stepper-num">02</div>
+        <div class="stepper-title">Organize Sections</div>
+        <div class="stepper-desc">Group survey legs into logical cave sections. Assign colors, names, and metadata. Build the structural skeleton of your cave map.</div>
+      </div>
+      <div class="stepper-step">
+        <div class="stepper-num">03</div>
+        <div class="stepper-title">Detect Loop Closures</div>
+        <div class="stepper-desc">The engine automatically finds loops in your survey network. Review misclosure errors and flag problem legs for re-survey or correction.</div>
+      </div>
+      <div class="stepper-step">
+        <div class="stepper-num">04</div>
+        <div class="stepper-title">Distribute Errors</div>
+        <div class="stepper-desc">Apply least-squares error distribution across all detected loops. Watch your network tighten as positional accuracy improves across every station.</div>
+      </div>
+      <div class="stepper-step">
+        <div class="stepper-num">05</div>
+        <div class="stepper-title">Visualize &amp; Export</div>
+        <div class="stepper-desc">View your survey in 2D with satellite overlay. Pan, zoom, and annotate. Export finished maps as PNG, SVG, PDF, or data as CSV and JSON.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- HIGHLIGHTS — compact 3-column -->
+<section id="highlights" class="section" style="background: var(--basalt-950);">
+  <div class="section-header reveal">
+    <div class="section-header-col">
+      <div class="section-label">Feature Highlights</div>
+      <h2>Dense Detail</h2>
+    </div>
+    <p>Built by cave divers, for cave divers. Every detail refined to precision.</p>
+  </div>
+  <div class="highlights-dense">
+    <div class="highlight-row reveal reveal-delay-1">
+      <div class="highlight-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <div>
+        <h3>Satellite Overlay</h3>
+        <p>Georeference your surveys and overlay them on satellite imagery. See where passages run relative to surface features.</p>
+      </div>
+    </div>
+    <div class="highlight-row reveal reveal-delay-2">
+      <div class="highlight-icon">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div>
+        <h3>Tauri + Rust Core</h3>
+        <p>Native performance with a lightweight footprint. Rust backend handles computation; React delivers a fluid interface.</p>
+      </div>
+    </div>
+    <div class="highlight-row reveal reveal-delay-3">
+      <div class="highlight-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="0"/><path d="M7 2v20M17 2v20M2 12h20M2 7h20M2 17h20"/></svg>
+      </div>
+      <div>
+        <h3>Multi-Format Export</h3>
+        <p>Export maps as high-resolution PNG, scalable SVG, or print-ready PDF. Data as CSV or structured JSON.</p>
+      </div>
+    </div>
+    <div class="highlight-row reveal reveal-delay-4">
+      <div class="highlight-icon">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <div>
+        <h3>Collaborative Workflow</h3>
+        <p>Merge surveys from multiple dive teams. Import and combine independent survey trips into a unified cave network.</p>
+      </div>
+    </div>
+    <div class="highlight-row reveal reveal-delay-5">
+      <div class="highlight-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+      </div>
+      <div>
+        <h3>Statistical Analysis</h3>
+        <p>View detailed statistics: total length, depth range, average leg length, misclosure percentages, and error vectors.</p>
+      </div>
+    </div>
+    <div class="highlight-row reveal reveal-delay-6">
+      <div class="highlight-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="0"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      </div>
+      <div>
+        <h3>Offline-First Design</h3>
+        <p>No internet required. Process surveys in the field, at base camp, or on the boat. Data stays local and secure.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- CTA — compact action bar -->
+<section id="download" class="section" style="background: var(--bg);">
+  <div class="cta-bar reveal">
+    <div class="cta-text">
+      <h2>Begin Your Survey</h2>
+      <p>Download StalagMight and bring precision to your underwater cave mapping workflow. Free and open-source.</p>
+    </div>
+    <div class="cta-actions">
+      <a href="#" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download
+      </a>
+      <a href="#" class="btn btn-secondary">GitHub</a>
+      <div class="cta-platforms">
+        <span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Win
+        </span>
+        <span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 110 20 10 10 0 010-20z"/></svg>
+          Mac
+        </span>
+        <span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Linux
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+        <defs><linearGradient id="foot-accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs>
+        <g transform="translate(512 512) scale(1.18) translate(-512 -512)">
+          <circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity="0.20"/>
+          <circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity="0.12"/>
+          <g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity="0.32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g>
+          <g fill="none" stroke="url(#foot-accent)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g>
+          <g fill="#F3E8D8" opacity="0.98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g>
+        </g>
+      </svg>
+      <span>StalagMight</span>
+    </div>
+    <ul class="footer-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#workflow">Process</a></li>
+      <li><a href="#download">Download</a></li>
+      <li><a href="#">Docs</a></li>
+      <li><a href="#">GitHub</a></li>
+    </ul>
+    <div class="footer-copy">&copy; 2026 StalagMight. Underwater cave survey and mapping.</div>
+  </div>
+</footer>
+
+<script>
+/* ===== SCROLL REVEAL ===== */
+(function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => {
+    observer.observe(el);
+  });
+})();
+
+/* ===== SMOOTH NAV SCROLL ===== */
+document.querySelectorAll('.nav-links a, .hero-cta-group a, .footer-links a, .cta-bar a').forEach(link => {
+  link.addEventListener('click', function(e) {
+    const href = this.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  });
+});
+
+/* ===== NAV BACKGROUND ON SCROLL ===== */
+(function() {
+  const nav = document.querySelector('.nav');
+  window.addEventListener('scroll', () => {
+    nav.style.background = window.scrollY > 40 ? 'rgba(14,13,12,0.98)' : 'rgba(14,13,12,0.95)';
+  });
+})();
+</script>
+</body>
+</html>
