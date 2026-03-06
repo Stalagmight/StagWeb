@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stalagmight — Expedition HQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:#1E293B;color:#CBD5E1;overflow-x:hidden;line-height:1.6}
+h1,h2,h3,h4,h5,h6{font-family:'Chakra Petch',sans-serif;font-weight:700;line-height:1.2}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+
+/* ── Variables ────────────────────────────────────── */
+:root{
+  --bg-deep:#0F172A;
+  --bg-mid:#1E293B;
+  --bg-panel:#0F172A;
+  --blue:#3852fc;
+  --indigo:#6366F1;
+  --purple:#A855F7;
+  --purple-dark:#784FAF;
+  --violet:#8b5cf6;
+  --teal:#14b8a6;
+  --emerald:#10b981;
+  --orange:#FF8C17;
+  --beige:#F1D6A2;
+  --light:#F1F5F9;
+  --lavender:#E9D5FF;
+  --white:#FFFFFD;
+  --red:#ef4444;
+  --yellow:#eab308;
+  --border:rgba(56,82,252,.15);
+  --panel-bg:rgba(15,23,42,.7);
+  --glow-blue:0 0 20px rgba(56,82,252,.15);
+  --glow-orange:0 0 20px rgba(255,140,23,.12);
+}
+
+/* ── Scrollbar ────────────────────────────────────── */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg-deep)}
+::-webkit-scrollbar-thumb{background:var(--blue);border-radius:0}
+
+/* ── Scan Line Overlay ────────────────────────────── */
+body::after{
+  content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);
+  opacity:.4;
+}
+
+/* ── Topographic Background ───────────────────────── */
+.topo-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='none' stroke='%233852fc' stroke-width='.5'%3E%3Cellipse cx='200' cy='200' rx='180' ry='120'/%3E%3Cellipse cx='200' cy='200' rx='150' ry='100'/%3E%3Cellipse cx='200' cy='200' rx='120' ry='80'/%3E%3Cellipse cx='200' cy='200' rx='90' ry='60'/%3E%3Cellipse cx='200' cy='200' rx='60' ry='40'/%3E%3Cellipse cx='200' cy='200' rx='30' ry='20'/%3E%3Cellipse cx='180' cy='180' rx='160' ry='110' transform='rotate(15 200 200)'/%3E%3Cellipse cx='180' cy='180' rx='130' ry='90' transform='rotate(15 200 200)'/%3E%3Cellipse cx='180' cy='180' rx='100' ry='70' transform='rotate(15 200 200)'/%3E%3Cellipse cx='180' cy='180' rx='70' ry='50' transform='rotate(15 200 200)'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ── Utility ──────────────────────────────────────── */
+.container{max-width:1240px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+.section{padding:100px 0;position:relative}
+
+/* ── Panel Component ──────────────────────────────── */
+.panel{
+  background:var(--panel-bg);
+  border:1px solid var(--border);
+  backdrop-filter:blur(8px);
+  position:relative;overflow:hidden;
+  transition:border-color .4s,box-shadow .4s;
+}
+.panel:hover{border-color:rgba(56,82,252,.3);box-shadow:var(--glow-blue)}
+.panel__header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;
+  border-bottom:1px solid var(--border);
+  background:rgba(15,23,42,.5);
+}
+.panel__title{
+  font-family:'Chakra Petch',sans-serif;font-size:.75rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.12em;color:#94A3B8;
+  display:flex;align-items:center;gap:8px;
+}
+.panel__body{padding:16px}
+
+/* HUD corners */
+.hud-corners{position:relative}
+.hud-corners::before,.hud-corners::after,
+.hud-corners .hud-bl::before,.hud-corners .hud-br::before{
+  content:'';position:absolute;width:16px;height:16px;
+  border-color:var(--blue);border-style:solid;border-width:0;
+  opacity:.5;transition:opacity .4s;z-index:3;
+}
+.hud-corners:hover::before,.hud-corners:hover::after,
+.hud-corners:hover .hud-bl::before,.hud-corners:hover .hud-br::before{opacity:1}
+.hud-corners::before{top:-1px;left:-1px;border-top-width:2px;border-left-width:2px}
+.hud-corners::after{top:-1px;right:-1px;border-top-width:2px;border-right-width:2px}
+.hud-corners .hud-bl::before{bottom:-1px;left:-1px;border-bottom-width:2px;border-left-width:2px;position:absolute}
+.hud-corners .hud-br::before{bottom:-1px;right:-1px;border-bottom-width:2px;border-right-width:2px;position:absolute}
+
+/* Status dots */
+.status-dot{
+  width:8px;height:8px;border-radius:50%;display:inline-block;
+  animation:pulse 2s ease-in-out infinite;
+}
+.status-dot--green{background:var(--emerald);box-shadow:0 0 6px var(--emerald)}
+.status-dot--orange{background:var(--orange);box-shadow:0 0 6px var(--orange)}
+.status-dot--red{background:var(--red);box-shadow:0 0 6px var(--red)}
+.status-dot--blue{background:var(--blue);box-shadow:0 0 6px var(--blue)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── Nav ──────────────────────────────────────────── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(15,23,42,.92);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.nav__inner{
+  max-width:1240px;margin:0 auto;padding:0 24px;
+  display:flex;align-items:center;justify-content:space-between;height:60px;
+}
+.nav__logo{
+  display:flex;align-items:center;gap:10px;
+  font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:1.2rem;
+  color:var(--white);letter-spacing:.03em;
+}
+.nav__logo svg{color:var(--orange)}
+.nav__status{
+  display:flex;align-items:center;gap:8px;
+  font-family:'Chakra Petch',sans-serif;font-size:.7rem;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--emerald);
+}
+.nav__links{display:flex;gap:28px;align-items:center}
+.nav__links a{
+  font-size:.82rem;font-weight:500;color:#64748B;
+  text-transform:uppercase;letter-spacing:.06em;transition:color .25s;
+}
+.nav__links a:hover{color:var(--white)}
+.nav__cta{
+  background:var(--orange);color:var(--bg-deep);
+  padding:8px 20px;font-weight:700;font-size:.8rem;
+  text-transform:uppercase;letter-spacing:.08em;
+  border:none;cursor:pointer;transition:all .3s;
+  font-family:'Chakra Petch',sans-serif;
+}
+.nav__cta:hover{background:var(--white);color:var(--bg-deep)}
+
+/* ── Hero (Mission Briefing) ──────────────────────── */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  justify-content:center;padding:80px 0 40px;
+  position:relative;background:var(--bg-deep);
+}
+.hero__grid{
+  display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:center;
+}
+.hero__content{position:relative;z-index:2}
+.hero__alert{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,140,23,.08);border:1px solid rgba(255,140,23,.25);
+  padding:6px 16px;font-family:'Chakra Petch',sans-serif;
+  font-size:.72rem;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--orange);margin-bottom:28px;
+}
+.hero__title{
+  font-size:clamp(2.4rem,5.5vw,4rem);color:var(--white);
+  margin-bottom:20px;line-height:1.1;
+}
+.hero__title span{color:var(--orange)}
+.hero__sub{
+  font-size:1.1rem;color:#94A3B8;max-width:520px;
+  margin-bottom:36px;line-height:1.7;
+}
+.hero__actions{display:flex;gap:14px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 28px;font-family:'Chakra Petch',sans-serif;
+  font-weight:700;font-size:.88rem;text-transform:uppercase;
+  letter-spacing:.08em;cursor:pointer;border:none;transition:all .3s;
+}
+.btn--primary{background:var(--orange);color:var(--bg-deep)}
+.btn--primary:hover{background:var(--white)}
+.btn--outline{background:transparent;color:var(--blue);border:1px solid var(--blue)}
+.btn--outline:hover{background:rgba(56,82,252,.1);color:var(--white)}
+
+/* ── Dashboard Panel (Hero Right) ─────────────────── */
+.dashboard{position:relative;z-index:2}
+.dashboard__grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dash-card{
+  background:var(--panel-bg);border:1px solid var(--border);
+  padding:16px;position:relative;overflow:hidden;
+  transition:border-color .3s,box-shadow .3s;
+}
+.dash-card:hover{border-color:rgba(56,82,252,.3);box-shadow:var(--glow-blue)}
+.dash-card__label{
+  font-family:'Chakra Petch',sans-serif;font-size:.65rem;
+  text-transform:uppercase;letter-spacing:.12em;color:#64748B;
+  margin-bottom:8px;display:flex;align-items:center;gap:6px;
+}
+.dash-card__value{
+  font-family:'Chakra Petch',sans-serif;font-size:1.8rem;font-weight:700;
+  color:var(--white);line-height:1;
+}
+.dash-card__value--orange{color:var(--orange)}
+.dash-card__value--emerald{color:var(--emerald)}
+.dash-card__value--blue{color:var(--blue)}
+.dash-card__value--purple{color:var(--purple)}
+.dash-card__bar{
+  height:3px;margin-top:10px;background:rgba(255,255,255,.05);
+  position:relative;overflow:hidden;
+}
+.dash-card__fill{
+  height:100%;position:absolute;left:0;top:0;
+  transition:width 2s ease;
+}
+.dash-card--full{grid-column:1/-1}
+
+/* Live feed simulation */
+.live-feed{
+  grid-column:1/-1;
+  height:120px;overflow:hidden;position:relative;
+}
+.live-feed__content{
+  font-family:'Chakra Petch',sans-serif;font-size:.7rem;
+  color:#64748B;line-height:1.8;
+  animation:feedScroll 30s linear infinite;
+}
+@keyframes feedScroll{
+  0%{transform:translateY(0)}
+  100%{transform:translateY(-50%)}
+}
+.feed-line{display:flex;gap:12px;white-space:nowrap}
+.feed-time{color:#475569;min-width:65px}
+.feed-type{min-width:60px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.feed-type--info{color:var(--blue)}
+.feed-type--ok{color:var(--emerald)}
+.feed-type--warn{color:var(--orange)}
+.feed-type--data{color:var(--purple)}
+.feed-msg{color:#94A3B8}
+
+@media(max-width:900px){.hero__grid{grid-template-columns:1fr}}
+
+/* ── Features (Status Panels) ─────────────────────── */
+.features{background:var(--bg-mid)}
+.section__header{text-align:center;margin-bottom:56px}
+.section__label{
+  font-family:'Chakra Petch',sans-serif;font-size:.72rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.18em;color:var(--orange);
+  margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.section__title{
+  font-size:clamp(1.8rem,4vw,2.6rem);color:var(--white);margin-bottom:14px;
+}
+.section__desc{color:#94A3B8;max-width:540px;margin:0 auto;font-size:1rem}
+
+.features__grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+}
+@media(max-width:900px){.features__grid{grid-template-columns:1fr}}
+
+.feature-panel{
+  background:var(--panel-bg);border:1px solid var(--border);
+  position:relative;overflow:hidden;
+  transition:border-color .4s,box-shadow .4s;
+}
+.feature-panel:hover{border-color:rgba(56,82,252,.35);box-shadow:var(--glow-blue)}
+.feature-panel__head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  background:rgba(15,23,42,.4);
+}
+.feature-panel__label{
+  font-family:'Chakra Petch',sans-serif;font-size:.7rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.1em;color:#94A3B8;
+  display:flex;align-items:center;gap:8px;
+}
+.feature-panel__status{
+  font-family:'Chakra Petch',sans-serif;font-size:.65rem;
+  text-transform:uppercase;letter-spacing:.08em;
+  display:flex;align-items:center;gap:6px;
+}
+.feature-panel__body{padding:20px 18px}
+.feature-panel__title{
+  font-family:'Chakra Petch',sans-serif;font-size:1.1rem;font-weight:700;
+  color:var(--white);margin-bottom:10px;
+}
+.feature-panel__text{color:#94A3B8;font-size:.88rem;line-height:1.65;margin-bottom:16px}
+.feature-panel__metrics{
+  display:flex;gap:16px;
+}
+.metric{text-align:center;flex:1}
+.metric__val{
+  font-family:'Chakra Petch',sans-serif;font-size:1.2rem;font-weight:700;color:var(--white);
+}
+.metric__label{font-size:.65rem;color:#64748B;text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.progress-bar{
+  height:4px;background:rgba(255,255,255,.05);margin-top:12px;
+  position:relative;overflow:hidden;
+}
+.progress-bar__fill{
+  height:100%;position:absolute;left:0;top:0;
+  transition:width 1.5s ease;
+}
+
+/* ── How It Works ─────────────────────────────────── */
+.how-it-works{background:var(--bg-deep);position:relative}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+@media(max-width:900px){.steps{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.steps{grid-template-columns:1fr}}
+
+.step{
+  background:var(--panel-bg);border:1px solid var(--border);
+  padding:0;position:relative;overflow:hidden;
+  transition:border-color .4s,box-shadow .4s;
+}
+.step:hover{border-color:rgba(255,140,23,.3);box-shadow:var(--glow-orange)}
+.step__number{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-bottom:1px solid var(--border);
+  background:rgba(15,23,42,.5);
+}
+.step__num{
+  font-family:'Chakra Petch',sans-serif;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.12em;color:var(--orange);
+}
+.step__body{padding:20px 16px}
+.step__icon{
+  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,140,23,.08);border:1px solid rgba(255,140,23,.2);
+  margin-bottom:16px;color:var(--orange);
+}
+.step__title{
+  font-family:'Chakra Petch',sans-serif;font-size:1rem;font-weight:700;
+  color:var(--white);margin-bottom:8px;
+}
+.step__text{color:#94A3B8;font-size:.85rem;line-height:1.6}
+
+/* ── Feature Highlights ───────────────────────────── */
+.highlights{background:var(--bg-mid)}
+.highlight{
+  display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;
+  margin-bottom:80px;
+}
+.highlight:last-child{margin-bottom:0}
+.highlight:nth-child(even){direction:rtl}
+.highlight:nth-child(even)>*{direction:ltr}
+@media(max-width:768px){
+  .highlight{grid-template-columns:1fr;gap:32px}
+  .highlight:nth-child(even){direction:ltr}
+}
+
+.highlight__visual{
+  background:var(--panel-bg);border:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.highlight__visual-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;border-bottom:1px solid var(--border);
+  background:rgba(15,23,42,.4);
+}
+.highlight__visual-title{
+  font-family:'Chakra Petch',sans-serif;font-size:.68rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.1em;color:#94A3B8;
+  display:flex;align-items:center;gap:6px;
+}
+.highlight__visual-body{padding:20px 16px}
+
+/* Mock map display */
+.mock-map{position:relative;height:220px;overflow:hidden}
+.contour-lines{position:absolute;inset:0;opacity:.15}
+.contour-lines svg{width:100%;height:100%}
+.map-stations{position:absolute;inset:0}
+.map-station{
+  position:absolute;width:10px;height:10px;
+  border:2px solid var(--blue);background:rgba(56,82,252,.3);
+  border-radius:50%;
+}
+.map-station::after{
+  content:'';position:absolute;inset:-4px;
+  border:1px solid rgba(56,82,252,.2);border-radius:50%;
+  animation:stationPing 2s ease infinite;
+}
+@keyframes stationPing{0%{transform:scale(1);opacity:1}100%{transform:scale(2.5);opacity:0}}
+.map-station:nth-child(1){top:20%;left:25%}
+.map-station:nth-child(2){top:45%;left:55%}
+.map-station:nth-child(3){top:65%;left:35%}
+.map-station:nth-child(4){top:30%;left:70%}
+.map-station:nth-child(5){top:75%;left:65%}
+.map-line{position:absolute;height:1px;background:rgba(56,82,252,.2);transform-origin:left center}
+
+/* Mock data rows */
+.data-row{
+  display:flex;align-items:center;gap:10px;padding:8px 0;
+  border-bottom:1px solid rgba(56,82,252,.06);
+  font-family:'Chakra Petch',sans-serif;font-size:.75rem;
+}
+.data-row:last-child{border-bottom:none}
+.data-id{color:var(--blue);min-width:60px;font-weight:600;letter-spacing:.05em}
+.data-val{color:#94A3B8;flex:1}
+.data-status{display:flex;align-items:center;gap:4px;font-size:.65rem;text-transform:uppercase;letter-spacing:.06em}
+
+.highlight__content{}
+.highlight__label{
+  font-family:'Chakra Petch',sans-serif;font-size:.72rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.14em;color:var(--orange);
+  margin-bottom:10px;display:flex;align-items:center;gap:8px;
+}
+.highlight__title{font-size:clamp(1.5rem,3vw,2rem);color:var(--white);margin-bottom:14px}
+.highlight__text{color:#94A3B8;margin-bottom:24px;font-size:.95rem;line-height:1.7}
+.highlight__list{display:flex;flex-direction:column;gap:10px}
+.highlight__list li{
+  display:flex;align-items:center;gap:10px;
+  color:#CBD5E1;font-size:.9rem;
+}
+.highlight__list li .status-dot{flex-shrink:0}
+
+/* ── Stats Banner ─────────────────────────────────── */
+.stats{background:var(--bg-deep);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:48px 0}
+.stats__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+@media(max-width:768px){.stats__grid{grid-template-columns:repeat(2,1fr)}}
+.stat{
+  text-align:center;padding:20px;
+  background:var(--panel-bg);border:1px solid var(--border);
+  position:relative;
+}
+.stat__number{
+  font-family:'Chakra Petch',sans-serif;font-size:clamp(2rem,4vw,2.8rem);font-weight:700;
+  color:var(--white);line-height:1.1;
+}
+.stat__label{
+  font-family:'Chakra Petch',sans-serif;font-size:.65rem;
+  text-transform:uppercase;letter-spacing:.12em;color:#64748B;margin-top:6px;
+}
+
+/* ── CTA ──────────────────────────────────────────── */
+.cta{background:var(--bg-mid);text-align:center}
+.cta__panel{
+  background:var(--panel-bg);border:1px solid var(--border);
+  padding:0;position:relative;overflow:hidden;max-width:800px;margin:0 auto;
+}
+.cta__panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;border-bottom:1px solid var(--border);
+  background:rgba(15,23,42,.5);
+}
+.cta__panel-title{
+  font-family:'Chakra Petch',sans-serif;font-size:.72rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.12em;color:var(--orange);
+  display:flex;align-items:center;gap:8px;
+}
+.cta__panel-body{padding:48px 40px}
+.cta__title{font-size:clamp(1.8rem,3.5vw,2.4rem);color:var(--white);margin-bottom:14px}
+.cta__text{color:#94A3B8;max-width:480px;margin:0 auto 32px;font-size:1rem}
+.cta__actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.cta__note{margin-top:20px;font-size:.78rem;color:#475569}
+.cta__input-group{
+  display:flex;gap:0;max-width:420px;margin:0 auto 24px;
+}
+.cta__input{
+  flex:1;padding:12px 16px;
+  background:rgba(15,23,42,.8);border:1px solid var(--border);
+  color:var(--white);font-family:'Outfit',sans-serif;font-size:.9rem;
+  outline:none;transition:border-color .3s;
+}
+.cta__input::placeholder{color:#475569}
+.cta__input:focus{border-color:var(--orange)}
+.cta__input-btn{
+  padding:12px 24px;background:var(--orange);color:var(--bg-deep);
+  font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:.82rem;
+  text-transform:uppercase;letter-spacing:.08em;
+  border:1px solid var(--orange);cursor:pointer;transition:all .3s;
+}
+.cta__input-btn:hover{background:var(--white);border-color:var(--white)}
+
+/* ── Footer ───────────────────────────────────────── */
+.footer{
+  background:var(--bg-deep);border-top:1px solid var(--border);
+  padding:56px 0 28px;
+}
+.footer__grid{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px;
+}
+@media(max-width:768px){.footer__grid{grid-template-columns:1fr 1fr;gap:28px}}
+.footer__brand{display:flex;flex-direction:column;gap:14px}
+.footer__brand-logo{
+  display:flex;align-items:center;gap:8px;
+  font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:1.1rem;
+  color:var(--white);
+}
+.footer__brand-logo svg{color:var(--orange)}
+.footer__brand p{color:#475569;font-size:.85rem;line-height:1.6;max-width:280px}
+.footer__col h4{
+  font-family:'Chakra Petch',sans-serif;font-size:.7rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.12em;color:var(--orange);margin-bottom:14px;
+}
+.footer__col a{display:block;color:#475569;font-size:.85rem;margin-bottom:8px;transition:color .25s}
+.footer__col a:hover{color:var(--white)}
+.footer__bottom{
+  border-top:1px solid var(--border);padding-top:20px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.78rem;color:#334155;
+}
+@media(max-width:768px){.footer__bottom{flex-direction:column;gap:10px;text-align:center}}
+
+/* ── Scroll Reveal ────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal--left{transform:translateX(-30px)}
+.reveal--right{transform:translateX(30px)}
+.reveal.is-visible{opacity:1;transform:translate(0)}
+
+/* ── Sequential border light-up ───────────────────── */
+@keyframes borderLight{
+  0%{border-color:var(--border)}
+  50%{border-color:rgba(56,82,252,.4)}
+  100%{border-color:var(--border)}
+}
+.light-seq .feature-panel:nth-child(1){animation:borderLight 3s ease 0s infinite}
+.light-seq .feature-panel:nth-child(2){animation:borderLight 3s ease .5s infinite}
+.light-seq .feature-panel:nth-child(3){animation:borderLight 3s ease 1s infinite}
+.light-seq .feature-panel:nth-child(4){animation:borderLight 3s ease 1.5s infinite}
+.light-seq .feature-panel:nth-child(5){animation:borderLight 3s ease 2s infinite}
+.light-seq .feature-panel:nth-child(6){animation:borderLight 3s ease 2.5s infinite}
+</style>
+</head>
+<body>
+
+<div class="topo-bg"></div>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="#" class="nav__logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462" width="32" height="32">
+        <path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/>
+      </svg>
+      Stalagmight
+    </a>
+    <div class="nav__status">
+      <span class="status-dot status-dot--green"></span>
+      All Systems Operational
+    </div>
+    <div class="nav__links">
+      <a href="#features">Systems</a>
+      <a href="#how-it-works">Protocol</a>
+      <a href="#highlights">Intel</a>
+      <a href="#cta" class="nav__cta">Deploy Now</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="container">
+    <div class="hero__grid">
+      <div class="hero__content reveal">
+        <div class="hero__alert">
+          <span class="status-dot status-dot--orange"></span>
+          Mission Control Active
+        </div>
+        <h1 class="hero__title">Command Your<br><span>Underground Ops</span></h1>
+        <p class="hero__sub">Stalagmight is the expedition headquarters for speleological survey teams. Map cave systems, manage field equipment, track scientific data, and coordinate your team from a single command center.</p>
+        <div class="hero__actions">
+          <a href="#cta" class="btn btn--primary">Launch Mission</a>
+          <a href="#features" class="btn btn--outline">View Systems</a>
+        </div>
+      </div>
+
+      <!-- Dashboard Panel -->
+      <div class="dashboard reveal reveal--right">
+        <div class="dashboard__grid">
+          <div class="dash-card">
+            <div class="dash-card__label">
+              <span class="status-dot status-dot--green" style="width:6px;height:6px"></span>
+              Active Surveys
+            </div>
+            <div class="dash-card__value dash-card__value--blue" id="activeSurveys">0</div>
+            <div class="dash-card__bar"><div class="dash-card__fill" style="width:0%;background:var(--blue)" data-width="78%"></div></div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card__label">
+              <span class="status-dot status-dot--green" style="width:6px;height:6px"></span>
+              Stations Mapped
+            </div>
+            <div class="dash-card__value dash-card__value--emerald" id="stationsMapped">0</div>
+            <div class="dash-card__bar"><div class="dash-card__fill" style="width:0%;background:var(--emerald)" data-width="92%"></div></div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card__label">
+              <span class="status-dot status-dot--orange" style="width:6px;height:6px"></span>
+              Equipment Status
+            </div>
+            <div class="dash-card__value dash-card__value--orange" id="equipStatus">0%</div>
+            <div class="dash-card__bar"><div class="dash-card__fill" style="width:0%;background:var(--orange)" data-width="67%"></div></div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card__label">
+              <span class="status-dot status-dot--blue" style="width:6px;height:6px"></span>
+              Team Members
+            </div>
+            <div class="dash-card__value dash-card__value--purple" id="teamMembers">0</div>
+            <div class="dash-card__bar"><div class="dash-card__fill" style="width:0%;background:var(--purple)" data-width="45%"></div></div>
+          </div>
+
+          <!-- Live feed -->
+          <div class="dash-card dash-card--full live-feed">
+            <div class="dash-card__label" style="margin-bottom:10px">
+              <span class="status-dot status-dot--green" style="width:6px;height:6px"></span>
+              Live Operations Feed
+            </div>
+            <div class="live-feed__content" id="liveFeed"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section features" id="features">
+  <div class="container">
+    <div class="section__header reveal">
+      <div class="section__label">
+        <span class="status-dot status-dot--green"></span>
+        System Modules
+      </div>
+      <h2 class="section__title">Operational Systems</h2>
+      <p class="section__desc">Six integrated modules forming your complete cave expedition command center.</p>
+    </div>
+    <div class="features__grid light-seq">
+      <div class="feature-panel reveal" style="transition-delay:.05s">
+        <div class="feature-panel__head">
+          <div class="feature-panel__label">
+            <span class="status-dot status-dot--green"></span>
+            SYS-001
+          </div>
+          <div class="feature-panel__status" style="color:var(--emerald)">Online</div>
+        </div>
+        <div class="feature-panel__body">
+          <h3 class="feature-panel__title">3D Cave Mapping</h3>
+          <p class="feature-panel__text">Render comprehensive three-dimensional cave models from survey data. Passages, chambers, and geological features in full spatial context.</p>
+          <div class="feature-panel__metrics">
+            <div class="metric">
+              <div class="metric__val">12K+</div>
+              <div class="metric__label">Models</div>
+            </div>
+            <div class="metric">
+              <div class="metric__val">99.7%</div>
+              <div class="metric__label">Accuracy</div>
+            </div>
+          </div>
+          <div class="progress-bar"><div class="progress-bar__fill" style="background:var(--blue)" data-width="94%"></div></div>
+        </div>
+      </div>
+
+      <div class="feature-panel reveal" style="transition-delay:.1s">
+        <div class="feature-panel__head">
+          <div class="feature-panel__label">
+            <span class="status-dot status-dot--green"></span>
+            SYS-002
+          </div>
+          <div class="feature-panel__status" style="color:var(--emerald)">Online</div>
+        </div>
+        <div class="feature-panel__body">
+          <h3 class="feature-panel__title">GIS Survey Stations</h3>
+          <p class="feature-panel__text">Manage geo-referenced stations with full coordinate systems. Import, export, and transform spatial data across standard GIS formats.</p>
+          <div class="feature-panel__metrics">
+            <div class="metric">
+              <div class="metric__val">156K</div>
+              <div class="metric__label">Stations</div>
+            </div>
+            <div class="metric">
+              <div class="metric__val">14</div>
+              <div class="metric__label">Formats</div>
+            </div>
+          </div>
+          <div class="progress-bar"><div class="progress-bar__fill" style="background:var(--emerald)" data-width="88%"></div></div>
+        </div>
+      </div>
+
+      <div class="feature-panel reveal" style="transition-delay:.15s">
+        <div class="feature-panel__head">
+          <div class="feature-panel__label">
+            <span class="status-dot status-dot--green"></span>
+            SYS-003
+          </div>
+          <div class="feature-panel__status" style="color:var(--emerald)">Online</div>
+        </div>
+        <div class="feature-panel__body">
+          <h3 class="feature-panel__title">Experiment Tracking</h3>
+          <p class="feature-panel__text">Log scientific experiments with structured metadata. Track sensors, water chemistry, geological samples, and biological surveys.</p>
+          <div class="feature-panel__metrics">
+            <div class="metric">
+              <div class="metric__val">8.4K</div>
+              <div class="metric__label">Experiments</div>
+            </div>
+            <div class="metric">
+              <div class="metric__val">340+</div>
+              <div class="metric__label">Variables</div>
+            </div>
+          </div>
+          <div class="progress-bar"><div class="progress-bar__fill" style="background:var(--purple)" data-width="76%"></div></div>
+        </div>
+      </div>
+
+      <div class="feature-panel reveal" style="transition-delay:.2s">
+        <div class="feature-panel__head">
+          <div class="feature-panel__label">
+            <span class="status-dot status-dot--orange"></span>
+            SYS-004
+          </div>
+          <div class="feature-panel__status" style="color:var(--orange)">Monitoring</div>
+        </div>
+        <div class="feature-panel__body">
+          <h3 class="feature-panel__title">Equipment Mgmt</h3>
+          <p class="feature-panel__text">Track sensors, gas cylinders, ropes, and gear. Monitor calibration status, maintenance schedules, and deployment history.</p>
+          <div class="feature-panel__metrics">
+            <div class="metric">
+              <div class="metric__val">2.1K</div>
+              <div class="metric__label">Assets</div>
+            </div>
+            <div class="metric">
+              <div class="metric__val">97%</div>
+              <div class="metric__label">Tracked</div>
+            </div>
+          </div>
+          <div class="progress-bar"><div class="progress-bar__fill" style="background:var(--orange)" data-width="67%"></div></div>
+        </div>
+      </div>
+
+      <div class="feature-panel reveal" style="transition-delay:.25s">
+        <div class="feature-panel__head">
+          <div class="feature-panel__label">
+            <span class="status-dot status-dot--green"></span>
+            SYS-005
+          </div>
+          <div class="feature-panel__status" style="color:var(--emerald)">Online</div>
+        </div>
+        <div class="feature-panel__body">
+          <h3 class="feature-panel__title">GPS Track Import</h3>
+          <p class="feature-panel__text">Import GPS tracks from field devices and overlay on cave maps. Correlate surface and subsurface data for spatial analysis.</p>
+          <div class="feature-panel__metrics">
+            <div class="metric">
+              <div class="metric__val">45K</div>
+              <div class="metric__label">Tracks</div>
+            </div>
+            <div class="metric">
+              <div class="metric__val">GPX+</div>
+              <div class="metric__label">Formats</div>
+            </div>
+          </div>
+          <div class="progress-bar"><div class="progress-bar__fill" style="background:var(--teal)" data-width="82%"></div></div>
+        </div>
+      </div>
+
+      <div class="feature-panel reveal" style="transition-delay:.3s">
+        <div class="feature-panel__head">
+          <div class="feature-panel__label">
+            <span class="status-dot status-dot--green"></span>
+            SYS-006
+          </div>
+          <div class="feature-panel__status" style="color:var(--emerald)">Online</div>
+        </div>
+        <div class="feature-panel__body">
+          <h3 class="feature-panel__title">Team Collaboration</h3>
+          <p class="feature-panel__text">Role-based permissions for survey teams. Real-time shared editing, annotation, and review workflows for multi-party documentation.</p>
+          <div class="feature-panel__metrics">
+            <div class="metric">
+              <div class="metric__val">430+</div>
+              <div class="metric__label">Teams</div>
+            </div>
+            <div class="metric">
+              <div class="metric__val">5</div>
+              <div class="metric__label">Roles</div>
+            </div>
+          </div>
+          <div class="progress-bar"><div class="progress-bar__fill" style="background:var(--indigo)" data-width="91%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="section how-it-works" id="how-it-works">
+  <div class="container">
+    <div class="section__header reveal">
+      <div class="section__label">
+        <span class="status-dot status-dot--orange"></span>
+        Deployment Protocol
+      </div>
+      <h2 class="section__title">Mission Onboarding</h2>
+      <p class="section__desc">Four operational phases from first login to full field deployment.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal" style="transition-delay:.05s">
+        <div class="step__number">
+          <div class="step__num">Phase 01</div>
+          <span class="status-dot status-dot--green"></span>
+        </div>
+        <div class="step__body">
+          <div class="step__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          </div>
+          <h3 class="step__title">Assemble Team</h3>
+          <p class="step__text">Create your expedition crew. Assign roles: Lead Surveyor, Data Analyst, Field Operator, and Observer.</p>
+        </div>
+      </div>
+      <div class="step reveal" style="transition-delay:.15s">
+        <div class="step__number">
+          <div class="step__num">Phase 02</div>
+          <span class="status-dot status-dot--green"></span>
+        </div>
+        <div class="step__body">
+          <div class="step__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <h3 class="step__title">Load Intel</h3>
+          <p class="step__text">Import GPS tracks, existing survey data, and satellite imagery. Configure your coordinate reference systems.</p>
+        </div>
+      </div>
+      <div class="step reveal" style="transition-delay:.25s">
+        <div class="step__number">
+          <div class="step__num">Phase 03</div>
+          <span class="status-dot status-dot--orange"></span>
+        </div>
+        <div class="step__body">
+          <div class="step__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/></svg>
+          </div>
+          <h3 class="step__title">Deploy Mapping</h3>
+          <p class="step__text">Launch your cave mapping mission. Real-time data flows from field instruments to your command dashboard.</p>
+        </div>
+      </div>
+      <div class="step reveal" style="transition-delay:.35s">
+        <div class="step__number">
+          <div class="step__num">Phase 04</div>
+          <span class="status-dot status-dot--blue"></span>
+        </div>
+        <div class="step__body">
+          <div class="step__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <h3 class="step__title">Analyze & Report</h3>
+          <p class="step__text">Generate mission reports, export publication maps, and share intelligence with the speleological community.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Highlights -->
+<section class="section highlights" id="highlights">
+  <div class="container">
+    <!-- Highlight 1 -->
+    <div class="highlight">
+      <div class="highlight__visual reveal reveal--left">
+        <div class="highlight__visual-header">
+          <div class="highlight__visual-title">
+            <span class="status-dot status-dot--green"></span>
+            Survey Station Map — Live
+          </div>
+          <span style="font-family:'Chakra Petch',sans-serif;font-size:.65rem;color:var(--emerald);text-transform:uppercase;letter-spacing:.08em">5 Active</span>
+        </div>
+        <div class="highlight__visual-body">
+          <div class="mock-map">
+            <svg class="contour-lines" viewBox="0 0 400 220" fill="none" stroke="rgba(56,82,252,.3)" stroke-width=".5">
+              <ellipse cx="200" cy="110" rx="180" ry="100"/>
+              <ellipse cx="200" cy="110" rx="150" ry="82"/>
+              <ellipse cx="200" cy="110" rx="120" ry="65"/>
+              <ellipse cx="195" cy="105" rx="90" ry="48"/>
+              <ellipse cx="190" cy="100" rx="60" ry="32"/>
+              <ellipse cx="185" cy="95" rx="30" ry="16"/>
+              <ellipse cx="210" cy="115" rx="160" ry="90" transform="rotate(8 200 110)"/>
+              <ellipse cx="210" cy="115" rx="130" ry="72" transform="rotate(8 200 110)"/>
+              <ellipse cx="210" cy="115" rx="100" ry="55" transform="rotate(8 200 110)"/>
+            </svg>
+            <div class="map-stations">
+              <div class="map-station" style="top:20%;left:25%"></div>
+              <div class="map-station" style="top:45%;left:55%"></div>
+              <div class="map-station" style="top:65%;left:35%"></div>
+              <div class="map-station" style="top:30%;left:70%"></div>
+              <div class="map-station" style="top:75%;left:62%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="highlight__content reveal reveal--right">
+        <div class="highlight__label">
+          <span class="status-dot status-dot--green"></span>
+          Spatial Intelligence
+        </div>
+        <h3 class="highlight__title">Geo-Referenced Survey Network</h3>
+        <p class="highlight__text">Every survey station is a node in your underground intelligence network. Full GIS integration with live positioning, multi-datum transformations, and real-time accuracy monitoring.</p>
+        <ul class="highlight__list">
+          <li><span class="status-dot status-dot--green"></span> Multi-datum coordinate transformations</li>
+          <li><span class="status-dot status-dot--green"></span> Real-time GNSS correction feeds</li>
+          <li><span class="status-dot status-dot--green"></span> Export: Shapefile, GeoJSON, KML, CSV</li>
+          <li><span class="status-dot status-dot--orange"></span> 3D elevation-aware positioning</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Highlight 2 -->
+    <div class="highlight">
+      <div class="highlight__visual reveal reveal--right">
+        <div class="highlight__visual-header">
+          <div class="highlight__visual-title">
+            <span class="status-dot status-dot--orange"></span>
+            Equipment Manifest
+          </div>
+          <span style="font-family:'Chakra Petch',sans-serif;font-size:.65rem;color:var(--orange);text-transform:uppercase;letter-spacing:.08em">44 Items</span>
+        </div>
+        <div class="highlight__visual-body">
+          <div class="data-row">
+            <span class="data-id">EQP-001</span>
+            <span class="data-val">Disto X2 — Survey Unit</span>
+            <span class="data-status" style="color:var(--emerald)"><span class="status-dot status-dot--green" style="width:5px;height:5px"></span> Active</span>
+          </div>
+          <div class="data-row">
+            <span class="data-id">EQP-007</span>
+            <span class="data-val">O2 Cylinder — 12L/200bar</span>
+            <span class="data-status" style="color:var(--orange)"><span class="status-dot status-dot--orange" style="width:5px;height:5px"></span> 62%</span>
+          </div>
+          <div class="data-row">
+            <span class="data-id">EQP-012</span>
+            <span class="data-val">Temp Sensor Array — Cave-B</span>
+            <span class="data-status" style="color:var(--emerald)"><span class="status-dot status-dot--green" style="width:5px;height:5px"></span> Active</span>
+          </div>
+          <div class="data-row">
+            <span class="data-id">EQP-019</span>
+            <span class="data-val">Static Rope — 200m/10.5mm</span>
+            <span class="data-status" style="color:var(--emerald)"><span class="status-dot status-dot--green" style="width:5px;height:5px"></span> Good</span>
+          </div>
+          <div class="data-row">
+            <span class="data-id">EQP-024</span>
+            <span class="data-val">GPS Handheld — Garmin 67i</span>
+            <span class="data-status" style="color:var(--red)"><span class="status-dot status-dot--red" style="width:5px;height:5px"></span> Cal Due</span>
+          </div>
+          <div class="data-row">
+            <span class="data-id">EQP-031</span>
+            <span class="data-val">CO2 Sensor — Main Chamber</span>
+            <span class="data-status" style="color:var(--emerald)"><span class="status-dot status-dot--green" style="width:5px;height:5px"></span> Active</span>
+          </div>
+        </div>
+      </div>
+      <div class="highlight__content reveal reveal--left">
+        <div class="highlight__label">
+          <span class="status-dot status-dot--orange"></span>
+          Asset Operations
+        </div>
+        <h3 class="highlight__title">Equipment Command Center</h3>
+        <p class="highlight__text">Full lifecycle visibility for every piece of field equipment. From sensors to rope, cylinders to GPS units. Track deployments, calibrations, and maintenance from mission control.</p>
+        <ul class="highlight__list">
+          <li><span class="status-dot status-dot--green"></span> Barcode/QR field check-in and checkout</li>
+          <li><span class="status-dot status-dot--orange"></span> Automated calibration alerts</li>
+          <li><span class="status-dot status-dot--green"></span> Full maintenance and lifecycle history</li>
+          <li><span class="status-dot status-dot--green"></span> Real-time availability dashboards</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="stats">
+  <div class="container">
+    <div class="stats__grid">
+      <div class="stat reveal" style="transition-delay:.05s">
+        <div class="stat__number" data-target="2847" data-suffix="+">0</div>
+        <div class="stat__label">Caves Mapped</div>
+      </div>
+      <div class="stat reveal" style="transition-delay:.1s">
+        <div class="stat__number" data-target="156" data-suffix="K">0</div>
+        <div class="stat__label">Survey Stations</div>
+      </div>
+      <div class="stat reveal" style="transition-delay:.15s">
+        <div class="stat__number" data-target="430" data-suffix="+">0</div>
+        <div class="stat__label">Active Teams</div>
+      </div>
+      <div class="stat reveal" style="transition-delay:.2s">
+        <div class="stat__number" data-target="12" data-suffix="M km">0</div>
+        <div class="stat__label">Passages Charted</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section cta" id="cta">
+  <div class="container">
+    <div class="cta__panel">
+      <div class="cta__panel-header">
+        <div class="cta__panel-title">
+          <span class="status-dot status-dot--orange"></span>
+          Mission Deployment
+        </div>
+        <span style="font-family:'Chakra Petch',sans-serif;font-size:.65rem;color:#64748B;text-transform:uppercase;letter-spacing:.08em">Awaiting Personnel</span>
+      </div>
+      <div class="cta__panel-body">
+        <h2 class="cta__title reveal">Ready to Deploy?</h2>
+        <p class="cta__text reveal" style="transition-delay:.1s">Join 430+ expedition teams using Stalagmight as their underground operations command center.</p>
+        <div class="cta__input-group reveal" style="transition-delay:.15s">
+          <input type="email" class="cta__input" placeholder="Enter your email address">
+          <button class="cta__input-btn">Deploy</button>
+        </div>
+        <div class="cta__actions reveal" style="transition-delay:.2s">
+          <a href="#" class="btn btn--outline" style="padding:10px 22px;font-size:.8rem">Schedule Briefing</a>
+        </div>
+        <p class="cta__note reveal" style="transition-delay:.25s">Free tier available. No credit card required. Instant deployment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <div class="footer__brand-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="24.98 25 462.02 462" width="24" height="24">
+            <path fill="currentColor" d="M25 25v94.1c29.99.1 62.76-.7 90.3 21.3l2.6 2 24.7 122.3 31.7-151.4 11 7.2c23.2 15.1 41.4 9.7 58.8-.3l11.4-6.6 15.8 103.9 19.5-92.2 17.6-.2 17.8 74.9 12.7-112.32 13.6 19.92c8.3 12.1 14.5 21.1 20.6 26.7 5.4 5 10.6 7.7 18.9 8.7 13.4-8.4 27.8-20.7 44.4-30.1 14.6-8.4 31.7-14.23 50.6-11.9V25H25zm417.6 338.7c-12 10.6-25.5 26.2-39.7 41.6-16.5 17.8-33.7 35.2-53.9 42.3l-3.2 1.1-3.2-1.3c-32.5-13.1-72.9-11.6-115.6-6.5l-2.5.3-2.3-1c-26.1-11.8-42.9-23-75.3-34.2-7 12.3-16.4 23.4-27.2 30.8-6.4 4.4-13.4 7.6-20.86 8.5-7.47 1-15.51-.7-22.15-5.5-10.43-7.5-20.87-18-31.23-25.6-7.49-5.4-14.3-8.8-20.46-9.7V487h462v-37.2c-5.1-12.7-12.2-31.1-20.8-48.7-7.2-14.9-15.8-28.8-23.6-37.4z"/>
+          </svg>
+          Stalagmight
+        </div>
+        <p>Expedition headquarters for speleological survey teams. Command your underground operations from a single platform.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Systems</h4>
+        <a href="#">Cave Mapping</a>
+        <a href="#">Survey Stations</a>
+        <a href="#">Equipment</a>
+        <a href="#">GPS Import</a>
+        <a href="#">Experiments</a>
+      </div>
+      <div class="footer__col">
+        <h4>Resources</h4>
+        <a href="#">Documentation</a>
+        <a href="#">API Reference</a>
+        <a href="#">Tutorials</a>
+        <a href="#">Community</a>
+        <a href="#">Support</a>
+      </div>
+      <div class="footer__col">
+        <h4>Company</h4>
+        <a href="#">About</a>
+        <a href="#">Blog</a>
+        <a href="#">Careers</a>
+        <a href="#">Contact</a>
+        <a href="#">Privacy</a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>&copy; 2026 Stalagmight. All rights reserved.</span>
+      <span style="display:flex;align-items:center;gap:6px">
+        <span class="status-dot status-dot--green" style="width:5px;height:5px"></span>
+        All systems operational
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── Live Feed Data ───────────────────────────────── */
+(function(){
+  const feedData = [
+    {time:'08:42:17',type:'info',cls:'feed-type--info',msg:'Survey session STN-2847 initialized — Cave Bravo sector'},
+    {time:'08:42:03',type:'data',cls:'feed-type--data',msg:'GPS track imported: 847 waypoints — Surface Grid Alpha'},
+    {time:'08:41:55',type:'ok',cls:'feed-type--ok',msg:'Station STN-1204 validated — accuracy: 0.003m RMS'},
+    {time:'08:41:38',type:'warn',cls:'feed-type--warn',msg:'Equipment EQP-024 calibration due in 48 hours'},
+    {time:'08:41:22',type:'ok',cls:'feed-type--ok',msg:'Team Delta role assignment confirmed — 6 members active'},
+    {time:'08:41:09',type:'data',cls:'feed-type--data',msg:'Experiment EXP-419 data sync complete — 2,340 readings'},
+    {time:'08:40:51',type:'info',cls:'feed-type--info',msg:'New passage segment mapped — 47.3m length, bearing 142°'},
+    {time:'08:40:34',type:'ok',cls:'feed-type--ok',msg:'Sensor array Cave-B reporting — temp: 11.2°C, humidity: 94%'},
+    {time:'08:40:18',type:'warn',cls:'feed-type--warn',msg:'O2 Cylinder EQP-007 at 62% — replacement scheduled'},
+    {time:'08:40:02',type:'data',cls:'feed-type--data',msg:'Contour model v3.12 generated — 12,847 triangles'},
+    {time:'08:39:47',type:'ok',cls:'feed-type--ok',msg:'Backup completed — 847MB survey data archived'},
+    {time:'08:39:31',type:'info',cls:'feed-type--info',msg:'Water chemistry sample WC-089 logged — pH 7.4, Ca2+ 128mg/L'},
+    {time:'08:39:15',type:'data',cls:'feed-type--data',msg:'Cross-section analysis: Chamber 7 — volume: 1,240 m³'},
+    {time:'08:38:58',type:'ok',cls:'feed-type--ok',msg:'Permission update: User jmartinez elevated to Lead Surveyor'},
+    {time:'08:38:42',type:'warn',cls:'feed-type--warn',msg:'Battery alert: GPS unit EQP-031 at 28%'},
+    {time:'08:38:27',type:'info',cls:'feed-type--info',msg:'Formation catalog: 14 new speleothems tagged in Zone C'},
+  ];
+
+  const feed = document.getElementById('liveFeed');
+  // Double the data for seamless scroll
+  const allData = [...feedData, ...feedData];
+  feed.innerHTML = allData.map(d =>
+    `<div class="feed-line"><span class="feed-time">${d.time}</span><span class="feed-type ${d.cls}">${d.type}</span><span class="feed-msg">${d.msg}</span></div>`
+  ).join('');
+})();
+
+/* ── Dashboard Counter Animation ──────────────────── */
+(function(){
+  const counters = [
+    {el: document.getElementById('activeSurveys'), target: 147, suffix: ''},
+    {el: document.getElementById('stationsMapped'), target: 12847, suffix: ''},
+    {el: document.getElementById('equipStatus'), target: 67, suffix: '%'},
+    {el: document.getElementById('teamMembers'), target: 284, suffix: ''},
+  ];
+
+  function animateCounter(c){
+    const duration = 2500;
+    const start = performance.now();
+    function update(now){
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.floor(eased * c.target);
+      c.el.textContent = current.toLocaleString() + c.suffix;
+      if(progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  }
+
+  // Start after short delay
+  setTimeout(() => counters.forEach(animateCounter), 800);
+
+  // Animate dashboard progress bars
+  setTimeout(() => {
+    document.querySelectorAll('.dash-card__fill[data-width]').forEach(el => {
+      el.style.width = el.dataset.width;
+    });
+  }, 1000);
+})();
+
+/* ── Scroll Reveal ────────────────────────────────── */
+(function(){
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  reveals.forEach(el => observer.observe(el));
+})();
+
+/* ── Progress Bar Animation on Scroll ─────────────── */
+(function(){
+  const bars = document.querySelectorAll('.progress-bar__fill[data-width]');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.style.width = entry.target.dataset.width;
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  bars.forEach(el => {
+    el.style.width = '0%';
+    observer.observe(el);
+  });
+})();
+
+/* ── Stats Counter Animation ──────────────────────── */
+(function(){
+  const counters = document.querySelectorAll('.stat__number[data-target]');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        const el = entry.target;
+        const target = parseInt(el.dataset.target);
+        const suffix = el.dataset.suffix || '';
+        const duration = 2200;
+        const start = performance.now();
+        function update(now){
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = Math.floor(eased * target);
+          el.textContent = current.toLocaleString() + suffix;
+          if(progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+        observer.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(el => observer.observe(el));
+})();
+
+/* ── Simulated Live Value Updates ─────────────────── */
+(function(){
+  const surveyEl = document.getElementById('activeSurveys');
+  const stationEl = document.getElementById('stationsMapped');
+
+  // Occasionally bump survey station count
+  setInterval(() => {
+    if(!stationEl) return;
+    const current = parseInt(stationEl.textContent.replace(/,/g,'')) || 12847;
+    stationEl.textContent = (current + Math.floor(Math.random() * 3)).toLocaleString();
+  }, 5000);
+
+  // Occasionally change active surveys
+  setInterval(() => {
+    if(!surveyEl) return;
+    const current = parseInt(surveyEl.textContent.replace(/,/g,'')) || 147;
+    const delta = Math.random() > 0.5 ? 1 : -1;
+    surveyEl.textContent = Math.max(140, current + delta).toLocaleString();
+  }, 7000);
+})();
+
+/* ── Nav scroll effect ────────────────────────────── */
+(function(){
+  const nav = document.querySelector('.nav');
+  window.addEventListener('scroll', () => {
+    nav.style.borderBottomColor = window.scrollY > 60
+      ? 'rgba(255,140,23,.2)'
+      : 'rgba(56,82,252,.15)';
+  });
+})();
+</script>
+</body>
+</html>
