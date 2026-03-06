@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StalagMight — Tessellation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & VARS ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --cave-ember-700: #3A251A;
+  --cave-ember-900: #1A120B;
+  --basalt-950: #0F0906;
+  --limestone-50: #F3E8D8;
+  --sandstone-200: #C1A07A;
+  --silt-300: #AE8D67;
+  --bg: #0e0d0c;
+  --panel: #171615;
+  --border: #2a2826;
+  --text-primary: #d5d0ca;
+  --text-secondary: #858280;
+  --accent: #a89060;
+  --warning: #b89848;
+  --error: #b85048;
+  --success: #48986a;
+  --border-subtle: rgba(243,232,216,0.18);
+  --border-strong: rgba(243,232,216,0.60);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--basalt-950);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+
+a { color: var(--sandstone-200); text-decoration: none; transition: color 0.3s; }
+a:hover { color: var(--limestone-50); }
+
+/* ===== TESSELLATION BACKGROUND ===== */
+.tess-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpolygon points='40,0 80,20 80,60 40,80 0,60 0,20' fill='none' stroke='%23F3E8D8' stroke-width='0.4'/%3E%3Cline x1='40' y1='0' x2='40' y2='80' stroke='%23F3E8D8' stroke-width='0.2'/%3E%3Cline x1='0' y1='20' x2='80' y2='60' stroke='%23F3E8D8' stroke-width='0.2'/%3E%3Cline x1='80' y1='20' x2='0' y2='60' stroke='%23F3E8D8' stroke-width='0.2'/%3E%3C/svg%3E");
+  background-size: 80px 80px;
+  animation: tess-shift 30s linear infinite;
+}
+
+@keyframes tess-shift {
+  0% { background-position: 0 0; }
+  100% { background-position: 80px 80px; }
+}
+
+/* ===== NAV ===== */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(15,9,6,0.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background 0.4s;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-brand svg { width: 36px; height: 36px; }
+
+.nav-brand span {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--limestone-50);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  position: relative;
+  padding: 0.25rem 0.5rem;
+}
+
+.nav-links a::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  background: rgba(168,144,96,0.08);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.nav-links a:hover { color: var(--limestone-50); }
+.nav-links a:hover::before { opacity: 1; }
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 40% 30%, var(--cave-ember-700) 0%, var(--cave-ember-900) 60%, var(--basalt-950) 100%);
+}
+
+/* Animated diamond tessellation overlay in hero */
+.hero-tess {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hero-diamond {
+  position: absolute;
+  border: 1px solid rgba(193,160,122,0.08);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  animation: diamond-float 15s ease-in-out infinite;
+}
+
+.hero-diamond:nth-child(1) {
+  width: 200px; height: 200px; top: 5%; left: 5%;
+  animation-delay: 0s; opacity: 0.3;
+  background: linear-gradient(135deg, rgba(193,160,122,0.02), transparent);
+}
+
+.hero-diamond:nth-child(2) {
+  width: 150px; height: 150px; top: 15%; right: 10%;
+  animation-delay: -3s; opacity: 0.25;
+  background: linear-gradient(135deg, rgba(243,232,216,0.02), transparent);
+}
+
+.hero-diamond:nth-child(3) {
+  width: 250px; height: 250px; bottom: 10%; left: 12%;
+  animation-delay: -7s; opacity: 0.2;
+  background: linear-gradient(135deg, rgba(168,144,96,0.02), transparent);
+}
+
+.hero-diamond:nth-child(4) {
+  width: 120px; height: 120px; bottom: 20%; right: 8%;
+  animation-delay: -5s; opacity: 0.35;
+  background: linear-gradient(135deg, rgba(193,160,122,0.03), transparent);
+}
+
+.hero-diamond:nth-child(5) {
+  width: 180px; height: 180px; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -10s; opacity: 0.15;
+  background: linear-gradient(135deg, rgba(243,232,216,0.015), transparent);
+}
+
+.hero-diamond:nth-child(6) {
+  width: 100px; height: 100px; top: 60%; left: 5%;
+  animation-delay: -2s; opacity: 0.2;
+}
+
+@keyframes diamond-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-15px) rotate(2deg); }
+  75% { transform: translateY(10px) rotate(-1deg); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 5;
+  max-width: 700px;
+  padding: 2rem;
+}
+
+.hero-mark {
+  display: inline-block;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.hero-mark svg {
+  width: 88px; height: 88px;
+  filter: drop-shadow(0 0 30px rgba(193,160,122,0.2));
+}
+
+/* Diamond frame around mark */
+.hero-mark::before {
+  content: '';
+  position: absolute;
+  inset: -24px;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  border: 1px solid rgba(193,160,122,0.15);
+  background: transparent;
+  animation: diamond-float 8s ease-in-out infinite;
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  background: linear-gradient(90deg, var(--limestone-50), var(--sandstone-200));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.75rem;
+}
+
+.hero-tagline {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--silt-300);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+
+.hero-desc {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.7;
+}
+
+.hero-cta-group {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ===== BUTTONS — Parallelogram shape ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.85rem 2.2rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.35s ease;
+  clip-path: polygon(14px 0%, 100% 0%, calc(100% - 14px) 100%, 0% 100%);
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, var(--limestone-50), var(--sandstone-200));
+  color: var(--basalt-950);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(193,160,122,0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--limestone-50);
+  border: 2px solid var(--border-subtle);
+  clip-path: polygon(14px 0%, 100% 0%, calc(100% - 14px) 100%, 0% 100%);
+}
+
+.btn-secondary:hover {
+  border-color: var(--sandstone-200);
+  background: rgba(193,160,122,0.08);
+}
+
+/* ===== SECTIONS ===== */
+.section {
+  padding: 7rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.section-bg-dark { background: var(--basalt-950); }
+.section-bg-panel { background: var(--panel); }
+
+/* Different tessellation backgrounds per section */
+.section-tess-hex {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66Z' fill='none' stroke='%23C1A07A' stroke-width='0.5'/%3E%3Cpath d='M28 100L0 84L0 50L28 34L56 50L56 84L28 100Z' fill='none' stroke='%23C1A07A' stroke-width='0.5'/%3E%3C/svg%3E");
+  background-size: 56px 100px;
+}
+
+.section-tess-tri {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='52' viewBox='0 0 60 52'%3E%3Cpolygon points='30,0 60,52 0,52' fill='none' stroke='%23C1A07A' stroke-width='0.4'/%3E%3Cpolygon points='0,0 60,0 30,52' fill='none' stroke='%23C1A07A' stroke-width='0.4'/%3E%3C/svg%3E");
+  background-size: 60px 52px;
+}
+
+.section-tess-diamond {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpolygon points='24,0 48,24 24,48 0,24' fill='none' stroke='%23C1A07A' stroke-width='0.4'/%3E%3C/svg%3E");
+  background-size: 48px 48px;
+}
+
+.section-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 4rem;
+  position: relative;
+}
+
+.section-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  margin-bottom: 1rem;
+}
+
+.section-header h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--limestone-50);
+  margin-bottom: 1rem;
+}
+
+.section-header p {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+/* ===== FEATURES — Diamond Grid ===== */
+.features-diamond-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.feat-diamond {
+  position: relative;
+  padding: 2.5rem 2rem;
+  background: rgba(23,22,21,0.85);
+  border: 1px solid var(--border);
+  clip-path: polygon(20px 0%, calc(100% - 20px) 0%, 100% 20px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 20px 100%, 0% calc(100% - 20px), 0% 20px);
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+
+/* Corner facet accents */
+.feat-diamond::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 28px; height: 28px;
+  background: linear-gradient(225deg, rgba(193,160,122,0.15), transparent);
+}
+
+.feat-diamond::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 28px; height: 28px;
+  background: linear-gradient(45deg, rgba(193,160,122,0.15), transparent);
+}
+
+.feat-diamond:hover {
+  border-color: rgba(193,160,122,0.35);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+}
+
+.feat-icon {
+  width: 48px; height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  background: rgba(168,144,96,0.1);
+  border: 1px solid var(--border-subtle);
+}
+
+.feat-icon svg {
+  width: 22px; height: 22px;
+  stroke: var(--sandstone-200);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.feat-diamond h3 {
+  font-size: 1.2rem;
+  color: var(--limestone-50);
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.04em;
+}
+
+.feat-diamond p {
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+/* ===== WORKFLOW — Connected Diamond Chain ===== */
+.workflow-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* The connecting line */
+.workflow-line {
+  position: absolute;
+  top: 50%;
+  left: 60px;
+  right: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--sandstone-200), var(--sandstone-200), transparent);
+  opacity: 0.15;
+  transform: translateY(-50%);
+}
+
+.workflow-steps {
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  position: relative;
+}
+
+.wf-diamond {
+  flex: 1;
+  max-width: 240px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* The diamond shape at top */
+.wf-diamond-shape {
+  width: 80px; height: 80px;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  background: linear-gradient(135deg, var(--cave-ember-700), var(--cave-ember-900));
+  border: 2px solid var(--sandstone-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+  transition: all 0.4s ease;
+}
+
+.wf-diamond:hover .wf-diamond-shape {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 0 30px rgba(168,144,96,0.2);
+}
+
+.wf-diamond-shape span {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--limestone-50);
+  /* Rotate text to be readable inside diamond */
+}
+
+/* Diamond connector arrows between steps */
+.wf-diamond-connector {
+  position: absolute;
+  top: 40px;
+  right: -20px;
+  width: 40px;
+  height: 2px;
+  background: var(--sandstone-200);
+  opacity: 0.2;
+  z-index: 1;
+}
+
+.wf-diamond-connector::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: -4px;
+  width: 10px; height: 10px;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  background: var(--sandstone-200);
+  opacity: 0.4;
+}
+
+.wf-diamond:last-child .wf-diamond-connector { display: none; }
+
+.wf-diamond-content {
+  padding: 1.5rem;
+  background: rgba(23,22,21,0.8);
+  border: 1px solid var(--border);
+  clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0% calc(100% - 12px), 0% 12px);
+  transition: all 0.35s ease;
+}
+
+.wf-diamond:hover .wf-diamond-content {
+  border-color: rgba(193,160,122,0.3);
+  background: rgba(23,22,21,0.95);
+}
+
+.wf-diamond-content h3 {
+  font-size: 1.05rem;
+  color: var(--limestone-50);
+  margin-bottom: 0.4rem;
+}
+
+.wf-diamond-content p {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+/* ===== HIGHLIGHTS — Rhombus Cards ===== */
+.highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hl-rhombus {
+  padding: 2rem;
+  background: rgba(23,22,21,0.7);
+  border: 1px solid var(--border);
+  /* Parallelogram shape via clip-path */
+  clip-path: polygon(16px 0%, 100% 0%, calc(100% - 16px) 100%, 0% 100%);
+  transition: all 0.35s ease;
+}
+
+.hl-rhombus:hover {
+  border-color: rgba(193,160,122,0.3);
+  background: rgba(23,22,21,0.9);
+  transform: translateX(4px);
+}
+
+.hl-rhombus-icon {
+  width: 36px; height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  background: rgba(168,144,96,0.1);
+}
+
+.hl-rhombus-icon svg {
+  width: 18px; height: 18px;
+  stroke: var(--sandstone-200);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hl-rhombus h3 {
+  font-size: 1.05rem;
+  color: var(--limestone-50);
+  margin-bottom: 0.4rem;
+}
+
+.hl-rhombus p {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+/* ===== CTA ===== */
+.cta-section {
+  text-align: center;
+  padding: 8rem 2rem;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 50%, var(--cave-ember-700), var(--cave-ember-900) 70%);
+}
+
+/* Diamond tessellation in CTA background */
+.cta-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpolygon points='30,0 60,30 30,60 0,30' fill='none' stroke='%23F3E8D8' stroke-width='0.5'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
+}
+
+.cta-content {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cta-content h2 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  color: var(--limestone-50);
+  margin-bottom: 1rem;
+}
+
+.cta-content p {
+  color: var(--silt-300);
+  font-size: 1.05rem;
+  margin-bottom: 2.5rem;
+  line-height: 1.7;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cta-platforms {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 2rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.cta-platforms span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  background: var(--basalt-950);
+  border-top: 1px solid var(--border);
+  padding: 3rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footer-brand svg { width: 28px; height: 28px; }
+
+.footer-brand span {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--limestone-50);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.footer-links a {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  transition: color 0.3s;
+}
+
+.footer-links a:hover { color: var(--limestone-50); }
+
+.footer-copy {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+/* ===== SCROLL ANIMATIONS ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(25px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1000px) {
+  .features-diamond-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .workflow-steps {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .workflow-line { display: none; }
+  .wf-diamond-connector { display: none !important; }
+  .wf-diamond { max-width: 400px; width: 100%; }
+  .highlights-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 700px) {
+  .features-diamond-grid { grid-template-columns: 1fr; }
+  .highlights-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .hero h1 { font-size: 2.5rem; }
+  .section { padding: 4rem 1.25rem; }
+  .hl-rhombus { clip-path: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TESSELLATION BACKGROUND -->
+<div class="tess-bg"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="nav-a" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity="0.20"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity="0.12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity="0.32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#nav-a)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity="0.98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+    <span>StalagMight</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Workflow</a></li>
+    <li><a href="#highlights">Highlights</a></li>
+    <li><a href="#download">Download</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tess">
+    <div class="hero-diamond"></div>
+    <div class="hero-diamond"></div>
+    <div class="hero-diamond"></div>
+    <div class="hero-diamond"></div>
+    <div class="hero-diamond"></div>
+    <div class="hero-diamond"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-mark">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="hero-a" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity="0.20"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity="0.12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity="0.32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#hero-a)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity="0.98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+    </div>
+    <h1>StalagMight</h1>
+    <div class="hero-tagline">Underwater Cave Survey &amp; Mapping</div>
+    <p class="hero-desc">The precision desktop tool for cave divers. Import mNemo DMP data, visualize surveys with satellite overlay, detect loop closures, and export publication-ready maps.</p>
+    <div class="hero-cta-group">
+      <a href="#download" class="btn btn-primary">Download Free</a>
+      <a href="#features" class="btn btn-secondary">Explore Features</a>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="section section-bg-dark">
+  <div class="section-tess-hex"></div>
+  <div class="section-header reveal">
+    <div class="section-label">Core Capabilities</div>
+    <h2>Crystalline Precision</h2>
+    <p>Every facet of your underwater survey workflow, cut with geometric accuracy. From raw data import to publication-ready export.</p>
+  </div>
+  <div class="features-diamond-grid">
+    <div class="feat-diamond reveal reveal-delay-1">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <h3>DMP File Import</h3>
+      <p>Direct import from mNemo dive computers. Parse DMP survey files with automatic station detection, compass bearings, and depth readings. Batch import supported.</p>
+    </div>
+    <div class="feat-diamond reveal reveal-delay-2">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="0"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+      </div>
+      <h3>Spreadsheet Entry</h3>
+      <p>Manual data entry via a built-in spreadsheet interface. Enter station names, azimuths, distances, and depths with validation, auto-complete, and undo history.</p>
+    </div>
+    <div class="feat-diamond reveal reveal-delay-3">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+      </div>
+      <h3>2D Visualization</h3>
+      <p>Render surveys as interactive 2D plan and profile views. Overlay on satellite imagery with real-world coordinates. Pan, zoom, and measure with precision.</p>
+    </div>
+    <div class="feat-diamond reveal reveal-delay-4">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <h3>Section Management</h3>
+      <p>Organize complex cave systems into logical sections. Color-code passages, manage branching networks, and merge independent survey trips seamlessly.</p>
+    </div>
+    <div class="feat-diamond reveal reveal-delay-5">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>
+      </div>
+      <h3>Loop Closure</h3>
+      <p>Automatic detection of loop closures in survey networks. Identify redundant paths, calculate misclosure vectors, and validate network consistency.</p>
+    </div>
+    <div class="feat-diamond reveal">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <h3>Error Distribution</h3>
+      <p>Distribute accumulated survey errors across loop closures using least-squares adjustment. Improve positional accuracy across your entire cave network.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WORKFLOW -->
+<section id="workflow" class="section section-bg-panel">
+  <div class="section-tess-diamond"></div>
+  <div class="section-header reveal">
+    <div class="section-label">Workflow</div>
+    <h2>From Raw Data to Map</h2>
+    <p>A crystalline pipeline that transforms your dive survey data into precision cartography in five clear steps.</p>
+  </div>
+  <div class="workflow-container">
+    <div class="workflow-line"></div>
+    <div class="workflow-steps">
+      <div class="wf-diamond reveal reveal-delay-1">
+        <div class="wf-diamond-shape"><span>01</span></div>
+        <div class="wf-diamond-content">
+          <h3>Import Survey Data</h3>
+          <p>Connect your mNemo device and import DMP files directly, or enter survey legs manually via the built-in spreadsheet. All data validated on entry.</p>
+        </div>
+        <div class="wf-diamond-connector"></div>
+      </div>
+      <div class="wf-diamond reveal reveal-delay-2">
+        <div class="wf-diamond-shape"><span>02</span></div>
+        <div class="wf-diamond-content">
+          <h3>Organize Sections</h3>
+          <p>Group survey legs into logical cave sections. Assign colors, names, and metadata. Build the structural skeleton of your cave map.</p>
+        </div>
+        <div class="wf-diamond-connector"></div>
+      </div>
+      <div class="wf-diamond reveal reveal-delay-3">
+        <div class="wf-diamond-shape"><span>03</span></div>
+        <div class="wf-diamond-content">
+          <h3>Detect Loop Closures</h3>
+          <p>The engine automatically finds loops in your survey network. Review misclosure errors and flag problem legs for re-survey or correction.</p>
+        </div>
+        <div class="wf-diamond-connector"></div>
+      </div>
+      <div class="wf-diamond reveal reveal-delay-4">
+        <div class="wf-diamond-shape"><span>04</span></div>
+        <div class="wf-diamond-content">
+          <h3>Distribute Errors</h3>
+          <p>Apply least-squares error distribution across all detected loops. Watch your network tighten as positional accuracy improves across every station.</p>
+        </div>
+        <div class="wf-diamond-connector"></div>
+      </div>
+      <div class="wf-diamond reveal reveal-delay-5">
+        <div class="wf-diamond-shape"><span>05</span></div>
+        <div class="wf-diamond-content">
+          <h3>Visualize &amp; Export</h3>
+          <p>View your survey in 2D with satellite overlay. Pan, zoom, and annotate. Export finished maps as PNG, SVG, PDF, or data as CSV and JSON.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HIGHLIGHTS -->
+<section id="highlights" class="section section-bg-dark">
+  <div class="section-tess-tri"></div>
+  <div class="section-header reveal">
+    <div class="section-label">Feature Highlights</div>
+    <h2>Every Facet Refined</h2>
+    <p>Built by cave divers, for cave divers. Every detail has been polished to crystalline clarity.</p>
+  </div>
+  <div class="highlights-grid">
+    <div class="hl-rhombus reveal reveal-delay-1">
+      <div class="hl-rhombus-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <h3>Satellite Overlay</h3>
+      <p>Georeference your surveys and overlay them on satellite imagery. See exactly where passages run relative to surface features.</p>
+    </div>
+    <div class="hl-rhombus reveal reveal-delay-2">
+      <div class="hl-rhombus-icon">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <h3>Tauri + Rust Core</h3>
+      <p>Native performance with a lightweight footprint. The Rust backend handles computation while React delivers a fluid interface.</p>
+    </div>
+    <div class="hl-rhombus reveal reveal-delay-3">
+      <div class="hl-rhombus-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="0"/><path d="M7 2v20M17 2v20M2 12h20M2 7h20M2 17h20"/></svg>
+      </div>
+      <h3>Multi-Format Export</h3>
+      <p>Export maps as high-resolution PNG, scalable SVG, or print-ready PDF. Export raw data as CSV or structured JSON for further analysis.</p>
+    </div>
+    <div class="hl-rhombus reveal reveal-delay-4">
+      <div class="hl-rhombus-icon">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <h3>Collaborative Workflow</h3>
+      <p>Merge surveys from multiple dive teams. Import and combine independent survey trips into a unified cave network.</p>
+    </div>
+    <div class="hl-rhombus reveal reveal-delay-5">
+      <div class="hl-rhombus-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+      </div>
+      <h3>Statistical Analysis</h3>
+      <p>View detailed statistics for each survey section: total length, depth range, average leg length, misclosure percentages, and error vectors.</p>
+    </div>
+    <div class="hl-rhombus reveal">
+      <div class="hl-rhombus-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="0"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      </div>
+      <h3>Offline-First Design</h3>
+      <p>No internet required. Process surveys in the field, at base camp, or on the boat. Your data stays local and secure on your machine.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="download" class="cta-section">
+  <div class="cta-content reveal">
+    <h2>Begin Your Survey</h2>
+    <p>Download StalagMight and bring crystalline precision to your underwater cave mapping workflow. Free and open-source.</p>
+    <div class="cta-buttons">
+      <a href="#" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download for Desktop
+      </a>
+      <a href="#" class="btn btn-secondary">View on GitHub</a>
+    </div>
+    <div class="cta-platforms">
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Windows
+      </span>
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+        macOS
+      </span>
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Linux
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="ft-a" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F3E8D8"/><stop offset="1" stop-color="#C1A07A"/></linearGradient></defs><g transform="translate(512 512) scale(1.18) translate(-512 -512)"><circle cx="512" cy="512" r="310" fill="none" stroke="#F3E8D8" stroke-width="14" opacity="0.20"/><circle cx="512" cy="512" r="240" fill="none" stroke="#F3E8D8" stroke-width="10" opacity="0.12"/><g stroke="#C1A07A" stroke-width="10" stroke-linecap="round" opacity="0.32"><path d="M512 210V270"/><path d="M512 754V814"/><path d="M210 512H270"/><path d="M754 512H814"/></g><g fill="none" stroke="url(#ft-a)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F3E8D8" opacity="0.98"><circle cx="320" cy="620" r="15"/><circle cx="430" cy="520" r="15"/><circle cx="520" cy="600" r="15"/><circle cx="640" cy="460" r="15"/><circle cx="730" cy="540" r="15"/><circle cx="420" cy="390" r="15"/><circle cx="540" cy="360" r="15"/><circle cx="520" cy="740" r="15"/></g></g></svg>
+      <span>StalagMight</span>
+    </div>
+    <ul class="footer-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#workflow">Workflow</a></li>
+      <li><a href="#download">Download</a></li>
+      <li><a href="#">Documentation</a></li>
+      <li><a href="#">GitHub</a></li>
+    </ul>
+    <div class="footer-copy">&copy; 2026 StalagMight. Underwater cave survey and mapping.</div>
+  </div>
+</footer>
+
+<script>
+/* Scroll Reveal */
+(function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('revealed');
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+})();
+
+/* Smooth nav scroll */
+document.querySelectorAll('.nav-links a, .hero-cta-group a, .footer-links a').forEach(link => {
+  link.addEventListener('click', function(e) {
+    const href = this.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+/* Nav background on scroll */
+(function() {
+  const nav = document.querySelector('.nav');
+  window.addEventListener('scroll', () => {
+    nav.style.background = window.scrollY > 60 ? 'rgba(15,9,6,0.95)' : 'rgba(15,9,6,0.88)';
+  });
+})();
+</script>
+</body>
+</html>
