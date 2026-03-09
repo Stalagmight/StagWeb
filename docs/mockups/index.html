@@ -355,14 +355,16 @@
     </g>
   </svg>
   <span class="header-title">StalagMight</span>
-  <span class="header-subtitle">Crystal Matrix Variations</span>
+  <span class="header-subtitle">Design Mockups</span>
 </header>
 
 <section class="hero">
   <h1><span>StalagMight</span> Design Mockups</h1>
-  <p>Selected product page concepts. Crystal Matrix base design and Stalactite variation. Cave palette, self-contained HTML.</p>
-  <div class="pill"><strong>2</strong> designs &middot; Cave palette &middot; Self-contained HTML</div>
+  <p>Product page concepts and DMP import dialog sequence. Crystal Matrix base with Stalactite variation, plus full import wizard flow.</p>
+  <div class="pill"><strong>6</strong> mockups &middot; Cave palette &middot; Self-contained HTML</div>
 </section>
+
+<div class="section-label" style="border-top:none">Product Page Concepts</div>
 
 <div class="grid">
 
@@ -388,6 +390,64 @@
       <div class="card-name">Stalactite</div>
       <div class="card-desc">Top-heavy design with content dripping downward. Massive header, narrowing sections, stalactite-shaped dividers.</div>
       <div class="card-tags"><span class="tag">Top-Heavy</span><span class="tag">Dripping</span><span class="tag">Organic</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+</div>
+
+<div class="section-label">DMP Import Wizard — Dialog Sequence</div>
+
+<div class="grid">
+
+  <a href="dmp-import/01-section-selection.html" class="card" style="animation-delay:0.05s">
+    <div class="card-preview p-v06">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#C1A07A" stroke-width="1.5" stroke-linecap="round"><rect x="12" y="14" width="40" height="36" rx="3" opacity=".3"/><line x1="18" y1="24" x2="46" y2="24" opacity=".2"/><line x1="18" y1="32" x2="46" y2="32" opacity=".2"/><line x1="18" y1="40" x2="46" y2="40" opacity=".2"/><rect x="18" y="28" width="8" height="8" rx="1.5" opacity=".6"/><rect x="18" y="36" width="8" height="8" rx="1.5" opacity=".6"/><path d="M20.5 31.5 L22 33 L25 30" opacity=".8"/><path d="M20.5 39.5 L22 41 L25 38" opacity=".8"/></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Step 1</div>
+      <div class="card-name">Section Selection</div>
+      <div class="card-desc">Pick a .dmp file, review file metadata (shots, length, depth range), and select which sections to import via checkbox table. Bulk controls and default surveyor/date fields.</div>
+      <div class="card-tags"><span class="tag">File metadata</span><span class="tag">Checkbox table</span><span class="tag">Bulk select</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="dmp-import/02-zero-datum-config.html" class="card" style="animation-delay:0.1s">
+    <div class="card-preview p-v04">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#C1A07A" stroke-width="1.5" stroke-linecap="round"><circle cx="24" cy="22" r="4" fill="#48986a" stroke="#48986a" opacity=".7"/><circle cx="24" cy="22" r="7" stroke="#48986a" opacity=".3"/><polyline points="24,22 32,30 28,40 36,46" opacity=".6"/><circle cx="32" cy="30" r="2.5" opacity=".5"/><circle cx="28" cy="40" r="2.5" opacity=".5"/><circle cx="36" cy="46" r="2.5" opacity=".5"/><text x="42" y="20" font-family="system-ui" font-size="7" fill="#858280" stroke="none">GPS</text></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Step 2</div>
+      <div class="card-name">Zero Datum Config</div>
+      <div class="card-desc">Anchor the first section with GPS coordinates. Choose a station as zero datum, set section metadata, and review the shot table with continuous depth values.</div>
+      <div class="card-tags"><span class="tag">GPS anchor</span><span class="tag">Station preview</span><span class="tag">Shot table</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="dmp-import/03-suggesting.html" class="card" style="animation-delay:0.15s">
+    <div class="card-preview p-v05">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#C1A07A" stroke-width="1.5" stroke-linecap="round"><polyline points="14,42 22,36 30,38 38,32" stroke="#585654" opacity=".5"/><polyline points="38,32 44,26 50,20 48,14" opacity=".7"/><circle cx="38" cy="32" r="4" stroke-dasharray="2 1.5" opacity=".6"/><circle cx="38" cy="32" r="2" fill="#a89060" stroke="none" opacity=".7"/><text x="16" y="54" font-family="system-ui" font-size="6" fill="#48986a" stroke="none">High</text><rect x="14" y="49" width="14" height="8" rx="2" stroke="#48986a" opacity=".3"/></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Step 3</div>
+      <div class="card-name">Suggesting</div>
+      <div class="card-desc">For each subsequent section, the system suggests connection points based on shot matching and geometry. Shows confidence, merge mapping, overlap mode, and alternatives.</div>
+      <div class="card-tags"><span class="tag">Auto-match</span><span class="tag">Confidence</span><span class="tag">Alternatives</span></div>
+    </div>
+    <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </a>
+
+  <a href="dmp-import/04-manual-placing.html" class="card" style="animation-delay:0.2s">
+    <div class="card-preview p-v10">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#C1A07A" stroke-width="1.5" stroke-linecap="round"><circle cx="32" cy="28" r="3" fill="#a89060" stroke="none" opacity=".8"/><circle cx="32" cy="28" r="6" stroke="#a89060" opacity=".4"/><polyline points="18,44 26,38 32,28" stroke="#5a9a8a" opacity=".5"/><polyline points="32,28 40,22 48,16" stroke="#c87850" opacity=".5"/><circle cx="18" cy="44" r="2" stroke="#5a9a8a" opacity=".5"/><circle cx="48" cy="16" r="2" stroke="#c87850" opacity=".5"/><circle cx="12" y1="18" r="3.5" cx="14" cy="18" stroke="none"/><rect x="10" y="16" width="7" height="7" rx="7" stroke="#a89060" opacity=".4"/><circle cx="14" cy="19.5" r="1.5" fill="#a89060" stroke="none" opacity=".6"/></svg>
+    </div>
+    <div class="card-body">
+      <div class="card-number">Step 4</div>
+      <div class="card-name">Manual Placing</div>
+      <div class="card-desc">When no suggestion fits, manually choose a placement mode: reuse a previous suggestion, connect from an existing station, place on map, or skip the segment entirely.</div>
+      <div class="card-tags"><span class="tag">Radio cards</span><span class="tag">4 modes</span><span class="tag">Segment placing</span></div>
     </div>
     <div class="card-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>
