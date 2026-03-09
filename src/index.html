@@ -456,7 +456,7 @@ a:hover { color: var(--limestone-50); }
   line-height: 1.65;
 }
 
-/* ===== WORKFLOW — Descending stalactites ===== */
+/* ===== WORKFLOW — Dialog Previews ===== */
 .workflow-section {
   background: var(--basalt-950);
   padding: 6rem 2rem 8rem;
@@ -473,110 +473,123 @@ a:hover { color: var(--limestone-50); }
   clip-path: polygon(0 0, 100% 0, 50% 100%);
 }
 
-.steps-cascade {
-  max-width: 900px;
+.workflow-steps {
+  max-width: 1100px;
   margin: 0 auto;
-  position: relative;
-  padding-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
 }
 
-/* Central drip line */
-.steps-cascade::before {
-  content: '';
-  position: absolute;
-  top: 0; bottom: 0;
-  left: 50%;
-  width: 2px;
-  background: linear-gradient(180deg, var(--sandstone-200), transparent);
-  opacity: 0.15;
-}
-
-.step {
+.workflow-step {
   display: flex;
   align-items: flex-start;
-  gap: 2rem;
-  margin-bottom: 1rem;
-  position: relative;
-  opacity: 0;
-  transform: translateY(-20px);
-  transition: all 0.6s ease;
+  gap: 3rem;
 }
 
-.step.revealed {
-  opacity: 1;
-  transform: translateY(0);
+.workflow-step.reverse {
+  flex-direction: row-reverse;
 }
 
-/* Each step hangs lower — progressive offset */
-.step:nth-child(1) { padding-left: 0; }
-.step:nth-child(2) { padding-left: 4rem; }
-.step:nth-child(3) { padding-left: 8rem; }
-.step:nth-child(4) { padding-left: 12rem; }
-.step:nth-child(5) { padding-left: 16rem; }
-
-/* Drip connector between steps */
-.step::before {
-  content: '';
-  position: absolute;
-  top: -1rem;
-  left: calc(50% - 1px);
-  width: 2px;
-  height: 1rem;
-  background: var(--sandstone-200);
-  opacity: 0.15;
-}
-
-.step:first-child::before { display: none; }
-
-.step-number {
+/* Dialog preview iframe container */
+.dialog-preview {
   flex-shrink: 0;
-  width: 52px; height: 62px;
-  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  position: relative;
+}
+
+.dialog-preview iframe {
+  border: none;
+  display: block;
+  transform-origin: top left;
+}
+
+/* Dialog #1: 680px native width → scale(0.55) = 374px container */
+.dialog-preview[data-dialog="01"] {
+  width: 374px;
+  height: 385px;
+}
+
+.dialog-preview[data-dialog="01"] iframe {
+  width: 680px;
+  height: 700px;
+  transform: scale(0.55);
+}
+
+/* Dialog #2: 1100px native → scale(0.55) = 605px container */
+.dialog-preview[data-dialog="02"] {
+  width: 605px;
+  height: 440px;
+}
+
+.dialog-preview[data-dialog="02"] iframe {
+  width: 1100px;
+  height: 800px;
+  transform: scale(0.55);
+}
+
+/* Dialog #3: 1000px native → scale(0.55) = 550px container */
+.dialog-preview[data-dialog="03"] {
+  width: 550px;
+  height: 385px;
+}
+
+.dialog-preview[data-dialog="03"] iframe {
+  width: 1000px;
+  height: 700px;
+  transform: scale(0.55);
+}
+
+/* Dialog #4: 1000px native → scale(0.55) = 550px container */
+.dialog-preview[data-dialog="04"] {
+  width: 550px;
+  height: 385px;
+}
+
+.dialog-preview[data-dialog="04"] iframe {
+  width: 1000px;
+  height: 700px;
+  transform: scale(0.55);
+}
+
+/* Step info text */
+.workflow-step-info {
+  flex: 1;
+  padding-top: 1rem;
+}
+
+.workflow-step-badge {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 42px;
+  height: 42px;
   font-family: 'Rajdhani', sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--limestone-50);
   background: var(--cave-ember-900);
   border: 1px solid var(--sandstone-200);
   clip-path: polygon(50% 100%, 0% 20%, 0% 0%, 100% 0%, 100% 20%);
-  padding-bottom: 10px;
-  position: relative;
+  padding-bottom: 8px;
+  margin-bottom: 1rem;
 }
 
-.step-content {
-  flex: 1;
-  padding: 1.5rem 2rem;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-top: 2px solid var(--sandstone-200);
-  position: relative;
-}
-
-/* Pointed bottom drip on each step card */
-.step-content::after {
-  content: '';
-  position: absolute;
-  bottom: -10px; left: 2rem;
-  width: 0; height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 10px solid var(--panel);
-}
-
-.step-content h3 {
-  font-size: 1.15rem;
+.workflow-step-info h3 {
+  font-size: 1.3rem;
   color: var(--limestone-50);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
-.step-content p {
+.workflow-step-info p {
   color: var(--text-secondary);
-  font-size: 0.92rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  line-height: 1.7;
 }
 
 /* ===== HIGHLIGHTS ===== */
@@ -812,8 +825,19 @@ a:hover { color: var(--limestone-50); }
 @media (max-width: 900px) {
   .features-grid { grid-template-columns: 1fr; }
   .highlights-grid { grid-template-columns: 1fr; }
-  .step:nth-child(n) { padding-left: 0; }
   .nav-links { display: none; }
+  .workflow-step,
+  .workflow-step.reverse {
+    flex-direction: column;
+    align-items: center;
+  }
+  .dialog-preview {
+    max-width: 100%;
+  }
+  .dialog-preview[data-dialog="02"] {
+    width: 100%;
+    max-width: 605px;
+  }
 }
 
 @media (max-width: 600px) {
@@ -856,7 +880,7 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-document.querySelectorAll('.reveal, .feature-card, .step, .highlight-card').forEach(el => {
+document.querySelectorAll('.reveal, .feature-card, .highlight-card').forEach(el => {
   observer.observe(el);
 });
 </script>

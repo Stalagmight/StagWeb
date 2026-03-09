@@ -1,45 +1,55 @@
-<!-- WORKFLOW -->
+<!-- WORKFLOW — Import Dialog Previews -->
 <section id="workflow" class="section workflow-section">
   <div class="section-header reveal">
-    <div class="section-label">Workflow</div>
-    <h2>From Raw Data to Map</h2>
-    <p>A descending pipeline that transforms your dive survey data into precision cartography in five clear steps.</p>
+    <div class="section-label">Import Workflow</div>
+    <h2>From DMP File to Mapped Cave</h2>
+    <p>A guided wizard walks you through every step of importing mNemo survey data — from file selection to final placement on your cave map.</p>
   </div>
-  <div class="steps-cascade">
-    <div class="step reveal">
-      <div class="step-number">01</div>
-      <div class="step-content">
-        <h3>Import Survey Data</h3>
-        <p>Connect your mNemo device and import DMP files directly, or enter survey legs manually via the built-in spreadsheet. All data validated on entry.</p>
+  <div class="workflow-steps">
+
+    <div class="workflow-step reveal">
+      <div class="dialog-preview" data-dialog="01">
+        <iframe src="/dialogs/01-section-selection.html" loading="lazy"></iframe>
+      </div>
+      <div class="workflow-step-info">
+        <div class="workflow-step-badge">01</div>
+        <h3>Section Selection</h3>
+        <p>Open a DMP file and review its contents at a glance — shot count, total length, depth range. Pick which sections to import, skip already-imported ones, and set default surveyor and date for the batch.</p>
       </div>
     </div>
-    <div class="step reveal">
-      <div class="step-number">02</div>
-      <div class="step-content">
-        <h3>Organize Sections</h3>
-        <p>Group survey legs into logical cave sections. Assign colors, names, and metadata. Build the structural skeleton of your cave map.</p>
+
+    <div class="workflow-step reverse reveal">
+      <div class="dialog-preview" data-dialog="02">
+        <iframe src="/dialogs/02-zero-datum-config.html" loading="lazy"></iframe>
+      </div>
+      <div class="workflow-step-info">
+        <div class="workflow-step-badge">02</div>
+        <h3>Zero Datum Configuration</h3>
+        <p>Anchor your first section to real-world coordinates. Choose a station as the GPS zero datum, enter coordinates in decimal degrees, and configure section metadata — name, surveyor, date, color, and direction.</p>
       </div>
     </div>
-    <div class="step reveal">
-      <div class="step-number">03</div>
-      <div class="step-content">
-        <h3>Detect Loop Closures</h3>
-        <p>The engine automatically finds loops in your survey network. Review misclosure errors and flag problem legs for re-survey or correction.</p>
+
+    <div class="workflow-step reveal">
+      <div class="dialog-preview" data-dialog="03">
+        <iframe src="/dialogs/03-suggesting.html" loading="lazy"></iframe>
+      </div>
+      <div class="workflow-step-info">
+        <div class="workflow-step-badge">03</div>
+        <h3>Connection Suggesting</h3>
+        <p>For each subsequent section, the system automatically suggests a connection point based on shot matching. Review the confidence level, merge-station mapping, and overlap handling — or pick from alternative connections.</p>
       </div>
     </div>
-    <div class="step reveal">
-      <div class="step-number">04</div>
-      <div class="step-content">
-        <h3>Distribute Errors</h3>
-        <p>Apply least-squares error distribution across all detected loops. Watch your network tighten as positional accuracy improves across every station.</p>
+
+    <div class="workflow-step reverse reveal">
+      <div class="dialog-preview" data-dialog="04">
+        <iframe src="/dialogs/04-manual-placing.html" loading="lazy"></iframe>
+      </div>
+      <div class="workflow-step-info">
+        <div class="workflow-step-badge">04</div>
+        <h3>Manual Placing</h3>
+        <p>When no automatic suggestion fits, take full control. Choose from previous suggestions, connect to an existing station, place manually on the map, or skip the section entirely. Full shot table and metadata remain editable.</p>
       </div>
     </div>
-    <div class="step reveal">
-      <div class="step-number">05</div>
-      <div class="step-content">
-        <h3>Visualize &amp; Export</h3>
-        <p>View your survey in 2D with satellite overlay. Pan, zoom, and annotate. Export finished maps as PNG, SVG, PDF, or data as CSV and JSON.</p>
-      </div>
-    </div>
+
   </div>
 </section>
