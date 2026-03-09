@@ -1,0 +1,25 @@
+{
+  "name": "stalagmight_website",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@10.10.0.150:222/dsas/stalagmight_website.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^7.3.1",
+    "vite-plugin-html-inject": "^1.1.2"
+  }
+}
