@@ -332,18 +332,52 @@ a:hover { color: var(--limestone-50); }
   pointer-events: none;
 }
 
-.clip-drips i:nth-child(1) { left:  4%; width:  9px; height: 34px; background: #2A2018; }
-.clip-drips i:nth-child(2) { left: 22%; width: 13px; height: 62px; background: #332619; }
-.clip-drips i:nth-child(3) { left: 44%; width:  7px; height: 22px; background: #251C14; }
-.clip-drips i:nth-child(4) { left: 60%; width: 11px; height: 48px; background: #3A2B1C; }
-.clip-drips i:nth-child(5) { left: 80%; width:  8px; height: 30px; background: #2E2217; }
+/* Each clump is arranged differently: its own offset, its own number of
+   formations, and its own spacing, widths, heights and shades. Sharing one
+   nth-child set made all five identical clumps merely placed in different spots,
+   which is exactly what reads as a repeated graphic rather than as rock. */
 
-/* A different offset per row, so the clumps are scattered rather than aligned. */
-.f-row:nth-child(2) .clip-drips { left:  8%; }
+/* data entry — 5 formations */
+.f-row:nth-child(2) .clip-drips { left: 8%; }
+.f-row:nth-child(2) .clip-drips i:nth-child(1) { left: 2%; width: 8px; height: 30px; background: #2E2116; }
+.f-row:nth-child(2) .clip-drips i:nth-child(2) { left: 14%; width: 12px; height: 68px; background: #382818; }
+.f-row:nth-child(2) .clip-drips i:nth-child(3) { left: 30%; width: 7px; height: 24px; background: #291E14; }
+.f-row:nth-child(2) .clip-drips i:nth-child(4) { left: 55%; width: 10px; height: 52px; background: #332417; }
+.f-row:nth-child(2) .clip-drips i:nth-child(5) { left: 76%; width: 6px; height: 18px; background: #2C2015; }
+.f-row:nth-child(2) .clip-drips i:nth-child(n+6) { display: none; }
+
+/* visual-first editing — 4 formations */
 .f-row:nth-child(3) .clip-drips { left: 71%; }
+.f-row:nth-child(3) .clip-drips i:nth-child(1) { left: 8%; width: 6px; height: 20px; background: #2A1E14; }
+.f-row:nth-child(3) .clip-drips i:nth-child(2) { left: 26%; width: 14px; height: 74px; background: #3C2C1D; }
+.f-row:nth-child(3) .clip-drips i:nth-child(3) { left: 52%; width: 9px; height: 38px; background: #2E2116; }
+.f-row:nth-child(3) .clip-drips i:nth-child(4) { left: 74%; width: 7px; height: 26px; background: #271C13; }
+.f-row:nth-child(3) .clip-drips i:nth-child(n+5) { display: none; }
+
+/* speleodb — 6 formations */
 .f-row:nth-child(4) .clip-drips { left: 34%; }
+.f-row:nth-child(4) .clip-drips i:nth-child(1) { left: 0%; width: 7px; height: 22px; background: #2C2015; }
+.f-row:nth-child(4) .clip-drips i:nth-child(2) { left: 12%; width: 9px; height: 44px; background: #342518; }
+.f-row:nth-child(4) .clip-drips i:nth-child(3) { left: 24%; width: 6px; height: 16px; background: #251C14; }
+.f-row:nth-child(4) .clip-drips i:nth-child(4) { left: 38%; width: 11px; height: 62px; background: #3A2B1C; }
+.f-row:nth-child(4) .clip-drips i:nth-child(5) { left: 56%; width: 8px; height: 34px; background: #2E2116; }
+.f-row:nth-child(4) .clip-drips i:nth-child(6) { left: 72%; width: 6px; height: 20px; background: #291E14; }
+
+/* dive planning — 3 formations */
 .f-row:nth-child(5) .clip-drips { left: 55%; }
+.f-row:nth-child(5) .clip-drips i:nth-child(1) { left: 6%; width: 13px; height: 70px; background: #382818; }
+.f-row:nth-child(5) .clip-drips i:nth-child(2) { left: 40%; width: 8px; height: 28px; background: #2D2015; }
+.f-row:nth-child(5) .clip-drips i:nth-child(3) { left: 68%; width: 10px; height: 46px; background: #332417; }
+.f-row:nth-child(5) .clip-drips i:nth-child(n+4) { display: none; }
+
+/* import/export — 5 formations */
 .f-row:nth-child(6) .clip-drips { left: 19%; }
+.f-row:nth-child(6) .clip-drips i:nth-child(1) { left: 4%; width: 10px; height: 56px; background: #302217; }
+.f-row:nth-child(6) .clip-drips i:nth-child(2) { left: 22%; width: 6px; height: 20px; background: #271C13; }
+.f-row:nth-child(6) .clip-drips i:nth-child(3) { left: 44%; width: 12px; height: 66px; background: #3A2B1C; }
+.f-row:nth-child(6) .clip-drips i:nth-child(4) { left: 62%; width: 7px; height: 26px; background: #2C2015; }
+.f-row:nth-child(6) .clip-drips i:nth-child(5) { left: 82%; width: 9px; height: 40px; background: #2E2116; }
+.f-row:nth-child(6) .clip-drips i:nth-child(n+6) { display: none; }
 
 /* Clustered in three groups rather than spread evenly — a formation grows in
    clumps, and an even comb across the whole edge reads as a border treatment.
