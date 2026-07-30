@@ -120,22 +120,13 @@ a:hover { color: var(--limestone-50); }
   outline-offset: 4px;
 }
 
-/* GitHub sits in the nav as a bordered pill so it reads as a destination
-   rather than another in-page anchor. */
+/* Styled exactly like the other nav links — inline-flex only so the mark sits
+   beside the label. It keeps the shared colour, tracking and hover triangle. */
 .nav-github {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.3rem 0.85rem !important;
-  border: 1px solid var(--border-subtle);
-  color: var(--limestone-50) !important;
-  transition: border-color 0.3s ease, background 0.3s ease;
 }
-.nav-github:hover {
-  border-color: var(--sandstone-200);
-  background: rgba(193,160,122,0.08);
-}
-.nav-github::after { display: none; }
 
 /* ===== HERO — copy stack, one action, then the app cropped at the fold ===== */
 .hero {
@@ -288,9 +279,11 @@ a:hover { color: var(--limestone-50); }
   pointer-events: none;
 }
 
-.btn-drips i {
+.btn-drips i,
+.hero-drips i,
+.clip-drips i {
   position: absolute;
-  top: -2px;                     /* tuck the base under the button edge */
+  top: -2px;                     /* tuck the base under the edge it hangs from */
   display: block;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   /* Solid where it meets the button, fading out toward the tip — the same
@@ -301,6 +294,55 @@ a:hover { color: var(--limestone-50); }
   -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 28%, rgba(0,0,0,0.55) 62%, transparent 100%);
   mask-image: linear-gradient(180deg, #000 0%, #000 28%, rgba(0,0,0,0.55) 62%, transparent 100%);
 }
+
+/* ── Hanging into the left edge of the hero ──
+   Confined to the leftmost 10% so it frames the copy rather than crowding it.
+   Shades sit just above the ember the hero starts on, same reasoning as the
+   button's: relief catching a little light, not a graphic element. */
+.hero-drips {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 10%;
+  height: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-drips i:nth-child(1) { left:  2%; width: 14px; height: 196px; background: #452F1E; }
+.hero-drips i:nth-child(2) { left: 13%; width:  9px; height:  84px; background: #3E2A1A; }
+.hero-drips i:nth-child(3) { left: 24%; width: 20px; height: 312px; background: #4A3322; }
+.hero-drips i:nth-child(4) { left: 39%; width: 11px; height: 132px; background: #422C1C; }
+.hero-drips i:nth-child(5) { left: 50%; width:  8px; height:  58px; background: #392619; }
+.hero-drips i:nth-child(6) { left: 60%; width: 16px; height: 244px; background: #503826; }
+.hero-drips i:nth-child(7) { left: 74%; width: 10px; height: 104px; background: #402B1B; }
+.hero-drips i:nth-child(8) { left: 85%; width: 13px; height: 168px; background: #472F1F; }
+
+/* ── Hanging into the animated previews ──
+   One clump per clip covering about 15% of its width, at a different offset on
+   each so they do not line up down the page. Kept to the top edge, where a clip
+   is app chrome rather than survey data. */
+.clip-drips {
+  position: absolute;
+  top: 0;
+  width: 15%;
+  height: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.clip-drips i:nth-child(1) { left:  4%; width:  9px; height: 34px; background: #2A2018; }
+.clip-drips i:nth-child(2) { left: 22%; width: 13px; height: 62px; background: #332619; }
+.clip-drips i:nth-child(3) { left: 44%; width:  7px; height: 22px; background: #251C14; }
+.clip-drips i:nth-child(4) { left: 60%; width: 11px; height: 48px; background: #3A2B1C; }
+.clip-drips i:nth-child(5) { left: 80%; width:  8px; height: 30px; background: #2E2217; }
+
+/* A different offset per row, so the clumps are scattered rather than aligned. */
+.f-row:nth-child(2) .clip-drips { left:  8%; }
+.f-row:nth-child(3) .clip-drips { left: 71%; }
+.f-row:nth-child(4) .clip-drips { left: 34%; }
+.f-row:nth-child(5) .clip-drips { left: 55%; }
+.f-row:nth-child(6) .clip-drips { left: 19%; }
 
 /* Clustered in three groups rather than spread evenly — a formation grows in
    clumps, and an even comb across the whole edge reads as a border treatment.
@@ -463,6 +505,10 @@ a:hover { color: var(--limestone-50); }
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 30px rgba(193,160,122,0.3);
+  /* Restate the dark ink. The buttons are anchors, and the global
+     `a:hover { color: limestone }` outweighs `.btn-primary` on specificity —
+     which turned the label near-white on a near-white gradient on hover. */
+  color: var(--basalt-950);
 }
 
 .btn-secondary {
@@ -475,6 +521,7 @@ a:hover { color: var(--limestone-50); }
 .btn-secondary:hover {
   border-color: var(--sandstone-200);
   background: rgba(193,160,122,0.08);
+  color: var(--limestone-50);
 }
 
 /* ===== SECTIONS ===== */
@@ -616,14 +663,16 @@ a:hover { color: var(--limestone-50); }
 .f-visual .icon-mark { width: 116px; height: 116px; }
 
 .f-clip {
+  position: relative;
   display: block;
   width: 100%;
   border: 1px solid var(--border);
   border-radius: 6px;
-  overflow: hidden;
+  overflow: hidden;                /* also trims the drips to the frame */
   background: var(--panel);
   box-shadow: 0 18px 50px -24px rgba(0,0,0,0.85);
 }
+.f-clip picture { display: block; }
 .f-clip img { display: block; width: 100%; height: auto; }
 
 /* Every row carries its mark beside the title, since five of six have a
@@ -958,7 +1007,8 @@ document.querySelectorAll('.reveal').forEach(el => {
       // clip is near the middle, and does its falling off in the mid distance.
       const t = Math.min(1, dist.get(img) / reach);
       const eased = t * t * (3 - 2 * t);
-      img.parentElement.style.opacity = (1 - eased * (1 - FLOOR)).toFixed(3);
+      // the frame, not the <picture>: the drips inside it fade along with the clip
+      img.closest('.f-clip').style.opacity = (1 - eased * (1 - FLOOR)).toFixed(3);
 
       const want = img === winner ? img.dataset.anim : img.dataset.still;
       // Only assign on a real change; re-assigning would restart the loop.
