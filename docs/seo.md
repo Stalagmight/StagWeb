@@ -22,6 +22,21 @@ No `aggregateRating` in the structured data. Google's software rich result wants
 ratings or reviews, and inventing them is both against their guidelines and a
 liability. Add it when real reviews exist.
 
+## Seeing the previews
+
+The search and social cards render at
+**<https://stalagmight.anzu.nevim.co/_previews/>** (VPN only).
+
+They live in `docs/previews/` and are bind-mounted into the nginx container at
+`/srv/previews`, served by an `alias` in `stalagmight-nginx/default.conf`. Two
+reasons for that arrangement: nothing in `docs/` enters `dist/`, so no review
+artifact can leak onto the public site — confirmed, `stalagmight.com/_previews/`
+returns 404 — and the mount has to sit outside the document root because that
+root is a read-only bind mount, so Docker cannot create a mountpoint inside it.
+
+The board reads the live title, description and card image from stalagmight.com
+rather than restating them, so it cannot drift from what is actually served.
+
 ## What the keywords are actually worth
 
 Measured before any of the above: the page carried **242 indexable words**, and
