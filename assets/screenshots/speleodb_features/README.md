@@ -17,7 +17,7 @@ a few pixels off between shots. Registration handles both — no manual crop.
 
 ```bash
 ../../build-anim.py . ../../../public/media/speleodb.webp \
-    --holds 9,7,9,39,9,5,6,39,9,60 --width 1000 --quality 76 --report
+    --holds 9,7,9,26,9,5,6,26,9,40 --width 1000 --quality 76 --report
 ```
 
 See [../../../docs/screenshot-animations.md](../../../docs/screenshot-animations.md) for what the pipeline does and why.

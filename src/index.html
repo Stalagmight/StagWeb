@@ -426,17 +426,24 @@ a:hover { color: var(--limestone-50); }
   line-height: 1.7;
 }
 
-/* ===== FEATURES — alternating rows =====
-   Plain document scroll. Each feature is a full-width row with the mark on one
-   side and the copy on the other, flipping sides down the list. Nothing here
-   depends on JS beyond the shared fade-in. */
+/* ===== FEATURES — one colour zone per feature =====
+   Each feature owns a full-bleed band of its own colour, and the seam between
+   two bands is a row of stalactite points — the same device the CTA and footer
+   already use: a strip at the top of the block, filled with the colour *above*
+   it, clipped to a polygon. Zones step steadily darker down the page, so
+   reading the list feels like going deeper rather than like six flat cards. */
 .features-section {
   position: relative;
-  background: var(--bg);
-  padding: 6rem 2rem 4rem;
+  background: var(--basalt-950);
+  padding: 0;
 }
 
-.fs-head { text-align: center; max-width: 60ch; margin: 0 auto 1rem; }
+.fs-head {
+  text-align: center;
+  max-width: 60ch;
+  margin: 0 auto;
+  padding: 6rem 2rem 3rem;
+}
 .fs-head h2 {
   font-size: clamp(2rem, 4vw, 2.8rem);
   text-transform: uppercase;
@@ -445,36 +452,72 @@ a:hover { color: var(--limestone-50); }
 }
 .fs-head p { color: var(--text-secondary); margin-top: 0.6rem; }
 
-.f-rows { max-width: 1140px; margin: 0 auto; }
-
+/* The zone. Full width, so the colour band reaches both edges; the content
+   inside is what stays on the measure. */
 .f-row {
+  position: relative;
+  background: var(--zone);
+  padding: 4rem 0;
+}
+
+/* The jagged seam. Sits at the top of each zone carrying the previous zone's
+   colour, so the boundary between the two is a row of points. */
+.f-row::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: 0; right: 0;
+  height: 54px;
+  background: var(--zone-prev);
+  clip-path: polygon(0 0, 100% 0, 100% 30%, 93% 100%, 79% 34%, 64% 100%, 50% 34%, 36% 100%, 21% 34%, 7% 100%, 0 30%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Six steps down from the ember of the hero to near-black at the CTA. The
+   first zone's "previous" colour is the basalt the hero ends on. */
+.f-row:nth-child(1) { --zone: #2A1E15; --zone-prev: var(--basalt-950); }
+.f-row:nth-child(2) { --zone: #241A12; --zone-prev: #2A1E15; }
+.f-row:nth-child(3) { --zone: #1E1610; --zone-prev: #241A12; }
+.f-row:nth-child(4) { --zone: #18120D; --zone-prev: #1E1610; }
+.f-row:nth-child(5) { --zone: #120E0A; --zone-prev: #18120D; }
+.f-row:nth-child(6) { --zone: #0C0907; --zone-prev: #120E0A; }
+
+/* Content sits above the seam, and on the measure. */
+.f-row-in {
+  position: relative;
+  z-index: 1;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 2rem;
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
   gap: clamp(2rem, 5vw, 4.5rem);
   align-items: center;
-  padding: 3.4rem 0;
-  border-bottom: 1px solid var(--border);
 }
-.f-row:last-child { border-bottom: 0; }
 
-.f-row > .f-visual { grid-row: 1; grid-column: 1; }
-.f-row > .f-body   { grid-row: 1; grid-column: 2; }
+.f-row-in > .f-visual { grid-row: 1; grid-column: 1; }
+.f-row-in > .f-body   { grid-row: 1; grid-column: 2; }
 
 /* Flip every other row. The track widths swap along with the content, so the
-   mark always sits in the narrower column and the copy always gets the wider
-   one — alternating with `order` alone would hand the text the narrow track on
-   every second row and squash it. DOM order stays mark-then-copy either way,
-   so the reading order a screen reader gets never changes. */
-.f-row:nth-child(even) { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); }
-.f-row:nth-child(even) > .f-visual { grid-column: 2; }
-.f-row:nth-child(even) > .f-body   { grid-column: 1; }
+   media always gets the wider column — alternating with `order` alone would
+   hand the copy the narrow track on every second row and squash it. DOM order
+   is unchanged, so reading order for assistive tech is too. */
+.f-row:nth-child(even) .f-row-in { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); }
+.f-row:nth-child(even) .f-row-in > .f-visual { grid-column: 2; }
+.f-row:nth-child(even) .f-row-in > .f-body   { grid-column: 1; }
 
-/* No plate — the mark simply centres in its column. It carries the row on its
-   own, so it is sized up from what it was inside the box. */
-.f-visual {
-  display: grid;
-  place-items: center;
-}
+/* A media row gives the recording the wider track; a mark row gives it to the
+   copy, since a glyph does not need the room. */
+.f-row-media .f-row-in { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); }
+.f-row-media:nth-child(even) .f-row-in { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); }
+
+/* A row with nothing to show gets no visual column — a half-empty row reads as
+   a failed image load. Its copy runs to a comfortable measure instead. */
+.f-row-text .f-row-in { display: block; }
+.f-row-text .f-body p { max-width: 78ch; }
+
+/* No plate — the mark simply centres in its column. */
+.f-visual { display: grid; place-items: center; }
 .f-visual svg {
   width: 104px; height: 104px;
   stroke: var(--sandstone-200);
@@ -484,16 +527,6 @@ a:hover { color: var(--limestone-50); }
   stroke-linejoin: round;
 }
 .f-visual .icon-mark { width: 116px; height: 116px; }
-
-/* One row carries a screen capture instead of a mark. It gets the wider track,
-   since the merge dialog inside it has to stay readable, so this row's ratio is
-   the inverse of a normal one. */
-.f-row-media { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); }
-.f-row-media > .f-visual { grid-column: 1; }
-.f-row-media > .f-body   { grid-column: 2; }
-.f-row-media:nth-child(even) { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); }
-.f-row-media:nth-child(even) > .f-visual { grid-column: 2; }
-.f-row-media:nth-child(even) > .f-body   { grid-column: 1; }
 
 .f-clip {
   display: block;
@@ -505,11 +538,6 @@ a:hover { color: var(--limestone-50); }
   box-shadow: 0 18px 50px -24px rgba(0,0,0,0.85);
 }
 .f-clip img { display: block; width: 100%; height: auto; }
-
-/* A row with nothing to show gets no visual column — a half-empty row reads as
-   a failed image load. Its copy runs to a comfortable measure instead. */
-.f-row-text { display: block; }
-.f-row-text .f-body p { max-width: 78ch; }
 
 /* Every row carries its mark beside the title, since five of six have a
    recording in the visual column and no large glyph to stand in for it. */
@@ -536,7 +564,6 @@ a:hover { color: var(--limestone-50); }
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--limestone-50);
-  margin-bottom: 0.7rem;
 }
 .f-body p {
   color: var(--text-secondary);
@@ -558,127 +585,6 @@ a:hover { color: var(--limestone-50); }
   mask-image: url('/speleodb-logo.png');
 }
 
-/* ===== WORKFLOW — Dialog Previews ===== */
-.workflow-section {
-  background: var(--basalt-950);
-  padding: 6rem 2rem 8rem;
-  position: relative;
-}
-
-/* Pointed top edge */
-.workflow-section::before {
-  content: '';
-  position: absolute;
-  top: -1px; left: 0; right: 0;
-  height: 60px;
-  background: var(--bg);
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-}
-
-.workflow-steps {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 4rem;
-}
-
-.workflow-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 3rem;
-}
-
-.workflow-step.reverse {
-  flex-direction: row-reverse;
-}
-
-/* Dialog preview iframe container.
-   Each dialog has its own native size; the container keeps that aspect ratio
-   and caps at the 0.55 scale it was designed for, but is free to shrink below
-   it. The scale itself is set from the measured width in JS — hard-coding both
-   a pixel width and a fixed scale is what used to force the whole page wider
-   than a phone screen. */
-.dialog-preview {
-  width: 100%;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  position: relative;
-}
-
-.dialog-preview iframe {
-  border: none;
-  display: block;
-  transform-origin: top left;
-}
-
-/* Dialog #1: 680 × 700 native */
-.dialog-preview[data-dialog="01"] {
-  max-width: 374px;
-  aspect-ratio: 680 / 700;
-}
-.dialog-preview[data-dialog="01"] iframe { width: 680px; height: 700px; }
-
-/* Dialog #2: 1100 × 800 native */
-.dialog-preview[data-dialog="02"] {
-  max-width: 605px;
-  aspect-ratio: 1100 / 800;
-}
-.dialog-preview[data-dialog="02"] iframe { width: 1100px; height: 800px; }
-
-/* Dialog #3: 1000 × 700 native */
-.dialog-preview[data-dialog="03"] {
-  max-width: 550px;
-  aspect-ratio: 1000 / 700;
-}
-.dialog-preview[data-dialog="03"] iframe { width: 1000px; height: 700px; }
-
-/* Dialog #4: 1000 × 700 native */
-.dialog-preview[data-dialog="04"] {
-  max-width: 550px;
-  aspect-ratio: 1000 / 700;
-}
-.dialog-preview[data-dialog="04"] iframe { width: 1000px; height: 700px; }
-
-/* Step info text */
-.workflow-step-info {
-  flex: 1;
-  padding-top: 1rem;
-}
-
-.workflow-step-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--limestone-50);
-  background: var(--cave-ember-900);
-  border: 1px solid var(--sandstone-200);
-  clip-path: polygon(50% 100%, 0% 20%, 0% 0%, 100% 0%, 100% 20%);
-  padding-bottom: 8px;
-  margin-bottom: 1rem;
-}
-
-.workflow-step-info h3 {
-  font-size: 1.3rem;
-  color: var(--limestone-50);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 0.75rem;
-}
-
-.workflow-step-info p {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  line-height: 1.7;
-}
-
 /* ===== CTA ===== */
 .cta-section {
   text-align: center;
@@ -694,7 +600,7 @@ a:hover { color: var(--limestone-50); }
   position: absolute;
   top: -1px; left: 0; right: 0;
   height: 80px;
-  background: var(--panel);
+  background: #0C0907;                 /* the last feature zone */
   clip-path: polygon(0 0, 100% 0, 90% 100%, 70% 50%, 50% 100%, 30% 50%, 10% 100%);
 }
 
@@ -813,30 +719,27 @@ a:hover { color: var(--limestone-50); }
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
   .nav-links { display: none; }
-  .workflow-step,
-  .workflow-step.reverse {
-    flex-direction: column;
-    align-items: center;
-  }
   /* One column, alternation dropped — flipping sides means nothing once
-     everything is stacked. Both rows collapse to the same single track. */
-  .f-row,
-  .f-row:nth-child(even),
-  .f-row-media,
-  .f-row-media:nth-child(even) { grid-template-columns: 1fr; gap: 1.5rem; padding: 2.4rem 0; }
-  .f-row > .f-visual,
-  .f-row:nth-child(even) > .f-visual,
-  .f-row-media > .f-visual,
-  .f-row-media:nth-child(even) > .f-visual { grid-row: 1; grid-column: 1; }
-  .f-row > .f-body,
-  .f-row:nth-child(even) > .f-body,
-  .f-row-media > .f-body,
-  .f-row-media:nth-child(even) > .f-body { grid-row: 2; grid-column: 1; }
-  /* The clip keeps its own alignment — justify-items:start would shrink it. */
-  .f-row-media > .f-visual { justify-items: stretch; }
+     everything is stacked. Every variant collapses to the same single track. */
+  .f-row-in,
+  .f-row:nth-child(even) .f-row-in,
+  .f-row-media .f-row-in,
+  .f-row-media:nth-child(even) .f-row-in {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0 1.25rem;
+  }
+  .f-row-in > .f-visual,
+  .f-row:nth-child(even) .f-row-in > .f-visual { grid-row: 1; grid-column: 1; }
+  .f-row-in > .f-body,
+  .f-row:nth-child(even) .f-row-in > .f-body { grid-row: 2; grid-column: 1; }
+  .f-row { padding: 2.8rem 0; }
+  /* Shorter zones need a shallower seam or the points eat the content. */
+  .f-row::before { height: 34px; }
   .f-visual { justify-items: start; }
   .f-visual svg { width: 68px; height: 68px; }
   .f-visual .icon-mark { width: 76px; height: 76px; }
+  .fs-head { padding: 4.5rem 1.25rem 2rem; }
 }
 
 @media (max-width: 900px) {
@@ -892,7 +795,6 @@ a:hover { color: var(--limestone-50); }
 <load src="partials/nav.html" />
 <load src="partials/hero.html" />
 <load src="partials/features.html" />
-<load src="partials/workflow.html" />
 <load src="partials/cta.html" />
 <load src="partials/footer.html" />
 
@@ -969,10 +871,6 @@ document.querySelectorAll('.reveal').forEach(el => {
 // horizontally or letterboxed at any viewport size.
 (() => {
   const targets = [
-    ['.dialog-preview[data-dialog="01"]', 680],
-    ['.dialog-preview[data-dialog="02"]', 1100],
-    ['.dialog-preview[data-dialog="03"]', 1000],
-    ['.dialog-preview[data-dialog="04"]', 1000],
   ].flatMap(([sel, native]) =>
     [...document.querySelectorAll(sel)].map(box => ({ box, native }))
   );

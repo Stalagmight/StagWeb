@@ -60,7 +60,7 @@ All paths relative to `assets/screenshots/`. Every one of these reports
 | Folder | Feature row | Output | Extra flags |
 |---|---|---|---|
 | `import/` | mNemo & Manual Data Entry | `data-entry.webp` (141 KB, 9.4 s) | `--order 8,1,2,3,4,5,6,7 --holds 18,13,10,13,9,11,10,10` |
-| `speleodb_features/` | SpeleoDB Support | `speleodb.webp` (213 KB, 19.2 s) | `--holds 9,7,9,39,9,5,6,39,9,60` |
+| `speleodb_features/` | SpeleoDB Support | `speleodb.webp` (213 KB, 14.6 s) | `--holds 9,7,9,26,9,5,6,26,9,40` |
 | `station_merge/` | Visual-First Editing | `station-merge.webp` (41 KB, 8.0 s) | `--holds 12,7,6,5,4,4,4,5,15,18 --quality 75 --window full --crop 1923x1250+588+140` |
 | `dive_plan/` | Dive Planning | `dive-plan.webp` (99 KB, 7.8 s) | `--holds 14,10,12,10,12,20` |
 | `export/` | Import & Export Existing Data | `export.webp` (61 KB, 6.0 s) | `--holds 12,16,15,17 --band 90 --passes 8` |
