@@ -1,7 +1,7 @@
-<!-- FEATURES — index + detail, stepped by scroll -->
+<!-- FEATURES — alternating rows -->
 <section id="features" class="features-section">
 
-  <!-- Icons defined once; each is referenced twice, in the index and the panel -->
+  <!-- Icons defined once so each row can reference one -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <symbol id="i-oss" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></symbol>
     <symbol id="i-mnemo" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
@@ -15,53 +15,55 @@
     <p>Everything you need to go from raw survey data to a finished map.</p>
   </div>
 
-  <div class="fs-track" id="fsTrack">
-    <div class="fs-sticky">
-      <div class="fs-inner">
+  <div class="f-rows">
 
-        <div class="fs-index" id="fsIndex" aria-label="Features">
-          <button type="button" data-panel="fsp1"><svg><use href="#i-oss"/></svg>Free and Open-Source</button>
-          <button type="button" data-panel="fsp2"><svg><use href="#i-mnemo"/></svg>mNemo &amp; Manual Entry</button>
-          <button type="button" data-panel="fsp3"><span class="icon-mark icon-speleodb"></span>SpeleoDB Support</button>
-          <button type="button" data-panel="fsp4"><svg><use href="#i-visual"/></svg>Visual-First Editing</button>
-          <button type="button" data-panel="fsp5"><svg><use href="#i-plan"/></svg>Dive Planning</button>
-          <button type="button" data-panel="fsp6"><svg><use href="#i-io"/></svg>Import &amp; Export</button>
-        </div>
-
-        <div class="fs-panels" id="fsPanels">
-          <article class="fs-panel" id="fsp1">
-            <div class="fs-ico"><svg><use href="#i-oss"/></svg></div>
-            <h3>Free and Open-Source</h3>
-            <p>No trials, no subscriptions, no paywalls — Stalagmight is free to use and always will be. All source code is public, so you can inspect it, modify it, or contribute back.</p>
-          </article>
-          <article class="fs-panel" id="fsp2">
-            <div class="fs-ico"><svg><use href="#i-mnemo"/></svg></div>
-            <h3>mNemo &amp; Manual Data Entry</h3>
-            <p>Import DMP files directly from mNemo survey device, or enter data by hand with a built-in spreadsheet.</p>
-          </article>
-          <article class="fs-panel" id="fsp3">
-            <div class="fs-ico"><span class="icon-mark icon-speleodb"></span></div>
-            <h3>SpeleoDB Support</h3>
-            <p>Collaborate with other StalagMight users on SpeleoDB and enjoy its versioning and backup features.</p>
-          </article>
-          <article class="fs-panel" id="fsp4">
-            <div class="fs-ico"><svg><use href="#i-visual"/></svg></div>
-            <h3>Visual-First Editing</h3>
-            <p>Connect surveyed sections together visually, enter comments, add loop closures and edit survey data with very little need for tabular data entry. StalagMight encourages intuitive survey building and assists with section placement.</p>
-          </article>
-          <article class="fs-panel" id="fsp5">
-            <div class="fs-ico"><svg><use href="#i-plan"/></svg></div>
-            <h3>Dive Planning</h3>
-            <p>Use the survey data to plan future dives, estimate stage drop points and penetration range.</p>
-          </article>
-          <article class="fs-panel" id="fsp6">
-            <div class="fs-ico"><svg><use href="#i-io"/></svg></div>
-            <h3>Import &amp; Export Existing Data</h3>
-            <p>Read existing survey files instead of retyping them — Ariane, Compass, Walls and GPX. Export finished maps as SVG, PNG or PDF, and the survey data itself as CSV, JSON or Ariane TML.</p>
-          </article>
-        </div>
-
+    <div class="f-row reveal">
+      <div class="f-visual"><svg><use href="#i-oss"/></svg></div>
+      <div class="f-body">
+        <h3>Free and Open-Source</h3>
+        <p>No trials, no subscriptions, no paywalls — Stalagmight is free to use and always will be. All source code is public, so you can inspect it, modify it, or contribute back.</p>
       </div>
     </div>
+
+    <div class="f-row reveal">
+      <div class="f-visual"><svg><use href="#i-mnemo"/></svg></div>
+      <div class="f-body">
+        <h3>mNemo &amp; Manual Data Entry</h3>
+        <p>Import DMP files directly from mNemo survey device, or enter data by hand with a built-in spreadsheet.</p>
+      </div>
+    </div>
+
+    <div class="f-row reveal">
+      <div class="f-visual"><span class="icon-mark icon-speleodb"></span></div>
+      <div class="f-body">
+        <h3>SpeleoDB Support</h3>
+        <p>Collaborate with other StalagMight users on SpeleoDB and enjoy its versioning and backup features.</p>
+      </div>
+    </div>
+
+    <div class="f-row reveal">
+      <div class="f-visual"><svg><use href="#i-visual"/></svg></div>
+      <div class="f-body">
+        <h3>Visual-First Editing</h3>
+        <p>Connect surveyed sections together visually, enter comments, add loop closures and edit survey data with very little need for tabular data entry. StalagMight encourages intuitive survey building and assists with section placement.</p>
+      </div>
+    </div>
+
+    <div class="f-row reveal">
+      <div class="f-visual"><svg><use href="#i-plan"/></svg></div>
+      <div class="f-body">
+        <h3>Dive Planning</h3>
+        <p>Use the survey data to plan future dives, estimate stage drop points and penetration range.</p>
+      </div>
+    </div>
+
+    <div class="f-row reveal">
+      <div class="f-visual"><svg><use href="#i-io"/></svg></div>
+      <div class="f-body">
+        <h3>Import &amp; Export Existing Data</h3>
+        <p>Read existing survey files instead of retyping them — Ariane, Compass, Walls and GPX. Export finished maps as SVG, PNG or PDF, and the survey data itself as CSV, JSON or Ariane TML.</p>
+      </div>
+    </div>
+
   </div>
 </section>

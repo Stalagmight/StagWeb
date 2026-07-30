@@ -436,18 +436,17 @@ a:hover { color: var(--limestone-50); }
   line-height: 1.7;
 }
 
-/* ===== FEATURES — scroll-driven index + detail =====
-   The section pins while you scroll and steps through one feature at a time.
-   Everything here is additive: without the .fs-on class (no JS, reduced
-   motion, or narrow screens) the markup is a plain stacked list of all six,
-   which is why the index is hidden by default rather than shown empty. */
+/* ===== FEATURES — alternating rows =====
+   Plain document scroll. Each feature is a full-width row with the mark on one
+   side and the copy on the other, flipping sides down the list. Nothing here
+   depends on JS beyond the shared fade-in. */
 .features-section {
   position: relative;
   background: var(--bg);
   padding: 6rem 2rem 4rem;
 }
 
-.fs-head { text-align: center; max-width: 60ch; margin: 0 auto 3rem; }
+.fs-head { text-align: center; max-width: 60ch; margin: 0 auto 1rem; }
 .fs-head h2 {
   font-size: clamp(2rem, 4vw, 2.8rem);
   text-transform: uppercase;
@@ -456,73 +455,62 @@ a:hover { color: var(--limestone-50); }
 }
 .fs-head p { color: var(--text-secondary); margin-top: 0.6rem; }
 
-.fs-track { position: relative; max-width: 1200px; margin: 0 auto; }
-.fs-sticky { position: relative; }
-.fs-inner {
+.f-rows { max-width: 1140px; margin: 0 auto; }
+
+.f-row {
   display: grid;
-  grid-template-columns: minmax(15rem, 21rem) 1fr;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+  padding: 3.4rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.f-row:last-child { border-bottom: 0; }
+
+.f-row > .f-visual { grid-row: 1; grid-column: 1; }
+.f-row > .f-body   { grid-row: 1; grid-column: 2; }
+
+/* Flip every other row. The track widths swap along with the content, so the
+   mark always sits in the narrower column and the copy always gets the wider
+   one — alternating with `order` alone would hand the text the narrow track on
+   every second row and squash it. DOM order stays mark-then-copy either way,
+   so the reading order a screen reader gets never changes. */
+.f-row:nth-child(even) { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); }
+.f-row:nth-child(even) > .f-visual { grid-column: 2; }
+.f-row:nth-child(even) > .f-body   { grid-column: 1; }
+
+.f-visual {
+  display: grid;
+  place-items: center;
+  min-height: 190px;
+  padding: 2.5rem;
   border: 1px solid var(--border);
+  background:
+    radial-gradient(ellipse 70% 70% at 50% 40%, rgba(193,160,122,0.07), transparent 70%),
+    linear-gradient(180deg, var(--panel), rgba(23,22,21,0.3));
 }
+.f-visual svg {
+  width: 84px; height: 84px;
+  stroke: var(--sandstone-200);
+  fill: none;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.f-visual .icon-mark { width: 96px; height: 96px; }
 
-/* ── Index column ── */
-.fs-index { display: none; border-right: 1px solid var(--border); background: var(--panel); }
-.fs-index button {
-  position: relative;
-  width: 100%; text-align: left; cursor: pointer;
-  background: none; border: 0;
-  border-bottom: 1px solid var(--border);
-  padding: 1.15rem 1.4rem;
-  display: flex; align-items: center; gap: 0.85rem;
-  font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.95rem;
-  letter-spacing: 0.08em; text-transform: uppercase;
+.f-body h3 {
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--limestone-50);
+  margin-bottom: 0.7rem;
+}
+.f-body p {
   color: var(--text-secondary);
-  transition: color 0.25s ease, background 0.25s ease;
+  font-size: 1.03rem;
+  max-width: 56ch;
 }
-.fs-index button:last-child { border-bottom: 0; }
-.fs-index button svg { width: 20px; height: 20px; flex: 0 0 auto; }
-.fs-index button .icon-mark { width: 23px; height: 23px; flex: 0 0 auto; }
-.fs-index button:hover { color: var(--limestone-50); background: var(--panel-2, #1d1b1a); }
-.fs-index button:focus-visible { outline: 2px solid var(--sandstone-200); outline-offset: -3px; }
-
-/* A 2px rail on the left of each row; the active one fills as you scroll
-   through its share of the track, so the pin has a visible sense of progress. */
-.fs-index button::before {
-  content: '';
-  position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
-  background: var(--border-subtle);
-  transform: scaleY(0); transform-origin: top;
-  transition: transform 0.3s ease;
-}
-.fs-index button[aria-selected="true"] {
-  color: var(--limestone-50);
-  background: var(--panel-2, #1d1b1a);
-}
-.fs-index button[aria-selected="true"]::before {
-  background: var(--sandstone-200);
-  transform: scaleY(var(--seg, 1));
-  transition: transform 0.1s linear;
-}
-
-/* ── Detail column ── */
-.fs-panels { padding: 0; }
-.fs-panel {
-  padding: 3rem 2.6rem;
-  display: flex; flex-direction: column; gap: 1.1rem;
-  border-bottom: 1px solid var(--border);
-}
-.fs-panel:last-child { border-bottom: 0; }
-.fs-ico svg {
-  width: 48px; height: 48px;
-  stroke: var(--sandstone-200); fill: none; stroke-width: 1.5;
-  stroke-linecap: round; stroke-linejoin: round;
-}
-.fs-ico .icon-mark { width: 54px; height: 54px; }
-.fs-panel h3 {
-  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
-  text-transform: uppercase; letter-spacing: 0.05em;
-  color: var(--limestone-50);
-}
-.fs-panel p { color: var(--text-secondary); font-size: 1.05rem; max-width: 58ch; }
 
 /* Real brand marks ship as monochrome PNGs, so they are masks rather than
    <img> — that way they take the accent colour like the stroked icons. */
@@ -536,30 +524,6 @@ a:hover { color: var(--limestone-50); }
 .icon-speleodb {
   -webkit-mask-image: url('/speleodb-logo.png');
   mask-image: url('/speleodb-logo.png');
-}
-
-/* ── Pinned mode, switched on by JS only when it can work ── */
-.fs-on .fs-index { display: block; }
-.fs-on .fs-sticky {
-  position: sticky;
-  top: 5.5rem;
-}
-.fs-on .fs-panels {
-  display: grid;               /* every panel shares one cell, so the column */
-  align-items: start;          /* is as tall as the longest and never jumps  */
-}
-/* Panels share one grid cell, so only the incoming one animates. Transitioning
-   the outgoing one too would leave it ghosted under the new text for the length
-   of the fade — which is exactly as muddy as it sounds. */
-.fs-on .fs-panel {
-  grid-area: 1 / 1;
-  border-bottom: 0;
-  opacity: 0; visibility: hidden;
-  transform: translateY(12px);
-}
-.fs-on .fs-panel.on {
-  opacity: 1; visibility: visible; transform: none;
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.2,0.7,0.2,1);
 }
 
 /* ===== WORKFLOW — Dialog Previews ===== */
@@ -816,13 +780,23 @@ a:hover { color: var(--limestone-50); }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
-  .features-grid { grid-template-columns: 1fr; }
   .nav-links { display: none; }
   .workflow-step,
   .workflow-step.reverse {
     flex-direction: column;
     align-items: center;
   }
+  /* One column, alternation dropped — flipping sides means nothing once
+     everything is stacked. Both rows collapse to the same single track. */
+  .f-row,
+  .f-row:nth-child(even) { grid-template-columns: 1fr; gap: 1.5rem; padding: 2.4rem 0; }
+  .f-row > .f-visual,
+  .f-row:nth-child(even) > .f-visual { grid-row: 1; grid-column: 1; }
+  .f-row > .f-body,
+  .f-row:nth-child(even) > .f-body { grid-row: 2; grid-column: 1; }
+  .f-visual { min-height: 150px; padding: 1.8rem; }
+  .f-visual svg { width: 62px; height: 62px; }
+  .f-visual .icon-mark { width: 72px; height: 72px; }
 }
 
 @media (max-width: 900px) {
@@ -896,104 +870,7 @@ document.querySelectorAll('.reveal').forEach(el => {
   observer.observe(el);
 });
 
-// Features: pin the section and step through one feature per slice of scroll.
-// Only enabled where it can actually work — with JS, without a reduced-motion
-// preference, and wide enough for the two-column layout. Otherwise the markup
-// stays what it already is: a plain stacked list of all six.
-(() => {
-  const track  = document.getElementById('fsTrack');
-  const index  = document.getElementById('fsIndex');
-  const panels = [...document.querySelectorAll('.fs-panel')];
-  const tabs   = [...document.querySelectorAll('.fs-index button')];
-  if (!track || !index || panels.length !== tabs.length || !panels.length) return;
 
-  const section  = track.closest('.features-section');
-  const N        = panels.length;
-  const STEP_VH  = 44;          // scroll distance per feature — tune to taste
-  const wideMQ   = window.matchMedia('(min-width: 901px)');
-  const motionMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-  let on = false, current = -1, queued = false;
-
-  const setActive = (i, seg) => {
-    if (i !== current) {
-      current = i;
-      panels.forEach((p, n) => p.classList.toggle('on', n === i));
-      tabs.forEach((t, n) => t.setAttribute('aria-selected', n === i ? 'true' : 'false'));
-    }
-    if (tabs[i]) tabs[i].style.setProperty('--seg', seg.toFixed(3));
-  };
-
-  const frame = () => {
-    queued = false;
-    const rect = track.getBoundingClientRect();
-    const span = track.offsetHeight - window.innerHeight;
-    if (span <= 0) { setActive(0, 1); return; }
-    const p = Math.min(1, Math.max(0, -rect.top / span));
-    const raw = p * N;
-    setActive(Math.min(N - 1, Math.floor(raw)), Math.min(1, raw - Math.floor(raw)));
-  };
-  const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(frame); } };
-
-  // Clicking or keying the index jumps to that feature's slice of the track.
-  const scrollToIndex = (i) => {
-    const span = track.offsetHeight - window.innerHeight;
-    if (span <= 0) return;
-    const top = window.scrollY + track.getBoundingClientRect().top;
-    window.scrollTo({ top: top + span * ((i + 0.5) / N), behavior: 'smooth' });
-  };
-
-  const enable = () => {
-    if (on) return;
-    on = true;
-    section.classList.add('fs-on');
-    track.style.height = 'calc(100vh + ' + ((N - 1) * STEP_VH) + 'vh)';
-    index.setAttribute('role', 'tablist');
-    tabs.forEach((t, i) => {
-      t.setAttribute('role', 'tab');
-      t.setAttribute('aria-controls', panels[i].id);
-      panels[i].setAttribute('role', 'tabpanel');
-      panels[i].setAttribute('aria-labelledby', t.id || (t.id = 'fs-tab-' + (i + 1)));
-    });
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    frame();
-  };
-
-  const disable = () => {
-    if (!on) return;
-    on = false; current = -1;
-    section.classList.remove('fs-on');
-    track.style.height = '';
-    index.removeAttribute('role');
-    tabs.forEach((t, i) => {
-      t.removeAttribute('role'); t.removeAttribute('aria-selected'); t.style.removeProperty('--seg');
-      panels[i].classList.remove('on');
-      panels[i].removeAttribute('role');
-    });
-    window.removeEventListener('scroll', onScroll);
-    window.removeEventListener('resize', onScroll);
-  };
-
-  tabs.forEach((t, i) => {
-    t.addEventListener('click', () => { if (on) scrollToIndex(i); });
-    t.addEventListener('keydown', (e) => {
-      if (!on) return;
-      const d = (e.key === 'ArrowDown' || e.key === 'ArrowRight') ? 1
-              : (e.key === 'ArrowUp'   || e.key === 'ArrowLeft')  ? -1 : 0;
-      if (!d) return;
-      e.preventDefault();
-      const next = (i + d + N) % N;
-      tabs[next].focus();
-      scrollToIndex(next);
-    });
-  });
-
-  const sync = () => (wideMQ.matches && !motionMQ.matches) ? enable() : disable();
-  wideMQ.addEventListener('change', sync);
-  motionMQ.addEventListener('change', sync);
-  sync();
-})();
 
 // Label the download button for the visitor's own platform. Falls back to the
 // generic "Download for Desktop" already in the markup if detection fails, so
