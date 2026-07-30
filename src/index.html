@@ -407,7 +407,7 @@ a:hover { color: var(--limestone-50); }
 .btn-drips i:nth-child(14) { left: 88%;   width:  7px; height:  44px; background: #2D2015; clip-path: polygon(0 0, 100% 0, 84% 30%, 62% 66%, 48% 100%, 36% 58%, 14% 26%); }
 .btn-drips i:nth-child(15) { display: none; clip-path: polygon(0 0, 100% 0, 62% 100%, 42% 96%); }
 
-.hero-ghost-link {
+.ghost-link {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -420,10 +420,12 @@ a:hover { color: var(--limestone-50); }
   transition: color 0.3s ease;
 }
 
-/* A dim halo behind the label. The drips sit at z-index -1 and this comes later
-   in the document, so at the same level it paints over them — dimming whatever
-   passes behind the text instead of dimming every drip everywhere. */
-.hero-ghost-link::before {
+/* A dim halo behind the label, hero only: it exists to dim the drips hanging off
+   the download button. The drips sit at z-index -1 and this comes later in the
+   document, so at the same level it paints over them — dimming whatever passes
+   behind the text rather than dimming every drip everywhere. The CTA copy of
+   this link has nothing behind it, so it gets no halo. */
+.hero-actions .ghost-link::before {
   content: '';
   position: absolute;
   inset: -1rem -3rem;
@@ -434,10 +436,10 @@ a:hover { color: var(--limestone-50); }
               rgba(15,9,6,0.32) 66%, rgba(15,9,6,0) 100%);
 }
 
-.hero-ghost-link:hover { color: var(--limestone-50); }
-.hero-ghost-link svg { flex: 0 0 auto; }
-.hero-ghost-arrow { font-size: 0.8em; opacity: 0.7; }
-.hero-ghost-link:focus-visible,
+.ghost-link:hover { color: var(--limestone-50); }
+.ghost-link svg { flex: 0 0 auto; }
+.ghost-arrow { font-size: 0.8em; opacity: 0.7; }
+.ghost-link:focus-visible,
 .btn-download:focus-visible {
   outline: 2px solid var(--sandstone-200);
   outline-offset: 4px;
@@ -819,6 +821,10 @@ a:hover { color: var(--limestone-50); }
   justify-content: center;
   flex-wrap: wrap;
 }
+
+/* Same stacking as the hero: one primary action, then GitHub as a quiet link
+   under it, then the platform line. */
+.cta-content .ghost-link { margin-top: 1.7rem; }
 
 .cta-platforms {
   display: flex;
