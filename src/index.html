@@ -340,23 +340,13 @@ a:hover { color: var(--limestone-50); }
   color: var(--text-secondary);
 }
 
-/* The app preview is 1440×900 native. Holding that exact aspect ratio means
-   the whole screenshot is visible at any width — no crop, no letterboxing. */
-.hero-shot-viewport {
-  position: relative;
+/* A real screenshot rather than a live iframe: the intrinsic width/height on
+   the <img> reserves the right box before it loads, so nothing shifts. */
+.hero-shot-viewport { width: 100%; }
+.hero-shot-viewport img {
+  display: block;
   width: 100%;
-  aspect-ratio: 1440 / 900;
-  overflow: hidden;
-}
-
-.hero-shot-viewport iframe {
-  position: absolute;
-  top: 0; left: 0;
-  width: 1440px;
-  height: 900px;
-  border: none;
-  transform-origin: top left;
-  pointer-events: none;
+  height: auto;
 }
 
 /* ===== BUTTONS ===== */
@@ -515,6 +505,28 @@ a:hover { color: var(--limestone-50); }
   box-shadow: 0 18px 50px -24px rgba(0,0,0,0.85);
 }
 .f-clip img { display: block; width: 100%; height: auto; }
+
+/* On a media row the screenshot takes the visual column, so the mark moves up
+   beside the title rather than being dropped. Mark rows keep their large
+   floating glyph and don't repeat it here — showing the same glyph twice in one
+   row reads as a mistake. */
+.f-head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.7rem;
+}
+.f-head h3 { margin-bottom: 0; }
+.f-head .f-head-ico {
+  width: 30px; height: 30px;
+  flex: 0 0 auto;
+  stroke: var(--sandstone-200);
+  fill: none;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.f-head .icon-mark { width: 34px; height: 34px; flex: 0 0 auto; }
 
 .f-body h3 {
   font-size: clamp(1.35rem, 2.4vw, 1.75rem);
@@ -919,7 +931,6 @@ document.querySelectorAll('.reveal').forEach(el => {
 // horizontally or letterboxed at any viewport size.
 (() => {
   const targets = [
-    ['.hero-shot-viewport', 1440],
     ['.dialog-preview[data-dialog="01"]', 680],
     ['.dialog-preview[data-dialog="02"]', 1100],
     ['.dialog-preview[data-dialog="03"]', 1000],

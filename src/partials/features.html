@@ -33,10 +33,16 @@
       </div>
     </div>
 
-    <div class="f-row reveal">
-      <div class="f-visual"><span class="icon-mark icon-speleodb"></span></div>
+    <div class="f-row f-row-media reveal">
+      <div class="f-visual">
+        <picture class="f-clip">
+          <source media="(prefers-reduced-motion: reduce)" srcset="/media/speleodb-still.webp">
+          <img src="/media/speleodb.webp" width="1000" height="710" loading="lazy" decoding="async"
+               alt="Publishing a project to SpeleoDB, taking the write lock to edit, uploading the changes, and browsing the revision history with revert options.">
+        </picture>
+      </div>
       <div class="f-body">
-        <h3>SpeleoDB Support</h3>
+        <div class="f-head"><span class="icon-mark icon-speleodb"></span><h3>SpeleoDB Support</h3></div>
         <p>Collaborate with other StalagMight users on SpeleoDB and enjoy its versioning and backup features.</p>
       </div>
     </div>
@@ -53,7 +59,7 @@
         </picture>
       </div>
       <div class="f-body">
-        <h3>Visual-First Editing</h3>
+        <div class="f-head"><svg class="f-head-ico"><use href="#i-visual"/></svg><h3>Visual-First Editing</h3></div>
         <p>Connect surveyed sections together visually, enter comments, add loop closures and edit survey data with very little need for tabular data entry. StalagMight encourages intuitive survey building and assists with section placement.</p>
       </div>
     </div>
