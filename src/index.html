@@ -318,27 +318,18 @@ a:hover { color: var(--limestone-50); }
 .hero-drips i:nth-child(7) { left: 74%; width: 10px; height: 104px; background: #402B1B; }
 .hero-drips i:nth-child(8) { left: 85%; width: 13px; height: 168px; background: #472F1F; }
 
-/* ── Rising from the floor of each animated preview ──
-   These grow upward from the bottom edge rather than hanging from the top, so
-   they are stalagmites. One clump per clip covering about 15% of its width, at a
+/* ── Hanging off the bottom of each animated preview ──
+   Below the frame, not inside it: the clip sets overflow:hidden to trim the
+   screenshot, so anything within it gets trimmed too. The clump is a sibling of
+   the clip, hung from its bottom edge, the same reason the button's drips are a
+   sibling of the button. One per clip covering about 15% of its width, at a
    different offset on each so they do not line up down the page. */
 .clip-drips {
   position: absolute;
-  bottom: 0;
+  top: calc(100% - 3px);           /* base tucked under the clip's bottom border */
   width: 15%;
   height: 0;
-  z-index: 2;
   pointer-events: none;
-}
-
-/* Flip the shared drip: base on the floor, apex upward, and the taper fading
-   toward the tip means fading upward now. */
-.clip-drips i {
-  top: auto;
-  bottom: -2px;
-  clip-path: polygon(0 100%, 100% 100%, 50% 0);
-  -webkit-mask-image: linear-gradient(0deg, #000 0%, #000 28%, rgba(0,0,0,0.55) 62%, transparent 100%);
-  mask-image: linear-gradient(0deg, #000 0%, #000 28%, rgba(0,0,0,0.55) 62%, transparent 100%);
 }
 
 .clip-drips i:nth-child(1) { left:  4%; width:  9px; height: 34px; background: #2A2018; }
@@ -660,8 +651,9 @@ a:hover { color: var(--limestone-50); }
 .f-row-text .f-row-in { display: block; }
 .f-row-text .f-body p { max-width: 78ch; }
 
-/* No plate — the mark simply centres in its column. */
-.f-visual { display: grid; place-items: center; }
+/* No plate — the mark simply centres in its column. Positioned so a formation
+   can hang off the bottom of the clip inside it. */
+.f-visual { position: relative; display: grid; place-items: center; }
 .f-visual svg {
   width: 104px; height: 104px;
   stroke: var(--sandstone-200);
@@ -674,6 +666,7 @@ a:hover { color: var(--limestone-50); }
 
 .f-clip {
   position: relative;
+  z-index: 1;                      /* covers where the formation attaches */
   display: block;
   width: 100%;
   border: 1px solid var(--border);
@@ -1017,8 +1010,8 @@ document.querySelectorAll('.reveal').forEach(el => {
       // clip is near the middle, and does its falling off in the mid distance.
       const t = Math.min(1, dist.get(img) / reach);
       const eased = t * t * (3 - 2 * t);
-      // the frame, not the <picture>: the drips inside it fade along with the clip
-      img.closest('.f-clip').style.opacity = (1 - eased * (1 - FLOOR)).toFixed(3);
+      // the whole visual, so the formation hanging off the clip dims with it
+      img.closest('.f-visual').style.opacity = (1 - eased * (1 - FLOOR)).toFixed(3);
 
       const want = img === winner ? img.dataset.anim : img.dataset.still;
       // Only assign on a real change; re-assigning would restart the loop.
