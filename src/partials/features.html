@@ -41,8 +41,17 @@
       </div>
     </div>
 
-    <div class="f-row reveal">
-      <div class="f-visual"><svg><use href="#i-visual"/></svg></div>
+    <div class="f-row f-row-media reveal">
+      <div class="f-visual">
+        <!-- Animated WebP rather than a video: it is a plain <img>, so there is
+             no autoplay policy to fight, and <picture> can swap in a still for
+             anyone who has asked for reduced motion. -->
+        <picture class="f-clip">
+          <source media="(prefers-reduced-motion: reduce)" srcset="/media/station-merge-still.webp">
+          <img src="/media/station-merge.webp" width="1000" height="650" loading="lazy" decoding="async"
+               alt="Dragging a survey segment onto a neighbouring station in StalagMight, then confirming the Merge Stations dialog.">
+        </picture>
+      </div>
       <div class="f-body">
         <h3>Visual-First Editing</h3>
         <p>Connect surveyed sections together visually, enter comments, add loop closures and edit survey data with very little need for tabular data entry. StalagMight encourages intuitive survey building and assists with section placement.</p>
