@@ -842,18 +842,37 @@ document.querySelectorAll('.reveal').forEach(el => {
   // matching <source> beats anything set on the img — nothing to manage here.
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+  // Opacity tracks distance from the middle of the viewport, so a clip fades up
+  // as it approaches being the closest one and fades back as it leaves. It also
+  // hides the handover: the swap between animation and still happens at the
+  // moment two clips are equidistant, when both are equally faded, so the change
+  // of content is not something you catch.
+  const FLOOR = 0.28;         // how dim a clip gets once well away from centre
+  const REACH = 0.62;         // fade distance as a fraction of viewport height
+
   let queued = false;
   const update = () => {
     queued = false;
     const middle = window.innerHeight / 2;
+    const reach = window.innerHeight * REACH;
     let winner = null, best = Infinity;
+    const dist = new Map();
+
     for (const img of imgs) {
       const r = img.getBoundingClientRect();
-      if (r.bottom <= 0 || r.top >= window.innerHeight) continue;   // off screen
       const d = Math.abs(r.top + r.height / 2 - middle);
+      dist.set(img, d);
+      if (r.bottom <= 0 || r.top >= window.innerHeight) continue;   // off screen
       if (d < best) { best = d; winner = img; }
     }
+
     for (const img of imgs) {
+      // Smoothstep rather than linear: holds close to full opacity while the
+      // clip is near the middle, and does its falling off in the mid distance.
+      const t = Math.min(1, dist.get(img) / reach);
+      const eased = t * t * (3 - 2 * t);
+      img.parentElement.style.opacity = (1 - eased * (1 - FLOOR)).toFixed(3);
+
       const want = img === winner ? img.dataset.anim : img.dataset.still;
       // Only assign on a real change; re-assigning would restart the loop.
       if (!img.getAttribute('src').endsWith(want)) img.setAttribute('src', want);
