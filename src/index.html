@@ -285,6 +285,7 @@ a:hover { color: var(--limestone-50); }
   position: absolute;
   top: -2px;                     /* tuck the base under the edge it hangs from */
   display: block;
+  /* Fallback silhouette; each formation overrides it with its own profile. */
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   /* Solid where it meets the button, fading out toward the tip — the same
      taper the hero's own stalactites use. It is also what keeps the GitHub
@@ -309,14 +310,14 @@ a:hover { color: var(--limestone-50); }
   pointer-events: none;
 }
 
-.hero-drips i:nth-child(1) { left:  2%; width: 14px; height: 196px; background: #452F1E; }
-.hero-drips i:nth-child(2) { left: 13%; width:  9px; height:  84px; background: #3E2A1A; }
-.hero-drips i:nth-child(3) { left: 24%; width: 20px; height: 312px; background: #4A3322; }
-.hero-drips i:nth-child(4) { left: 39%; width: 11px; height: 132px; background: #422C1C; }
-.hero-drips i:nth-child(5) { left: 50%; width:  8px; height:  58px; background: #392619; }
-.hero-drips i:nth-child(6) { left: 60%; width: 16px; height: 244px; background: #503826; }
-.hero-drips i:nth-child(7) { left: 74%; width: 10px; height: 104px; background: #402B1B; }
-.hero-drips i:nth-child(8) { left: 85%; width: 13px; height: 168px; background: #472F1F; }
+.hero-drips i:nth-child(1) { left:  2%; width: 14px; height: 196px; background: #452F1E; clip-path: polygon(0 0, 100% 0, 74% 40%, 40% 100%, 30% 44%); }
+.hero-drips i:nth-child(2) { left: 13%; width:  9px; height:  84px; background: #3E2A1A; clip-path: polygon(0 0, 100% 0, 66% 52%, 58% 100%, 26% 38%); }
+.hero-drips i:nth-child(3) { left: 24%; width: 20px; height: 312px; background: #4A3322; clip-path: polygon(0 0, 100% 0, 84% 30%, 62% 66%, 48% 100%, 36% 58%, 14% 26%); }
+.hero-drips i:nth-child(4) { left: 39%; width: 11px; height: 132px; background: #422C1C; clip-path: polygon(0 0, 100% 0, 62% 100%, 42% 96%); }
+.hero-drips i:nth-child(5) { left: 50%; width:  8px; height:  58px; background: #392619; clip-path: polygon(0 0, 100% 0, 58% 34%, 46% 100%, 38% 40%); }
+.hero-drips i:nth-child(6) { left: 60%; width: 16px; height: 244px; background: #503826; clip-path: polygon(0 0, 100% 0, 52% 100%); }
+.hero-drips i:nth-child(7) { left: 74%; width: 10px; height: 104px; background: #402B1B; clip-path: polygon(0 0, 100% 0, 34% 100%); }
+.hero-drips i:nth-child(8) { left: 85%; width: 13px; height: 168px; background: #472F1F; clip-path: polygon(0 0, 100% 0, 70% 100%); }
 
 /* ── Hanging off the bottom of each animated preview ──
    Below the frame, not inside it: the clip sets overflow:hidden to trim the
@@ -339,44 +340,44 @@ a:hover { color: var(--limestone-50); }
 
 /* data entry — 5 formations */
 .f-row:nth-child(2) .clip-drips { left: 8%; }
-.f-row:nth-child(2) .clip-drips i:nth-child(1) { left: 2%; width: 8px; height: 30px; background: #2E2116; }
-.f-row:nth-child(2) .clip-drips i:nth-child(2) { left: 14%; width: 12px; height: 68px; background: #382818; }
-.f-row:nth-child(2) .clip-drips i:nth-child(3) { left: 30%; width: 7px; height: 24px; background: #291E14; }
-.f-row:nth-child(2) .clip-drips i:nth-child(4) { left: 55%; width: 10px; height: 52px; background: #332417; }
-.f-row:nth-child(2) .clip-drips i:nth-child(5) { left: 76%; width: 6px; height: 18px; background: #2C2015; }
+.f-row:nth-child(2) .clip-drips i:nth-child(1) { left: 2%; width: 8px; height: 30px; background: #2E2116; clip-path: polygon(0 0, 100% 0, 52% 100%); }
+.f-row:nth-child(2) .clip-drips i:nth-child(2) { left: 14%; width: 12px; height: 68px; background: #382818; clip-path: polygon(0 0, 100% 0, 34% 100%); }
+.f-row:nth-child(2) .clip-drips i:nth-child(3) { left: 30%; width: 7px; height: 24px; background: #291E14; clip-path: polygon(0 0, 100% 0, 70% 100%); }
+.f-row:nth-child(2) .clip-drips i:nth-child(4) { left: 55%; width: 10px; height: 52px; background: #332417; clip-path: polygon(0 0, 100% 0, 74% 40%, 40% 100%, 30% 44%); }
+.f-row:nth-child(2) .clip-drips i:nth-child(5) { left: 76%; width: 6px; height: 18px; background: #2C2015; clip-path: polygon(0 0, 100% 0, 66% 52%, 58% 100%, 26% 38%); }
 .f-row:nth-child(2) .clip-drips i:nth-child(n+6) { display: none; }
 
 /* visual-first editing — 4 formations */
 .f-row:nth-child(3) .clip-drips { left: 71%; }
-.f-row:nth-child(3) .clip-drips i:nth-child(1) { left: 8%; width: 6px; height: 20px; background: #2A1E14; }
-.f-row:nth-child(3) .clip-drips i:nth-child(2) { left: 26%; width: 14px; height: 74px; background: #3C2C1D; }
-.f-row:nth-child(3) .clip-drips i:nth-child(3) { left: 52%; width: 9px; height: 38px; background: #2E2116; }
-.f-row:nth-child(3) .clip-drips i:nth-child(4) { left: 74%; width: 7px; height: 26px; background: #271C13; }
+.f-row:nth-child(3) .clip-drips i:nth-child(1) { left: 8%; width: 6px; height: 20px; background: #2A1E14; clip-path: polygon(0 0, 100% 0, 74% 40%, 40% 100%, 30% 44%); }
+.f-row:nth-child(3) .clip-drips i:nth-child(2) { left: 26%; width: 14px; height: 74px; background: #3C2C1D; clip-path: polygon(0 0, 100% 0, 66% 52%, 58% 100%, 26% 38%); }
+.f-row:nth-child(3) .clip-drips i:nth-child(3) { left: 52%; width: 9px; height: 38px; background: #2E2116; clip-path: polygon(0 0, 100% 0, 84% 30%, 62% 66%, 48% 100%, 36% 58%, 14% 26%); }
+.f-row:nth-child(3) .clip-drips i:nth-child(4) { left: 74%; width: 7px; height: 26px; background: #271C13; clip-path: polygon(0 0, 100% 0, 62% 100%, 42% 96%); }
 .f-row:nth-child(3) .clip-drips i:nth-child(n+5) { display: none; }
 
 /* speleodb — 6 formations */
 .f-row:nth-child(4) .clip-drips { left: 34%; }
-.f-row:nth-child(4) .clip-drips i:nth-child(1) { left: 0%; width: 7px; height: 22px; background: #2C2015; }
-.f-row:nth-child(4) .clip-drips i:nth-child(2) { left: 12%; width: 9px; height: 44px; background: #342518; }
-.f-row:nth-child(4) .clip-drips i:nth-child(3) { left: 24%; width: 6px; height: 16px; background: #251C14; }
-.f-row:nth-child(4) .clip-drips i:nth-child(4) { left: 38%; width: 11px; height: 62px; background: #3A2B1C; }
-.f-row:nth-child(4) .clip-drips i:nth-child(5) { left: 56%; width: 8px; height: 34px; background: #2E2116; }
-.f-row:nth-child(4) .clip-drips i:nth-child(6) { left: 72%; width: 6px; height: 20px; background: #291E14; }
+.f-row:nth-child(4) .clip-drips i:nth-child(1) { left: 0%; width: 7px; height: 22px; background: #2C2015; clip-path: polygon(0 0, 100% 0, 34% 100%); }
+.f-row:nth-child(4) .clip-drips i:nth-child(2) { left: 12%; width: 9px; height: 44px; background: #342518; clip-path: polygon(0 0, 100% 0, 70% 100%); }
+.f-row:nth-child(4) .clip-drips i:nth-child(3) { left: 24%; width: 6px; height: 16px; background: #251C14; clip-path: polygon(0 0, 100% 0, 74% 40%, 40% 100%, 30% 44%); }
+.f-row:nth-child(4) .clip-drips i:nth-child(4) { left: 38%; width: 11px; height: 62px; background: #3A2B1C; clip-path: polygon(0 0, 100% 0, 66% 52%, 58% 100%, 26% 38%); }
+.f-row:nth-child(4) .clip-drips i:nth-child(5) { left: 56%; width: 8px; height: 34px; background: #2E2116; clip-path: polygon(0 0, 100% 0, 84% 30%, 62% 66%, 48% 100%, 36% 58%, 14% 26%); }
+.f-row:nth-child(4) .clip-drips i:nth-child(6) { left: 72%; width: 6px; height: 20px; background: #291E14; clip-path: polygon(0 0, 100% 0, 62% 100%, 42% 96%); }
 
 /* dive planning — 3 formations */
 .f-row:nth-child(5) .clip-drips { left: 55%; }
-.f-row:nth-child(5) .clip-drips i:nth-child(1) { left: 6%; width: 13px; height: 70px; background: #382818; }
-.f-row:nth-child(5) .clip-drips i:nth-child(2) { left: 40%; width: 8px; height: 28px; background: #2D2015; }
-.f-row:nth-child(5) .clip-drips i:nth-child(3) { left: 68%; width: 10px; height: 46px; background: #332417; }
+.f-row:nth-child(5) .clip-drips i:nth-child(1) { left: 6%; width: 13px; height: 70px; background: #382818; clip-path: polygon(0 0, 100% 0, 84% 30%, 62% 66%, 48% 100%, 36% 58%, 14% 26%); }
+.f-row:nth-child(5) .clip-drips i:nth-child(2) { left: 40%; width: 8px; height: 28px; background: #2D2015; clip-path: polygon(0 0, 100% 0, 62% 100%, 42% 96%); }
+.f-row:nth-child(5) .clip-drips i:nth-child(3) { left: 68%; width: 10px; height: 46px; background: #332417; clip-path: polygon(0 0, 100% 0, 58% 34%, 46% 100%, 38% 40%); }
 .f-row:nth-child(5) .clip-drips i:nth-child(n+4) { display: none; }
 
 /* import/export — 5 formations */
 .f-row:nth-child(6) .clip-drips { left: 19%; }
-.f-row:nth-child(6) .clip-drips i:nth-child(1) { left: 4%; width: 10px; height: 56px; background: #302217; }
-.f-row:nth-child(6) .clip-drips i:nth-child(2) { left: 22%; width: 6px; height: 20px; background: #271C13; }
-.f-row:nth-child(6) .clip-drips i:nth-child(3) { left: 44%; width: 12px; height: 66px; background: #3A2B1C; }
-.f-row:nth-child(6) .clip-drips i:nth-child(4) { left: 62%; width: 7px; height: 26px; background: #2C2015; }
-.f-row:nth-child(6) .clip-drips i:nth-child(5) { left: 82%; width: 9px; height: 40px; background: #2E2116; }
+.f-row:nth-child(6) .clip-drips i:nth-child(1) { left: 4%; width: 10px; height: 56px; background: #302217; clip-path: polygon(0 0, 100% 0, 70% 100%); }
+.f-row:nth-child(6) .clip-drips i:nth-child(2) { left: 22%; width: 6px; height: 20px; background: #271C13; clip-path: polygon(0 0, 100% 0, 74% 40%, 40% 100%, 30% 44%); }
+.f-row:nth-child(6) .clip-drips i:nth-child(3) { left: 44%; width: 12px; height: 66px; background: #3A2B1C; clip-path: polygon(0 0, 100% 0, 66% 52%, 58% 100%, 26% 38%); }
+.f-row:nth-child(6) .clip-drips i:nth-child(4) { left: 62%; width: 7px; height: 26px; background: #2C2015; clip-path: polygon(0 0, 100% 0, 84% 30%, 62% 66%, 48% 100%, 36% 58%, 14% 26%); }
+.f-row:nth-child(6) .clip-drips i:nth-child(5) { left: 82%; width: 9px; height: 40px; background: #2E2116; clip-path: polygon(0 0, 100% 0, 62% 100%, 42% 96%); }
 .f-row:nth-child(6) .clip-drips i:nth-child(n+6) { display: none; }
 
 /* Clustered in three groups rather than spread evenly — a formation grows in
@@ -386,25 +387,25 @@ a:hover { color: var(--limestone-50); }
    metal competing with the button. Widths, heights and tones all vary. */
 
 /* left clump */
-.btn-drips i:nth-child(1)  { left:  9%;   width:  9px; height:  96px; background: #2E2116; }
-.btn-drips i:nth-child(2)  { left: 13%;   width: 12px; height: 148px; background: #382818; }
-.btn-drips i:nth-child(3)  { left: 16.5%; width:  6px; height:  40px; background: #291E14; }
-.btn-drips i:nth-child(4)  { left: 21%;   width:  8px; height:  70px; background: #332417; }
-.btn-drips i:nth-child(5)  { left: 25%;   width:  6px; height:  26px; background: #2C2015; }
+.btn-drips i:nth-child(1)  { left:  9%;   width:  9px; height:  96px; background: #2E2116; clip-path: polygon(0 0, 100% 0, 52% 100%); }
+.btn-drips i:nth-child(2)  { left: 13%;   width: 12px; height: 148px; background: #382818; clip-path: polygon(0 0, 100% 0, 34% 100%); }
+.btn-drips i:nth-child(3)  { left: 16.5%; width:  6px; height:  40px; background: #291E14; clip-path: polygon(0 0, 100% 0, 70% 100%); }
+.btn-drips i:nth-child(4)  { left: 21%;   width:  8px; height:  70px; background: #332417; clip-path: polygon(0 0, 100% 0, 74% 40%, 40% 100%, 30% 44%); }
+.btn-drips i:nth-child(5)  { left: 25%;   width:  6px; height:  26px; background: #2C2015; clip-path: polygon(0 0, 100% 0, 66% 52%, 58% 100%, 26% 38%); }
 
 /* centre clump */
-.btn-drips i:nth-child(6)  { left: 44%;   width:  7px; height:  34px; background: #352618; }
-.btn-drips i:nth-child(7)  { left: 48%;   width: 11px; height: 118px; background: #3C2C1D; }
-.btn-drips i:nth-child(8)  { left: 51.5%; width:  8px; height:  62px; background: #2E2116; }
-.btn-drips i:nth-child(9)  { left: 56%;   width:  6px; height:  22px; background: #271C13; }
+.btn-drips i:nth-child(6)  { left: 44%;   width:  7px; height:  34px; background: #352618; clip-path: polygon(0 0, 100% 0, 84% 30%, 62% 66%, 48% 100%, 36% 58%, 14% 26%); }
+.btn-drips i:nth-child(7)  { left: 48%;   width: 11px; height: 118px; background: #3C2C1D; clip-path: polygon(0 0, 100% 0, 62% 100%, 42% 96%); }
+.btn-drips i:nth-child(8)  { left: 51.5%; width:  8px; height:  62px; background: #2E2116; clip-path: polygon(0 0, 100% 0, 58% 34%, 46% 100%, 38% 40%); }
+.btn-drips i:nth-child(9)  { left: 56%;   width:  6px; height:  22px; background: #271C13; clip-path: polygon(0 0, 100% 0, 52% 100%); }
 
 /* right clump */
-.btn-drips i:nth-child(10) { left: 72%;   width:  8px; height:  54px; background: #302217; }
-.btn-drips i:nth-child(11) { left: 76%;   width: 13px; height: 138px; background: #3A291A; }
-.btn-drips i:nth-child(12) { left: 80%;   width:  6px; height:  30px; background: #2A1E14; }
-.btn-drips i:nth-child(13) { left: 84.5%; width:  9px; height:  88px; background: #342518; }
-.btn-drips i:nth-child(14) { left: 88%;   width:  7px; height:  44px; background: #2D2015; }
-.btn-drips i:nth-child(15) { display: none; }
+.btn-drips i:nth-child(10) { left: 72%;   width:  8px; height:  54px; background: #302217; clip-path: polygon(0 0, 100% 0, 34% 100%); }
+.btn-drips i:nth-child(11) { left: 76%;   width: 13px; height: 138px; background: #3A291A; clip-path: polygon(0 0, 100% 0, 70% 100%); }
+.btn-drips i:nth-child(12) { left: 80%;   width:  6px; height:  30px; background: #2A1E14; clip-path: polygon(0 0, 100% 0, 74% 40%, 40% 100%, 30% 44%); }
+.btn-drips i:nth-child(13) { left: 84.5%; width:  9px; height:  88px; background: #342518; clip-path: polygon(0 0, 100% 0, 66% 52%, 58% 100%, 26% 38%); }
+.btn-drips i:nth-child(14) { left: 88%;   width:  7px; height:  44px; background: #2D2015; clip-path: polygon(0 0, 100% 0, 84% 30%, 62% 66%, 48% 100%, 36% 58%, 14% 26%); }
+.btn-drips i:nth-child(15) { display: none; clip-path: polygon(0 0, 100% 0, 62% 100%, 42% 96%); }
 
 .hero-ghost-link {
   display: inline-flex;
