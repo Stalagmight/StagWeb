@@ -682,9 +682,22 @@ a:hover { color: var(--limestone-50); }
 .f-row-media:nth-child(even) .f-row-in { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); }
 
 /* A row with nothing to show gets no visual column — a half-empty row reads as
-   a failed image load. Its copy runs to a comfortable measure instead. */
+   a failed image load. Instead its copy is centred in the zone, horizontally and
+   vertically, so it reads as an opening statement rather than as a row missing
+   its right-hand side.
+
+   The extra top padding is not symmetric by accident: the jagged seam occupies
+   the first 54px of every zone, so equal padding would leave this block sitting
+   visibly high in its band. */
+.f-row-text { padding: 7.5rem 0 5rem; }
 .f-row-text .f-row-in { display: block; }
-.f-row-text .f-body p { max-width: 78ch; }
+.f-row-text .f-body {
+  max-width: 66ch;
+  margin: 0 auto;
+  text-align: center;
+}
+.f-row-text .f-head { justify-content: center; }
+.f-row-text .f-body p { max-width: 58ch; margin: 0 auto; }
 
 /* No plate — the mark simply centres in its column. Positioned so a formation
    can hang off the bottom of the clip inside it. */
@@ -908,6 +921,7 @@ a:hover { color: var(--limestone-50); }
   .f-row-in > .f-body,
   .f-row:nth-child(even) .f-row-in > .f-body { grid-row: 2; grid-column: 1; }
   .f-row { padding: 2.8rem 0; }
+  .f-row-text { padding: 4.2rem 0 3rem; }
   /* Shorter zones need a shallower seam or the points eat the content. */
   .f-row::before { height: 34px; }
   .f-visual { justify-items: start; }
