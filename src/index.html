@@ -928,6 +928,41 @@ document.querySelectorAll('.reveal').forEach(el => {
   if (os) label.textContent = 'Download for ' + os;
 })();
 
+// Only the feature clip nearest the middle of the viewport animates; the others
+// show their first frame. Five looping WebPs decoding at once is wasted work and
+// splits attention, and an animated WebP cannot be paused — so the source is
+// swapped for the still instead. A clip therefore also downloads its animation
+// only once it has actually been looked at.
+(() => {
+  const imgs = [...document.querySelectorAll('.f-clip img[data-anim]')];
+  if (imgs.length < 2) return;
+  // Under reduced motion the <picture><source> already serves stills, and a
+  // matching <source> beats anything set on the img — nothing to manage here.
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  let queued = false;
+  const update = () => {
+    queued = false;
+    const middle = window.innerHeight / 2;
+    let winner = null, best = Infinity;
+    for (const img of imgs) {
+      const r = img.getBoundingClientRect();
+      if (r.bottom <= 0 || r.top >= window.innerHeight) continue;   // off screen
+      const d = Math.abs(r.top + r.height / 2 - middle);
+      if (d < best) { best = d; winner = img; }
+    }
+    for (const img of imgs) {
+      const want = img === winner ? img.dataset.anim : img.dataset.still;
+      // Only assign on a real change; re-assigning would restart the loop.
+      if (!img.getAttribute('src').endsWith(want)) img.setAttribute('src', want);
+    }
+  };
+  const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  update();
+})();
+
 // Fit every scaled-down iframe (the hero app shot and the four dialog
 // previews) to the width its container actually got. Each element declares its
 // own native width, so one routine handles all of them and nothing is cropped

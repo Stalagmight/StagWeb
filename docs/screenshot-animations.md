@@ -59,7 +59,7 @@ All paths relative to `assets/screenshots/`. Every one of these reports
 
 | Folder | Feature row | Output | Extra flags |
 |---|---|---|---|
-| `import/` | mNemo & Manual Data Entry | `data-entry.webp` (131 KB, 9.4 s) | `--holds 13,10,13,9,11,10,10,18` |
+| `import/` | mNemo & Manual Data Entry | `data-entry.webp` (141 KB, 9.4 s) | `--order 8,1,2,3,4,5,6,7 --holds 18,13,10,13,9,11,10,10` |
 | `speleodb_features/` | SpeleoDB Support | `speleodb.webp` (213 KB, 19.2 s) | `--holds 9,7,9,39,9,5,6,39,9,60` |
 | `station_merge/` | Visual-First Editing | `station-merge.webp` (41 KB, 8.0 s) | `--holds 12,7,6,5,4,4,4,5,15,18 --quality 75 --window full --crop 1923x1250+588+140` |
 | `dive_plan/` | Dive Planning | `dive-plan.webp` (99 KB, 7.8 s) | `--holds 14,10,12,10,12,20` |
@@ -80,6 +80,20 @@ For the same reason `--inset` defaults to `3,3,0,3` rather than `3`. The inset
 exists to clear the window's rounded corners and border antialiasing, which is a
 top-and-sides problem; taking 3px off a straight bottom edge clipped the status
 bar for no benefit.
+
+`import` uses `--order` to put the finished survey first: it makes a better
+opening frame than the dialog that starts the sequence, and frame one is also
+what becomes the reduced-motion still. `--holds` is given in the reordered
+sequence, not capture order.
+
+## Only one clip animates at a time
+
+The page swaps each clip's `src` between its animation and its still so that only
+the clip nearest the middle of the viewport is animating. An animated WebP cannot
+be paused, so swapping the source is the way to stop it — and it means a visitor
+only downloads the animation for a clip they actually scroll to, rather than all
+555 KB up front. Under `prefers-reduced-motion` the `<picture><source>` serves
+stills and wins over anything script sets, so that path is left alone.
 
 Two need non-default flags, both for reasons the report tells you about:
 

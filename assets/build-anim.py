@@ -134,14 +134,26 @@ def main() -> int:
     ap.add_argument("--fps", type=int, default=10)
     ap.add_argument("--window", choices=("auto","full"), default="auto",
                     help="auto = find the app window; full = capture is already only the app")
+    ap.add_argument("--order", help="reorder frames, 1-based indices into the sorted list;\n                          --holds is then given in this new order")
     ap.add_argument("--crop", help="tighter crop after registration, WxH+X+Y")
     ap.add_argument("--report", action="store_true")
     a = ap.parse_args()
 
     files = sorted(pathlib.Path(a.src).glob("*.png"))
-    holds = [int(x) for x in a.holds.split(",")]
     if not files:
         sys.exit(f"no PNGs in {a.src}")
+
+    # --order takes 1-based indices into the timestamp-sorted list. Capture order
+    # is not always the order that reads best: the finished result can make a
+    # better opening frame than the dialog that started it, and frame one is also
+    # what becomes the reduced-motion still.
+    if a.order:
+        idx = [int(v) for v in a.order.split(",")]
+        if sorted(idx) != list(range(1, len(files) + 1)):
+            sys.exit(f"--order must be a permutation of 1..{len(files)}, got {idx}")
+        files = [files[i - 1] for i in idx]
+
+    holds = [int(x) for x in a.holds.split(",")]
     if len(holds) != len(files):
         sys.exit(f"{len(files)} frames but {len(holds)} holds")
 
