@@ -298,27 +298,22 @@ a:hover { color: var(--limestone-50); }
   opacity: 0.65;
 }
 
-/* ===== HERO SHOT — the app, bled off the bottom of the fold ===== */
+/* ===== HERO SHOT — the whole app preview, shown in full ===== */
 .hero-shot {
   position: relative;
   z-index: 5;
   width: 100%;
   max-width: 1240px;
   margin: 3rem auto 0;
-  padding: 0 2rem;
-  /* Negative bottom margin pulls the next section up over the frame so the
-     screenshot is cut off rather than fully shown — it reads as "there is
-     more of this app" instead of "here is a picture". */
-  margin-bottom: -180px;
+  padding: 0 2rem 5rem;
 }
 
 .hero-shot-frame {
   border: 1px solid var(--border-subtle);
-  border-bottom: none;
-  border-radius: 10px 10px 0 0;
+  border-radius: 10px;
   overflow: hidden;
   background: var(--panel);
-  box-shadow: 0 -10px 80px rgba(0,0,0,0.6), 0 30px 90px rgba(0,0,0,0.75);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.75);
 }
 
 .hero-shot-bar {
@@ -345,11 +340,12 @@ a:hover { color: var(--limestone-50); }
   color: var(--text-secondary);
 }
 
-/* 1440×900 app preview scaled to fit, cropped short so it runs off the fold. */
+/* The app preview is 1440×900 native. Holding that exact aspect ratio means
+   the whole screenshot is visible at any width — no crop, no letterboxing. */
 .hero-shot-viewport {
   position: relative;
   width: 100%;
-  height: 620px;
+  aspect-ratio: 1440 / 900;
   overflow: hidden;
 }
 
@@ -441,13 +437,10 @@ a:hover { color: var(--limestone-50); }
 }
 
 /* ===== FEATURES — Hanging from horizontal bar ===== */
-/* Positioned above .hero-shot so it covers the bottom of the frame — that
-   overlap is what crops the screenshot. */
 .features-section {
   position: relative;
-  z-index: 10;
   background: var(--bg);
-  padding-top: 8rem;
+  padding-top: 6rem;
 }
 
 .features-bar {
@@ -842,9 +835,8 @@ a:hover { color: var(--limestone-50); }
 
 @media (max-width: 900px) {
   .hero { padding-top: 7rem; }
-  .hero-shot { padding: 0 1.25rem; margin-top: 3rem; margin-bottom: -90px; }
-  .hero-shot-viewport { height: 380px; }
-  .features-section { padding-top: 6rem; }
+  .hero-shot { padding: 0 1.25rem 3rem; margin-top: 2.5rem; }
+  .features-section { padding-top: 4.5rem; }
 }
 
 @media (max-width: 600px) {
@@ -853,8 +845,6 @@ a:hover { color: var(--limestone-50); }
   .section { padding: 4rem 1.25rem; }
   .btn { padding: 0.75rem 1.5rem; font-size: 0.9rem; }
   .btn-download { padding: 0.9rem 1.9rem; font-size: 0.95rem; }
-  .hero-shot { margin-bottom: -60px; }
-  .hero-shot-viewport { height: 260px; }
   .hero-shot-title { display: none; }
 }
 
