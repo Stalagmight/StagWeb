@@ -556,6 +556,23 @@ a:hover { color: var(--limestone-50); }
   stroke-linejoin: round;
 }
 
+/* Real brand marks that ship as monochrome PNGs are used as masks, not <img>,
+   so they take the same accent colour as the stroked icons beside them
+   instead of sitting there as white blocks. */
+.icon-mark {
+  display: block;
+  background-color: var(--sandstone-200);
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center;  mask-position: center;
+  -webkit-mask-size: contain;     mask-size: contain;
+}
+
+.icon-speleodb {
+  width: 30px; height: 30px;
+  -webkit-mask-image: url('/speleodb-logo.png');
+  mask-image: url('/speleodb-logo.png');
+}
+
 .feature-card h3 {
   font-size: 1.2rem;
   color: var(--limestone-50);
