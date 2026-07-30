@@ -35,13 +35,20 @@ from PIL import Image
 
 
 # ── 1. locate the application window ────────────────────────────────────────
-def window_bbox(rgb: np.ndarray, tol: int = 26) -> tuple[int, int, int, int]:
+def window_bbox(rgb: np.ndarray, tol: int = 20, frac: float = 0.97) -> tuple[int, int, int, int]:
     """Bounding box of the app window inside a capture that includes desktop.
 
-    The desktop colour is sampled from the extreme corners (the window never
-    reaches them). Anything far enough from that colour is treated as window.
-    Rows/columns must be >40% window pixels to count, which keeps a stray
-    desktop icon or a rounded corner from widening the box.
+    Walks in from each edge for as long as the row or column is almost entirely
+    the desktop colour, sampled from the extreme corners. The window starts at
+    the first line that is not.
+
+    This replaced a "keep lines that are >40% non-desktop" rule, which looked
+    equivalent and was not: the bottom of this app is a dimmed data table or a
+    modal's backdrop, mostly dark and therefore mostly *within* tolerance of a
+    dark desktop. Those rows were discarded as desktop, so the detected window
+    ended ~73px above its real bottom and the dialog's confirm buttons were
+    sliced in half. Requiring a line to be essentially *all* desktop before
+    treating it as outside the window keeps sparse content.
     """
     h, w, _ = rgb.shape
     corners = np.concatenate([
@@ -49,13 +56,21 @@ def window_bbox(rgb: np.ndarray, tol: int = 26) -> tuple[int, int, int, int]:
         rgb[-8:, :8].reshape(-1, 3), rgb[-8:, -8:].reshape(-1, 3),
     ])
     desktop = np.median(corners, axis=0)
-    mask = np.abs(rgb.astype(int) - desktop).sum(axis=2) > tol
+    near = np.abs(rgb.astype(int) - desktop).sum(axis=2) <= tol
 
-    rows = np.where(mask.mean(axis=1) > 0.40)[0]
-    cols = np.where(mask.mean(axis=0) > 0.40)[0]
-    if rows.size == 0 or cols.size == 0:          # capture is all window
-        return 0, 0, w, h
-    return int(cols[0]), int(rows[0]), int(cols[-1]) + 1, int(rows[-1]) + 1
+    top = 0
+    while top < h - 1 and near[top].mean() > frac:
+        top += 1
+    bot = h
+    while bot > top + 1 and near[bot - 1].mean() > frac:
+        bot -= 1
+    lef = 0
+    while lef < w - 1 and near[:, lef].mean() > frac:
+        lef += 1
+    rig = w
+    while rig > lef + 1 and near[:, rig - 1].mean() > frac:
+        rig -= 1
+    return lef, top, rig, bot
 
 
 # ── 2. registration ─────────────────────────────────────────────────────────
@@ -111,7 +126,8 @@ def main() -> int:
     ap.add_argument("--holds", required=True, help="tenths of a second per frame, comma separated")
     ap.add_argument("--width", type=int, default=1000)
     ap.add_argument("--quality", type=int, default=76)
-    ap.add_argument("--inset", type=int, default=3, help="px trimmed inside the window edge")
+    ap.add_argument("--inset", default="3,3,0,3",
+                    help="px trimmed inside the window edge: one value, or T,R,B,L")
     ap.add_argument("--band", type=int, default=56, help="px of edge band used for correlation")
     ap.add_argument("--maxshift", type=int, default=14, help="largest plausible jitter, in px")
     ap.add_argument("--passes", type=int, default=5, help="registration refinement iterations")
@@ -194,10 +210,21 @@ def main() -> int:
 
     # trim to what every frame still covers after shifting, plus the inset that
     # removes the window's own rounded corners and border antialiasing
-    top = max(0, max(dy for dy, _ in shifts)) + a.inset
-    bot = ch + min(0, min(dy for dy, _ in shifts)) - a.inset
-    lef = max(0, max(dx for _, dx in shifts)) + a.inset
-    rig = cw + min(0, min(dx for _, dx in shifts)) - a.inset
+    # --inset is per-edge (T,R,B,L, or one value for all). It exists to clear the
+    # window's rounded corners and border antialiasing, which is a top/side
+    # problem — the bottom edge is straight, and taking 3px off it clipped the
+    # status bar. Default keeps the bottom intact.
+    ins = [int(v) for v in str(a.inset).split(",")]
+    if len(ins) == 1:
+        ins *= 4
+    if len(ins) != 4:
+        sys.exit("--inset wants one value or T,R,B,L")
+    i_t, i_r, i_b, i_l = ins
+
+    top = max(0, max(dy for dy, _ in shifts)) + i_t
+    bot = ch + min(0, min(dy for dy, _ in shifts)) - i_b
+    lef = max(0, max(dx for _, dx in shifts)) + i_l
+    rig = cw + min(0, min(dx for _, dx in shifts)) - i_r
 
     # Optional tighter crop, WxH+X+Y relative to the registered region. Needed
     # for full-screen captures: the whole app at 640px on the page is unreadable,
@@ -219,7 +246,7 @@ def main() -> int:
         print(f"common crop     : {cw}x{ch}")
         for f, b, s in zip(files, boxes, shifts):
             print(f"  {f.name}  win={b[2]-b[0]}x{b[3]-b[1]}+{b[0]}+{b[1]}  shift dy={s[0]:+d} dx={s[1]:+d}")
-        print(f"final crop      : {rig - lef}x{bot - top}  (inset {a.inset})")
+        print(f"final crop      : {rig - lef}x{bot - top}  (inset T{i_t} R{i_r} B{i_b} L{i_l})")
 
     tmp = pathlib.Path(tempfile.mkdtemp(prefix="anim-"))
     try:

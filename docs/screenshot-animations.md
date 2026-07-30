@@ -59,12 +59,27 @@ All paths relative to `assets/screenshots/`. Every one of these reports
 
 | Folder | Feature row | Output | Extra flags |
 |---|---|---|---|
-| `import/` | mNemo & Manual Data Entry | `data-entry.webp` (123 KB, 9.4 s) | `--holds 13,10,13,9,11,10,10,18` |
-| `speleodb_features/` | SpeleoDB Support | `speleodb.webp` (206 KB, 19.2 s) | `--holds 9,7,9,39,9,5,6,39,9,60` |
+| `import/` | mNemo & Manual Data Entry | `data-entry.webp` (131 KB, 9.4 s) | `--holds 13,10,13,9,11,10,10,18` |
+| `speleodb_features/` | SpeleoDB Support | `speleodb.webp` (213 KB, 19.2 s) | `--holds 9,7,9,39,9,5,6,39,9,60` |
 | `station_merge/` | Visual-First Editing | `station-merge.webp` (41 KB, 8.0 s) | `--holds 12,7,6,5,4,4,4,5,15,18 --quality 75 --window full --crop 1923x1250+588+140` |
-| `dive_plan/` | Dive Planning | `dive-plan.webp` (98 KB, 7.8 s) | `--holds 14,10,12,10,12,20` |
-| `export/` | Import & Export Existing Data | `export.webp` (59 KB, 6.0 s) | `--holds 12,16,15,17 --band 90 --passes 8` |
+| `dive_plan/` | Dive Planning | `dive-plan.webp` (99 KB, 7.8 s) | `--holds 14,10,12,10,12,20` |
+| `export/` | Import & Export Existing Data | `export.webp` (61 KB, 6.0 s) | `--holds 12,16,15,17 --band 90 --passes 8` |
 | `main.png` | hero | `app-main-{1600,2200}.webp` | see below |
+
+### Why the bottom edge is treated differently
+
+The window detector walks in from each edge while the line is *almost entirely*
+the desktop colour. An earlier version kept lines that were ">40% non-desktop",
+which sounds equivalent and is not: the bottom of this app is a dimmed data table
+or a modal's backdrop — mostly dark, therefore mostly within tolerance of a dark
+desktop. Those rows were discarded as desktop, so the detected window ended about
+73px above its real bottom on four of the five sets, and the connection wizard's
+Confirm button was sliced in half.
+
+For the same reason `--inset` defaults to `3,3,0,3` rather than `3`. The inset
+exists to clear the window's rounded corners and border antialiasing, which is a
+top-and-sides problem; taking 3px off a straight bottom edge clipped the status
+bar for no benefit.
 
 Two need non-default flags, both for reasons the report tells you about:
 
