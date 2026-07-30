@@ -256,17 +256,78 @@ a:hover { color: var(--limestone-50); }
 
 /* One button, one text link, one reassurance line — stacked, not side by side,
    so the download is unambiguously the primary action. */
+/* Wider gap than the copy above needs: it gives the drips hanging off the
+   button room to fade before they reach this text. */
 .hero-actions {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.1rem;
+  gap: 2.2rem;
 }
 
 .btn-download {
   padding: 1rem 2.6rem;
   font-size: 1.05rem;
 }
+
+/* ── Stalactites growing off the download button ──
+   Negative z-index so they paint behind the in-flow content of .hero-content:
+   the button's own gradient hides where they attach, and the GitHub link and
+   platform line below stay legible where a long one passes behind them. */
+.btn-hang {
+  position: relative;
+  display: inline-block;
+}
+
+.btn-drips {
+  position: absolute;
+  top: 100%;
+  left: 0; right: 0;
+  height: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.btn-drips i {
+  position: absolute;
+  top: -2px;                     /* tuck the base under the button edge */
+  display: block;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  /* Solid where it meets the button, fading out toward the tip — the same
+     taper the hero's own stalactites use. It is also what keeps the GitHub
+     link and platform line readable: a long drip is already faint by the time
+     it reaches them. Masking rather than a gradient background so the fade is
+     pure alpha and each drip keeps its own flat colour. */
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 28%, rgba(0,0,0,0.55) 62%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 28%, rgba(0,0,0,0.55) 62%, transparent 100%);
+}
+
+/* Clustered in three groups rather than spread evenly — a formation grows in
+   clumps, and an even comb across the whole edge reads as a border treatment.
+   Shades sit just above the hero background behind them (about #18110A at this
+   height), so they read as relief catching a little light rather than as bright
+   metal competing with the button. Widths, heights and tones all vary. */
+
+/* left clump */
+.btn-drips i:nth-child(1)  { left:  9%;   width:  9px; height:  96px; background: #2E2116; }
+.btn-drips i:nth-child(2)  { left: 13%;   width: 12px; height: 148px; background: #382818; }
+.btn-drips i:nth-child(3)  { left: 16.5%; width:  6px; height:  40px; background: #291E14; }
+.btn-drips i:nth-child(4)  { left: 21%;   width:  8px; height:  70px; background: #332417; }
+.btn-drips i:nth-child(5)  { left: 25%;   width:  6px; height:  26px; background: #2C2015; }
+
+/* centre clump */
+.btn-drips i:nth-child(6)  { left: 44%;   width:  7px; height:  34px; background: #352618; }
+.btn-drips i:nth-child(7)  { left: 48%;   width: 11px; height: 118px; background: #3C2C1D; }
+.btn-drips i:nth-child(8)  { left: 51.5%; width:  8px; height:  62px; background: #2E2116; }
+.btn-drips i:nth-child(9)  { left: 56%;   width:  6px; height:  22px; background: #271C13; }
+
+/* right clump */
+.btn-drips i:nth-child(10) { left: 72%;   width:  8px; height:  54px; background: #302217; }
+.btn-drips i:nth-child(11) { left: 76%;   width: 13px; height: 138px; background: #3A291A; }
+.btn-drips i:nth-child(12) { left: 80%;   width:  6px; height:  30px; background: #2A1E14; }
+.btn-drips i:nth-child(13) { left: 84.5%; width:  9px; height:  88px; background: #342518; }
+.btn-drips i:nth-child(14) { left: 88%;   width:  7px; height:  44px; background: #2D2015; }
+.btn-drips i:nth-child(15) { display: none; }
 
 .hero-ghost-link {
   display: inline-flex;
@@ -276,8 +337,23 @@ a:hover { color: var(--limestone-50); }
   font-weight: 600;
   font-size: 0.95rem;
   letter-spacing: 0.06em;
-  color: var(--text-secondary);
+  color: var(--silt-300);
+  position: relative;
   transition: color 0.3s ease;
+}
+
+/* A dim halo behind the label. The drips sit at z-index -1 and this comes later
+   in the document, so at the same level it paints over them — dimming whatever
+   passes behind the text instead of dimming every drip everywhere. */
+.hero-ghost-link::before {
+  content: '';
+  position: absolute;
+  inset: -1rem -3rem;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center,
+              rgba(15,9,6,0.82) 0%, rgba(15,9,6,0.66) 38%,
+              rgba(15,9,6,0.32) 66%, rgba(15,9,6,0) 100%);
 }
 
 .hero-ghost-link:hover { color: var(--limestone-50); }
@@ -295,7 +371,18 @@ a:hover { color: var(--limestone-50); }
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-secondary);
-  opacity: 0.65;
+  position: relative;
+  opacity: 0.8;
+}
+
+.hero-platforms::before {
+  content: '';
+  position: absolute;
+  inset: -0.8rem -2.6rem;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center,
+              rgba(15,9,6,0.76) 0%, rgba(15,9,6,0.5) 50%, rgba(15,9,6,0) 100%);
 }
 
 /* ===== HERO SHOT — the whole app preview, shown in full ===== */
@@ -365,7 +452,7 @@ a:hover { color: var(--limestone-50); }
   position: relative;
   overflow: hidden;
   transition: all 0.35s ease;
-  clip-path: polygon(0% 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 0% 100%, 10px 50%);
+  clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
 }
 
 .btn-primary {
@@ -382,7 +469,7 @@ a:hover { color: var(--limestone-50); }
   background: transparent;
   color: var(--limestone-50);
   border: 2px solid var(--border-subtle);
-  clip-path: polygon(0% 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 0% 100%, 10px 50%);
+  clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
 }
 
 .btn-secondary:hover {
