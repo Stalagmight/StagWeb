@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StalagMight — Underwater Cave Survey &amp; Mapping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+/* The palette of the instrument itself: hard-anodised aluminium, the
+   grey-green of a transflective LCD, moulded rubber, and the amber of a
+   warning annunciator. Nothing here is a brand colour. */
+:root{
+  --alu-hi:#8E938C;
+  --alu:#6B7069;
+  --alu-lo:#4A4E48;
+  --body-hi:#3B3F3A;
+  --body:#2B2E2A;
+  --body-lo:#1C1E1B;
+  --rubber:#141613;
+  --lcd:#A9B79A;
+  --lcd-hi:#BECBAF;
+  --lcd-ink:#1E2A18;
+  --lcd-ink-2:#3E4C36;
+  --amber:#FF8A1E;
+  --led-green:#5CE07A;
+  --etch:#C9CEC4;
+  --etch-dim:#9AA095;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(ellipse 100% 60% at 50% 0%,#3A3E39,transparent 70%),
+    var(--body-lo);
+  color:var(--etch);
+  font-family:'Chakra Petch',sans-serif;font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+a{color:var(--amber);text-decoration:none}
+h1,h2,h3{font-weight:600;line-height:1.05}
+.lcdfont{font-family:'Share Tech Mono',monospace}
+.etch{
+  font-family:'Share Tech Mono',monospace;font-size:.66rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--etch-dim);
+}
+
+/* ── Machined panel: brushed face, chamfered edge, real depth. Reused
+      for every block so the page reads as one assembled instrument. ── */
+.panel{
+  position:relative;
+  background:
+    repeating-linear-gradient(93deg,rgba(255,255,255,.022) 0 1px,transparent 1px 3px),
+    linear-gradient(168deg,var(--body-hi),var(--body) 45%,var(--body-lo));
+  border:1px solid var(--alu-lo);
+  border-radius:7px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    inset 0 -1px 0 rgba(0,0,0,.55),
+    0 12px 28px -14px rgba(0,0,0,.85);
+}
+/* Panel screws. Four per panel, because that is how a panel is fixed. */
+.screw{
+  position:absolute;width:11px;height:11px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,var(--alu-hi),var(--alu) 55%,var(--alu-lo));
+  box-shadow:inset 0 -1px 1px rgba(0,0,0,.6),0 1px 1px rgba(0,0,0,.5);
+}
+.screw::after{
+  content:'';position:absolute;left:2px;right:2px;top:50%;height:1.5px;
+  background:var(--body-lo);transform:translateY(-50%) rotate(28deg);border-radius:1px;
+}
+.screw.tl{top:8px;left:8px}.screw.tr{top:8px;right:8px}
+.screw.bl{bottom:8px;left:8px}.screw.br{bottom:8px;right:8px}
+
+/* ── LCD: transflective, so it is lit from ambient rather than glowing.
+      Segment grid overlaid at low opacity. ── */
+.lcd{
+  position:relative;
+  background:linear-gradient(174deg,var(--lcd-hi),var(--lcd));
+  color:var(--lcd-ink);
+  border-radius:3px;
+  box-shadow:inset 0 2px 6px rgba(30,42,24,.42),inset 0 0 0 1px rgba(30,42,24,.3);
+  overflow:hidden;
+}
+.lcd::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg,rgba(30,42,24,.09) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(90deg,rgba(30,42,24,.06) 0 1px,transparent 1px 3px);
+}
+
+/* ═══ NAV — the device's key row ═══ */
+.nav{
+  position:sticky;top:0;z-index:70;
+  background:linear-gradient(180deg,var(--body-hi),var(--body-lo));
+  border-bottom:1px solid var(--alu-lo);
+  box-shadow:0 6px 16px -8px rgba(0,0,0,.9);
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.6rem 1.3rem;gap:1.2rem;
+}
+.nav-brand{display:flex;align-items:center;gap:.6rem;font-weight:700;letter-spacing:.03em}
+.nav-brand svg{width:23px;height:23px}
+.nav-links{list-style:none;display:flex;gap:.45rem}
+/* Membrane keys: raised, with a hard press state. */
+.nav-links a{
+  display:block;padding:.4rem .85rem;color:var(--etch);
+  font-family:'Share Tech Mono',monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;
+  background:linear-gradient(180deg,var(--alu),var(--alu-lo));
+  border:1px solid var(--body-lo);border-radius:4px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 2px 0 var(--body-lo),0 3px 4px rgba(0,0,0,.5);
+  transition:transform .06s,box-shadow .06s;
+}
+.nav-links a:hover{color:#fff}
+.nav-links a:active{transform:translateY(2px);box-shadow:inset 0 2px 4px rgba(0,0,0,.6)}
+.nav-links a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+/* ═══ HERO — the instrument face. The most characteristic object in a
+       cave surveyor's world is the device in their hand, so the page
+       opens as that device rather than as a headline. ═══ */
+.hero{padding:3.2rem 1.2rem 3rem}
+.device{max-width:900px;margin:0 auto;padding:1.5rem}
+/* Knurled grip band down each side of the case. */
+.device::before,.device::after{
+  content:'';position:absolute;top:34px;bottom:34px;width:7px;border-radius:3px;
+  background:repeating-linear-gradient(0deg,var(--alu-hi) 0 1px,var(--alu-lo) 1px 4px);
+  opacity:.5;
+}
+.device::before{left:3px}.device::after{right:3px}
+
+.device-top{
+  display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  padding:0 1.1rem .9rem;
+}
+.annun{display:flex;align-items:center;gap:1.1rem}
+.led{display:flex;align-items:center;gap:.4rem;font-family:'Share Tech Mono',monospace;
+  font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--etch-dim)}
+.led i{width:7px;height:7px;border-radius:50%;background:var(--body-lo);
+  box-shadow:inset 0 1px 1px rgba(0,0,0,.7)}
+.led.on i{background:var(--led-green);box-shadow:0 0 7px var(--led-green)}
+.led.warn i{background:var(--amber);box-shadow:0 0 7px var(--amber)}
+
+.readout{padding:1.7rem 1.6rem 1.5rem;margin:0 .6rem}
+.readout h1{
+  font-family:'Share Tech Mono',monospace;font-weight:400;
+  font-size:clamp(2.1rem,6.6vw,4rem);letter-spacing:.02em;color:var(--lcd-ink);
+}
+.readout .tagline{
+  font-family:'Share Tech Mono',monospace;font-size:clamp(.8rem,2.1vw,1.02rem);
+  letter-spacing:.19em;text-transform:uppercase;color:var(--lcd-ink-2);margin-top:.15rem;
+}
+.readout .rule{height:1px;background:rgba(30,42,24,.3);margin:1.1rem 0}
+.readout p{color:var(--lcd-ink-2);max-width:48ch;font-size:.98rem}
+.readout-vals{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:.9rem;margin-top:1.3rem}
+.readout-vals div{border-left:2px solid rgba(30,42,24,.35);padding-left:.6rem}
+.readout-vals dt{font-family:'Share Tech Mono',monospace;font-size:.54rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--lcd-ink-2)}
+.readout-vals dd{font-family:'Share Tech Mono',monospace;font-size:1.06rem;color:var(--lcd-ink)}
+
+.keyrow{display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;padding:1.4rem .6rem .4rem}
+.key{
+  display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;
+  font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:.17em;text-transform:uppercase;
+  border-radius:5px;border:1px solid var(--body-lo);
+  transition:transform .06s,box-shadow .06s;
+}
+.key-go{
+  background:linear-gradient(180deg,#FFA24E,var(--amber));color:#2B1600;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 3px 0 #A34F00,0 5px 8px rgba(0,0,0,.5);
+}
+.key-alt{
+  background:linear-gradient(180deg,var(--alu),var(--alu-lo));color:var(--etch);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 3px 0 var(--body-lo),0 5px 8px rgba(0,0,0,.5);
+}
+.key:active{transform:translateY(3px);box-shadow:inset 0 2px 5px rgba(0,0,0,.6)}
+.key:focus-visible{outline:2px solid var(--led-green);outline-offset:3px}
+
+/* ═══ SECTIONS ═══ */
+.section{max-width:1200px;margin:0 auto;padding:3.6rem 1.2rem}
+.sec-head{margin-bottom:1.9rem;max-width:60ch}
+.sec-head h2{font-size:clamp(1.6rem,3.8vw,2.3rem);margin-top:.4rem;letter-spacing:.01em}
+.sec-head p{color:var(--etch-dim);margin-top:.5rem;font-size:.96rem}
+
+/* ═══ FEATURES — sub-modules bolted to the chassis ═══ */
+.modules{display:grid;grid-template-columns:repeat(auto-fit,minmax(305px,1fr));gap:1.1rem}
+.module{padding:1.8rem 1.5rem 1.6rem}
+.module-plate{
+  display:inline-flex;align-items:center;gap:.5rem;margin-bottom:.9rem;
+  padding:.22rem .55rem;border:1px solid var(--alu-lo);border-radius:3px;
+  background:var(--body-lo);
+  font-family:'Share Tech Mono',monospace;font-size:.56rem;letter-spacing:.16em;color:var(--amber);
+}
+.module-icon{width:30px;height:30px;margin-bottom:.85rem}
+.module-icon svg{width:100%;height:100%;fill:none;stroke:var(--amber);stroke-width:1.7}
+.module h3{font-size:1.15rem;margin-bottom:.35rem}
+.module p{color:var(--etch-dim);font-size:.93rem}
+
+/* ═══ WORKFLOW — screens the device steps through ═══ */
+.screens{display:flex;flex-direction:column;gap:1.6rem}
+.screen{display:grid;grid-template-columns:1.1fr 1fr;gap:0;overflow:hidden}
+.screen-info{padding:1.9rem 1.7rem}
+.screen-step{
+  display:inline-flex;align-items:baseline;gap:.55rem;margin-bottom:.7rem;
+  font-family:'Share Tech Mono',monospace;
+}
+.screen-step b{font-size:1.5rem;color:var(--amber);font-weight:400}
+.screen-step span{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--etch-dim)}
+.screen-info h3{font-size:1.28rem;margin-bottom:.5rem}
+.screen-info p{color:var(--etch-dim);font-size:.93rem}
+.screen-lcd{margin:1rem 1rem 1rem 0;padding:5px;overflow:hidden}
+.screen-lcd-in{background:#0e0d0c;border-radius:2px;overflow:hidden}
+.screen-lcd iframe{width:100%;height:340px;border:0;display:block}
+
+/* ═══ PREVIEW ═══ */
+.bigscreen{padding:1rem}
+.bigscreen-in{border-radius:3px;overflow:hidden;background:#0e0d0c;
+  box-shadow:inset 0 0 0 1px var(--alu-lo),inset 0 3px 12px rgba(0,0,0,.7)}
+.bigscreen iframe{width:100%;height:min(74vh,660px);border:0;display:block}
+.bigscreen-bar{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:0 .3rem .75rem}
+
+/* ═══ CTA ═══ */
+.cta{max-width:1200px;margin:0 auto;padding:3.6rem 1.2rem 2rem}
+.cta-panel{padding:2.6rem 2rem;text-align:center}
+.cta h2{font-size:clamp(1.7rem,4.2vw,2.5rem)}
+.cta p{color:var(--etch-dim);margin:.5rem auto 0;max-width:44ch}
+.plats{display:flex;justify-content:center;flex-wrap:wrap;gap:0;margin-top:1.9rem;
+  border:1px solid var(--alu-lo);border-radius:4px;overflow:hidden;width:fit-content;margin-left:auto;margin-right:auto}
+.plats span{display:flex;align-items:center;gap:.5rem;padding:.65rem 1.2rem;
+  border-right:1px solid var(--alu-lo);background:var(--body-lo);
+  font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--etch-dim)}
+.plats span:last-child{border-right:0}
+.plats svg{width:13px;height:13px;fill:none;stroke:var(--led-green);stroke-width:2}
+
+/* ═══ FOOTER ═══ */
+.footer{max-width:1200px;margin:0 auto;padding:2rem 1.2rem 3rem;
+  display:flex;flex-wrap:wrap;gap:1.3rem;justify-content:space-between;align-items:center}
+.footer-brand{display:flex;align-items:center;gap:.5rem;font-weight:700}
+.footer-brand svg{width:21px;height:21px}
+.footer-links{list-style:none;display:flex;flex-wrap:wrap;gap:1.2rem}
+.footer-links a{color:var(--etch-dim);font-family:'Share Tech Mono',monospace;font-size:.62rem;
+  letter-spacing:.15em;text-transform:uppercase}
+.footer-links a:hover{color:var(--amber)}
+
+@media(max-width:900px){
+  .screen{grid-template-columns:1fr}
+  .screen-lcd{margin:0 1rem 1rem}
+  .nav-links{display:none}
+  .device::before,.device::after{display:none}
+  .device{padding:1rem}
+  .readout{margin:0;padding:1.3rem 1.1rem}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><g fill="none" stroke="#FF8A1E" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#C9CEC4"><circle cx="320" cy="620" r="28"/><circle cx="430" cy="520" r="28"/><circle cx="520" cy="600" r="28"/><circle cx="640" cy="460" r="28"/><circle cx="730" cy="540" r="28"/><circle cx="420" cy="390" r="28"/><circle cx="540" cy="360" r="28"/><circle cx="520" cy="740" r="28"/></g></svg>
+    StalagMight
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Process</a></li>
+    <li><a href="#preview">Preview</a></li>
+    <li><a href="#download">Download</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO: the instrument ══ -->
+<header class="hero">
+  <div class="device panel">
+    <span class="screw tl"></span><span class="screw tr"></span>
+    <span class="screw bl"></span><span class="screw br"></span>
+
+    <div class="device-top">
+      <span class="etch">Survey unit · SM-1024</span>
+      <div class="annun">
+        <span class="led on"><i></i>pwr</span>
+        <span class="led on"><i></i>fix</span>
+        <span class="led warn"><i></i>rec</span>
+      </div>
+    </div>
+
+    <div class="readout lcd">
+      <h1>StalagMight</h1>
+      <div class="tagline">Underwater cave survey &amp; mapping</div>
+      <div class="rule"></div>
+      <p>Free, open-source underwater cave survey software. Simple data entry, fast visualization, and easy map exports.</p>
+      <dl class="readout-vals">
+        <div><dt>Cost</dt><dd>0.00</dd></div>
+        <div><dt>Source</dt><dd>OPEN</dd></div>
+        <div><dt>Input</dt><dd>DMP</dd></div>
+        <div><dt>Platforms</dt><dd>3</dd></div>
+      </dl>
+    </div>
+
+    <div class="keyrow">
+      <a class="key key-go" href="#download">Download free</a>
+      <a class="key key-alt" href="#features">Explore features</a>
+    </div>
+  </div>
+</header>
+
+<!-- ══ FEATURES ══ -->
+<section class="section" id="features">
+  <div class="sec-head">
+    <span class="etch">Core capabilities</span>
+    <h2>Features</h2>
+    <p>Everything you need to go from raw survey data to a finished map.</p>
+  </div>
+  <div class="modules">
+    <article class="module panel">
+      <span class="screw tr"></span><span class="screw bl"></span>
+      <div class="module-plate">MOD 01</div>
+      <div class="module-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
+      <h3>Free Forever</h3>
+      <p>No trials, no subscriptions, no paywalls. Stalagmight is and always will be completely free to use.</p>
+    </article>
+    <article class="module panel">
+      <span class="screw tr"></span><span class="screw bl"></span>
+      <div class="module-plate">MOD 02</div>
+      <div class="module-icon"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 00-.9-2.6c3.1-.35 6.4-1.5 6.4-7A5.4 5.4 0 0020 4.8 5.1 5.1 0 0019.9 1S18.7.65 16 2.5a13.4 13.4 0 00-7 0C6.3.65 5.1 1 5.1 1A5.1 5.1 0 005 4.8a5.4 5.4 0 00-1.5 3.8c0 5.4 3.3 6.6 6.4 7A3.4 3.4 0 009 18.1V22"/></svg></div>
+      <h3>Open-Source</h3>
+      <p>All source code is publicly available. Inspect it, modify it, or contribute back to the project.</p>
+    </article>
+    <article class="module panel">
+      <span class="screw tr"></span><span class="screw bl"></span>
+      <div class="module-plate">MOD 03</div>
+      <div class="module-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <h3>mNemo &amp; Manual Data Entry</h3>
+      <p>Import DMP files directly from mNemo survey device, or enter data by hand with a built-in spreadsheet.</p>
+    </article>
+    <article class="module panel">
+      <span class="screw tr"></span><span class="screw bl"></span>
+      <div class="module-plate">MOD 04</div>
+      <div class="module-icon"><svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></div>
+      <h3>Automated Section Alignment</h3>
+      <p>Automatically match and connect survey sections based on shared reference shots. Less manual placement, fewer mistakes, faster data entry.</p>
+    </article>
+    <article class="module panel">
+      <span class="screw tr"></span><span class="screw bl"></span>
+      <div class="module-plate">MOD 05</div>
+      <div class="module-icon"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div>
+      <h3>2D Visualization</h3>
+      <p>Interactive plan view with satellite overlay. See your survey on a real map.</p>
+    </article>
+    <article class="module panel">
+      <span class="screw tr"></span><span class="screw bl"></span>
+      <div class="module-plate">MOD 06</div>
+      <div class="module-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l2.5 2.5L16 9"/></svg></div>
+      <h3>Loop Closure</h3>
+      <p>Detect loops in your survey network and distribute errors automatically for more accurate maps.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ══ WORKFLOW ══ -->
+<section class="section" id="workflow">
+  <div class="sec-head">
+    <span class="etch">Import workflow</span>
+    <h2>From DMP File to Mapped Cave</h2>
+    <p>A guided wizard walks you through every step of importing mNemo survey data — from file selection to final placement on your cave map.</p>
+  </div>
+  <div class="screens">
+    <article class="screen panel">
+      <div class="screen-info">
+        <div class="screen-step"><b>01</b><span>screen</span></div>
+        <h3>Section Selection</h3>
+        <p>Open a DMP file and review its contents at a glance — shot count, total length, depth range. Pick which sections to import, skip already-imported ones, and set default surveyor and date for the batch.</p>
+      </div>
+      <div class="screen-lcd lcd"><div class="screen-lcd-in"><iframe src="/dialogs/01-section-selection.html" loading="lazy" title="Section selection dialog"></iframe></div></div>
+    </article>
+    <article class="screen panel">
+      <div class="screen-info">
+        <div class="screen-step"><b>02</b><span>screen</span></div>
+        <h3>Zero Datum Configuration</h3>
+        <p>Anchor your first section to real-world coordinates. Choose a station as the GPS zero datum, enter coordinates in decimal degrees, and configure section metadata — name, surveyor, date, color, and direction.</p>
+      </div>
+      <div class="screen-lcd lcd"><div class="screen-lcd-in"><iframe src="/dialogs/02-zero-datum-config.html" loading="lazy" title="Zero datum configuration dialog"></iframe></div></div>
+    </article>
+    <article class="screen panel">
+      <div class="screen-info">
+        <div class="screen-step"><b>03</b><span>screen</span></div>
+        <h3>Connection Suggesting</h3>
+        <p>For each subsequent section, the system automatically suggests a connection point based on shot matching. Review the confidence level, merge-station mapping, and overlap handling — or pick from alternative connections.</p>
+      </div>
+      <div class="screen-lcd lcd"><div class="screen-lcd-in"><iframe src="/dialogs/03-suggesting.html" loading="lazy" title="Connection suggesting dialog"></iframe></div></div>
+    </article>
+    <article class="screen panel">
+      <div class="screen-info">
+        <div class="screen-step"><b>04</b><span>screen</span></div>
+        <h3>Manual Placing</h3>
+        <p>When no automatic suggestion fits, take full control. Choose from previous suggestions, connect to an existing station, place manually on the map, or skip the section entirely. Full shot table and metadata remain editable.</p>
+      </div>
+      <div class="screen-lcd lcd"><div class="screen-lcd-in"><iframe src="/dialogs/04-manual-placing.html" loading="lazy" title="Manual placing dialog"></iframe></div></div>
+    </article>
+  </div>
+</section>
+
+<!-- ══ PREVIEW ══ -->
+<section class="section" id="preview">
+  <div class="sec-head">
+    <span class="etch">App preview</span>
+    <h2>See It in Action</h2>
+    <p>The working survey view — plan, sections and shot table in one window.</p>
+  </div>
+  <div class="bigscreen panel">
+    <span class="screw tl"></span><span class="screw tr"></span>
+    <div class="bigscreen-bar" style="padding-top:.9rem">
+      <span class="etch">Plan view · satellite overlay</span>
+      <span class="etch">Depths in metres</span>
+    </div>
+    <div class="bigscreen-in"><iframe src="/app-preview.html" loading="lazy" title="StalagMight application preview"></iframe></div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="cta" id="download">
+  <div class="cta-panel panel">
+    <span class="screw tl"></span><span class="screw tr"></span>
+    <span class="screw bl"></span><span class="screw br"></span>
+    <span class="etch">Power on</span>
+    <h2 style="margin-top:.4rem">Begin Your Survey</h2>
+    <p>Download StalagMight for free. Available on Windows, macOS, and Linux.</p>
+    <div class="keyrow">
+      <a class="key key-go" href="#">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download for desktop
+      </a>
+      <a class="key key-alt" href="#">View on GitHub</a>
+    </div>
+    <div class="plats">
+      <span><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Windows</span>
+      <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>macOS</span>
+      <span><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Linux</span>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-brand">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><g fill="none" stroke="#FF8A1E" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#C9CEC4"><circle cx="320" cy="620" r="28"/><circle cx="430" cy="520" r="28"/><circle cx="520" cy="600" r="28"/><circle cx="640" cy="460" r="28"/><circle cx="730" cy="540" r="28"/><circle cx="420" cy="390" r="28"/><circle cx="540" cy="360" r="28"/><circle cx="520" cy="740" r="28"/></g></svg>
+    StalagMight
+  </div>
+  <ul class="footer-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Process</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="#">Documentation</a></li>
+    <li><a href="#">GitHub</a></li>
+  </ul>
+  <span class="etch">© 2026 StalagMight · Underwater cave survey and mapping</span>
+</footer>
+
+</body>
+</html>

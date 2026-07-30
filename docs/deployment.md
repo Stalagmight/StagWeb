@@ -32,6 +32,18 @@ Two pieces of host infra, both in `~/srv/infra/`:
 Because `dist/` is bind-mounted live, **nginx serves whatever is currently in
 `dist/`** — there is no copy step and no container restart needed to publish.
 
+## Design exploration gallery
+
+Fifteen alternative design directions for the same content live at
+**<https://stalagmight.anzu.nevim.co/designs/>** — a contact-sheet gallery with
+live iframe thumbnails and filter chips.
+
+Sources are standalone, self-contained HTML files in `public/designs/`; they
+share no CSS with `src/` and are copied verbatim by `vite build`. Each embeds
+the same four `/dialogs/*.html` and the same `/app-preview.html` as the live
+site, so they stay in sync with the real dialogs automatically. See
+[design-directions.md](design-directions.md) for what each one is.
+
 ## Publishing a change
 
 ```bash

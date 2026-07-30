@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StalagMight — Underwater Cave Survey &amp; Mapping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&family=Spectral:ital,wght@0,400;0,600;1,300;1,400&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+/* Hydrographic chart palette — Admiralty/NOAA symbology conventions.
+   Magenta is not decorative: on real charts it marks cables, pipelines and
+   anything the surveyor must not misread as bathymetry. */
+:root{
+  --paper:#F2EAD6;
+  --paper-lit:#F8F3E5;
+  --tint-shoal:#BFD9BC;   /* chart green — drying/shallow */
+  --tint-water:#CFE3EA;   /* blue tint — charted shallow water */
+  --tint-land:#E2CFAA;    /* buff — land */
+  --magenta:#C4006B;      /* cables, restricted areas, lights */
+  --ink:#16181C;
+  --ink-soft:#4C5056;
+  --hair:#16181C;
+  --rule:rgba(22,24,28,.28);
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Barlow Semi Condensed',sans-serif;
+  font-size:17px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* Faint chart-paper fibre + the graticule every chart carries. */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg,transparent 0 79px,rgba(22,24,28,.055) 79px 80px),
+    repeating-linear-gradient(90deg,transparent 0 79px,rgba(22,24,28,.055) 79px 80px);
+}
+.sheet{position:relative;z-index:1}
+
+a{color:var(--magenta);text-decoration:none}
+h1,h2,h3{font-weight:600;line-height:1.05}
+
+/* Chart labels: hydrographers set water features in italic serif and
+   fixed/land features in roman. Kept that split throughout. */
+.water-label{font-family:'Spectral',serif;font-style:italic;font-weight:400}
+.sounding{font-family:'Roboto Mono',monospace;font-size:.66rem;color:var(--ink-soft)}
+
+.legend{
+  font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;
+  font-weight:600;color:var(--ink-soft);
+}
+
+/* ── NEATLINE: charts are bounded by a double border, not a drop shadow ── */
+.neatline{
+  border:1px solid var(--hair);
+  box-shadow:0 0 0 3px var(--paper),0 0 0 4px var(--hair);
+}
+
+/* ═══ NAV — styled as a chart's marginal scale bar ═══ */
+.nav{
+  position:sticky;top:0;z-index:60;
+  display:flex;align-items:stretch;justify-content:space-between;
+  background:var(--paper-lit);
+  border-bottom:1px solid var(--hair);
+}
+.nav-brand{
+  display:flex;align-items:center;gap:.6rem;
+  padding:.7rem 1.4rem;border-right:1px solid var(--hair);
+}
+.nav-brand svg{width:22px;height:22px}
+.nav-brand b{font-size:1.02rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.nav-links{list-style:none;display:flex}
+.nav-links a{
+  display:flex;align-items:center;height:100%;
+  padding:.7rem 1.15rem;border-left:1px solid var(--rule);
+  color:var(--ink);font-size:.72rem;letter-spacing:.17em;text-transform:uppercase;
+}
+.nav-links a:hover{background:var(--tint-water)}
+.nav-links a:focus-visible{outline:2px solid var(--magenta);outline-offset:-4px}
+
+/* ═══ HERO — a chart title cartouche, which is where a real chart
+       states its subject, scale, datum and units ═══ */
+.hero{position:relative;padding:5rem 1.5rem 4.5rem;overflow:hidden}
+/* Charted water. Tint areas are drawn as hard-edged irregular polygons,
+   not soft radial blobs — a depth contour is a surveyed line with a
+   definite position, and a feathered edge would be a lie about it. */
+.hero-tints{position:absolute;inset:0;z-index:0;width:100%;height:100%}
+.hero-tints path{stroke:rgba(22,24,28,.30);stroke-width:1}
+/* The survey traverse, drawn in chart magenta so it reads as instrument
+   data laid over the bathymetry rather than as part of it. */
+.hero-plot{position:absolute;inset:0;z-index:1;pointer-events:none}
+.hero-plot path{fill:none;stroke:var(--magenta);stroke-width:1.6}
+.hero-plot .dash{stroke-dasharray:9 6;opacity:.85}
+.hero-plot circle{fill:var(--paper-lit);stroke:var(--magenta);stroke-width:1.6}
+.hero-plot text{font-family:'Roboto Mono',monospace;font-size:9px;fill:var(--ink-soft)}
+
+.cartouche{
+  position:relative;z-index:2;
+  max-width:660px;margin:0 auto;
+  background:var(--paper-lit);
+  padding:2.6rem 2.4rem 2.2rem;
+  border:1px solid var(--hair);
+  box-shadow:0 0 0 3px var(--paper-lit),0 0 0 4px var(--hair);
+}
+.cartouche-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:.7rem;margin-bottom:1.4rem;border-bottom:1px solid var(--rule);
+}
+.chart-no{font-family:'Roboto Mono',monospace;font-size:.7rem;letter-spacing:.08em}
+.cartouche h1{
+  font-family:'Spectral',serif;font-weight:600;
+  font-size:clamp(2.5rem,7vw,4.1rem);letter-spacing:-.015em;
+}
+.cartouche .sub{
+  font-family:'Spectral',serif;font-style:italic;font-weight:300;
+  font-size:clamp(1.05rem,2.6vw,1.4rem);color:var(--ink-soft);
+  margin-top:.35rem;
+}
+.rule-orn{
+  display:flex;align-items:center;gap:.7rem;margin:1.5rem 0 1.2rem;
+  color:var(--ink-soft);
+}
+.rule-orn::before,.rule-orn::after{content:'';flex:1;height:1px;background:var(--rule)}
+.rule-orn span{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase}
+.cartouche p.desc{max-width:46ch;font-size:1.04rem}
+
+/* Chart particulars block — datum/units/scale, as printed under a title. */
+.particulars{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:0;margin:1.7rem 0 1.6rem;border-top:1px solid var(--rule);
+}
+.particulars div{
+  padding:.7rem .8rem;border-bottom:1px solid var(--rule);
+  border-right:1px solid var(--rule);
+}
+.particulars div:last-child{border-right:0}
+.particulars dt{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft)}
+.particulars dd{font-family:'Roboto Mono',monospace;font-size:.86rem;margin-top:.2rem}
+
+.btn-row{display:flex;flex-wrap:wrap;gap:.7rem}
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.68rem 1.3rem;font-size:.74rem;letter-spacing:.19em;text-transform:uppercase;
+  font-weight:600;border:1px solid var(--hair);
+}
+.btn-primary{background:var(--magenta);color:var(--paper-lit);border-color:var(--magenta)}
+.btn-primary:hover{background:#9E0055}
+.btn-secondary{background:transparent;color:var(--ink)}
+.btn-secondary:hover{background:var(--tint-water)}
+.btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+/* ═══ SECTION SCAFFOLD ═══ */
+.section{max-width:1180px;margin:0 auto;padding:4.5rem 1.5rem}
+.sec-head{margin-bottom:2.4rem;max-width:62ch}
+.sec-head .legend{display:block;margin-bottom:.7rem}
+.sec-head h2{font-family:'Spectral',serif;font-size:clamp(1.7rem,3.6vw,2.5rem)}
+.sec-head p{color:var(--ink-soft);margin-top:.6rem;font-size:1.02rem}
+
+/* ═══ FEATURES — chart legend panel. A legend is a keyed list of
+       symbols, so each capability gets a plotted symbol, not an icon. ═══ */
+.legend-panel{background:var(--paper-lit);border:1px solid var(--hair)}
+.legend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr))}
+.legend-item{
+  display:flex;gap:1rem;padding:1.5rem 1.4rem;
+  border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);
+}
+.legend-sym{flex:0 0 46px;height:46px;border:1px solid var(--rule);background:var(--paper);
+  display:grid;place-items:center}
+.legend-sym svg{width:30px;height:30px;fill:none;stroke:var(--magenta);stroke-width:1.7}
+.legend-item h3{font-size:1.05rem;letter-spacing:.02em}
+.legend-item .key{
+  font-family:'Roboto Mono',monospace;font-size:.62rem;color:var(--ink-soft);
+  display:block;margin-bottom:.2rem;
+}
+.legend-item p{font-size:.93rem;color:var(--ink-soft);margin-top:.3rem}
+
+/* ═══ WORKFLOW — chart panels. Order matters here (it is a real
+       sequence), so the numbering is information, not ornament. ═══ */
+.panels{display:flex;flex-direction:column;gap:3.2rem}
+.panel{display:grid;grid-template-columns:1.25fr .95fr;gap:0;border:1px solid var(--hair);background:var(--paper-lit)}
+.panel-plate{border-right:1px solid var(--hair);background:var(--paper);position:relative;overflow:hidden}
+.panel-plate iframe{width:100%;height:100%;min-height:380px;border:0;display:block}
+.panel-body{padding:1.8rem 1.7rem}
+.panel-stamp{
+  display:inline-flex;align-items:baseline;gap:.5rem;margin-bottom:.9rem;
+  border-bottom:1px solid var(--magenta);padding-bottom:.25rem;
+}
+.panel-stamp b{font-family:'Roboto Mono',monospace;font-size:1.5rem;color:var(--magenta);font-weight:500}
+.panel-stamp span{font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft)}
+.panel-body h3{font-family:'Spectral',serif;font-size:1.3rem;margin-bottom:.55rem}
+.panel-body p{font-size:.95rem;color:var(--ink-soft)}
+
+/* ═══ PREVIEW ═══ */
+.plate-wide{border:1px solid var(--hair);background:var(--paper-lit);padding:.5rem}
+.plate-wide-inner{border:1px solid var(--rule);overflow:hidden;background:#0e0d0c}
+.plate-wide iframe{width:100%;height:min(74vh,680px);border:0;display:block}
+.plate-cap{
+  display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  padding:.6rem .3rem 0;font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);
+}
+
+/* ═══ CTA — the chart's "authorities" footnote block ═══ */
+.cta{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);background:var(--paper-lit)}
+.cta-in{max-width:1180px;margin:0 auto;padding:4rem 1.5rem;display:grid;grid-template-columns:1.1fr .9fr;gap:3rem;align-items:center}
+.cta h2{font-family:'Spectral',serif;font-size:clamp(1.8rem,4vw,2.6rem)}
+.cta p{color:var(--ink-soft);margin:.6rem 0 1.5rem;max-width:44ch}
+.platforms{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule)}
+.platforms span{
+  display:flex;align-items:center;gap:.6rem;padding:.75rem 1rem;
+  border-bottom:1px solid var(--rule);font-size:.74rem;letter-spacing:.17em;text-transform:uppercase;
+}
+.platforms span:last-child{border-bottom:0}
+.platforms svg{width:14px;height:14px;fill:none;stroke:var(--magenta);stroke-width:2}
+
+/* ═══ FOOTER ═══ */
+.footer{max-width:1180px;margin:0 auto;padding:2.6rem 1.5rem 3.5rem;
+  display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:space-between;align-items:center}
+.footer-brand{display:flex;align-items:center;gap:.6rem;font-size:.95rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.footer-brand svg{width:22px;height:22px}
+.footer-links{list-style:none;display:flex;flex-wrap:wrap;gap:1.3rem}
+.footer-links a{color:var(--ink-soft);font-size:.7rem;letter-spacing:.17em;text-transform:uppercase}
+.footer-links a:hover{color:var(--magenta)}
+.footer-copy{font-family:'Roboto Mono',monospace;font-size:.66rem;color:var(--ink-soft)}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:860px){
+  .panel,.cta-in{grid-template-columns:1fr}
+  .panel-plate{border-right:0;border-bottom:1px solid var(--hair)}
+  .nav-links{display:none}
+  .hero{padding:3rem 1rem 3rem}
+  .cartouche{padding:1.8rem 1.4rem}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<nav class="nav">
+  <div class="nav-brand">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><g fill="none" stroke="#C4006B" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#16181C"><circle cx="320" cy="620" r="26"/><circle cx="430" cy="520" r="26"/><circle cx="520" cy="600" r="26"/><circle cx="640" cy="460" r="26"/><circle cx="730" cy="540" r="26"/><circle cx="420" cy="390" r="26"/><circle cx="540" cy="360" r="26"/><circle cx="520" cy="740" r="26"/></g></svg>
+    <b>StalagMight</b>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Process</a></li>
+    <li><a href="#preview">Preview</a></li>
+    <li><a href="#download">Download</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO: title cartouche over charted water ══ -->
+<header class="hero">
+  <!-- Depth-tint areas: buff land, green drying shoal, blue charted shallows.
+       Edges are contours, so they are hard and irregular. -->
+  <svg class="hero-tints" viewBox="0 0 1400 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <path fill="#E2CFAA" d="M1064 0 L1400 0 L1400 214 L1332 186 L1258 208 L1196 170 L1142 196 L1088 156 L1042 92 Z"/>
+    <path fill="#CFE3EA" d="M0 132 L96 108 L204 146 L286 116 L392 152 L470 124 L566 158 L648 130
+      L742 166 L838 138 L922 174 L1010 148 L1094 188 L1188 162 L1284 200 L1400 176 L1400 470
+      L1298 496 L1204 462 L1108 490 L1010 458 L906 486 L806 452 L702 482 L598 450 L494 480
+      L392 448 L288 476 L184 444 L80 472 L0 440 Z"/>
+    <path fill="#BFD9BC" d="M0 486 L112 462 L214 498 L318 470 L404 506 L338 560 L246 588 L148 566 L54 596 L0 574 Z"/>
+    <path fill="#BFD9BC" d="M1180 262 L1268 240 L1342 276 L1306 322 L1226 336 L1164 306 Z"/>
+  </svg>
+  <svg class="hero-plot" viewBox="0 0 1400 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <path class="dash" d="M60 470 L190 392 L268 452 L392 330 L470 388 L560 300"/>
+    <path class="dash" d="M190 392 L176 250 L300 214 L392 330"/>
+    <path class="dash" d="M268 452 L262 578"/>
+    <path class="dash" d="M1180 180 L1268 250 L1210 350 L1320 420"/>
+    <circle cx="60" cy="470" r="4.5"/><circle cx="190" cy="392" r="4.5"/>
+    <circle cx="268" cy="452" r="4.5"/><circle cx="392" cy="330" r="4.5"/>
+    <circle cx="470" cy="388" r="4.5"/><circle cx="560" cy="300" r="4.5"/>
+    <circle cx="176" cy="250" r="4.5"/><circle cx="300" cy="214" r="4.5"/>
+    <circle cx="262" cy="578" r="4.5"/>
+    <circle cx="1180" cy="180" r="4.5"/><circle cx="1268" cy="250" r="4.5"/>
+    <circle cx="1210" cy="350" r="4.5"/><circle cx="1320" cy="420" r="4.5"/>
+    <!-- soundings: charted depths in metres -->
+    <text x="112" y="516">14₂</text><text x="228" y="356">21₈</text>
+    <text x="330" y="500">28₄</text><text x="434" y="292">31₀</text>
+    <text x="512" y="430">36₅</text><text x="616" y="268">39₂</text>
+    <text x="150" y="196">18₇</text><text x="352" y="176">24₃</text>
+    <text x="700" y="360">41₆</text><text x="790" y="470">44₀</text>
+    <text x="880" y="240">47₃</text><text x="960" y="530">51₈</text>
+    <text x="1060" y="330">55₄</text><text x="1130" y="470">58₉</text>
+    <text x="1240" y="150">62₁</text><text x="1300" y="300">64₇</text>
+  </svg>
+
+  <div class="cartouche">
+    <div class="cartouche-head">
+      <span class="legend">Cave Survey Sheet</span>
+      <span class="chart-no">No. 1024</span>
+    </div>
+    <h1>StalagMight</h1>
+    <div class="sub water-label">Underwater Cave Survey &amp; Mapping</div>
+
+    <div class="rule-orn"><span>Particulars</span></div>
+    <p class="desc">Free, open-source underwater cave survey software. Simple data entry, fast visualization, and easy map exports.</p>
+
+    <dl class="particulars">
+      <div><dt>Licence</dt><dd>Free · Open</dd></div>
+      <div><dt>Soundings in</dt><dd>Metres</dd></div>
+      <div><dt>Instrument</dt><dd>mNemo DMP</dd></div>
+      <div><dt>Platforms</dt><dd>Win · Mac · Linux</dd></div>
+    </dl>
+
+    <div class="btn-row">
+      <a class="btn btn-primary" href="#download">Download free</a>
+      <a class="btn btn-secondary" href="#features">Explore features</a>
+    </div>
+  </div>
+</header>
+
+<!-- ══ FEATURES: chart legend ══ -->
+<section class="section" id="features">
+  <div class="sec-head">
+    <span class="legend">Core Capabilities</span>
+    <h2>Features</h2>
+    <p>Everything you need to go from raw survey data to a finished map.</p>
+  </div>
+
+  <div class="legend-panel neatline">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-sym"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
+        <div><span class="key">Aa</span><h3>Free Forever</h3>
+        <p>No trials, no subscriptions, no paywalls. Stalagmight is and always will be completely free to use.</p></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-sym"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 00-.9-2.6c3.1-.35 6.4-1.5 6.4-7A5.4 5.4 0 0020 4.8 5.1 5.1 0 0019.9 1S18.7.65 16 2.5a13.4 13.4 0 00-7 0C6.3.65 5.1 1 5.1 1A5.1 5.1 0 005 4.8a5.4 5.4 0 00-1.5 3.8c0 5.4 3.3 6.6 6.4 7A3.4 3.4 0 009 18.1V22"/></svg></div>
+        <div><span class="key">Ab</span><h3>Open-Source</h3>
+        <p>All source code is publicly available. Inspect it, modify it, or contribute back to the project.</p></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-sym"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+        <div><span class="key">Ba</span><h3>mNemo &amp; Manual Data Entry</h3>
+        <p>Import DMP files directly from mNemo survey device, or enter data by hand with a built-in spreadsheet.</p></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-sym"><svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></div>
+        <div><span class="key">Bb</span><h3>Automated Section Alignment</h3>
+        <p>Automatically match and connect survey sections based on shared reference shots. Less manual placement, fewer mistakes, faster data entry.</p></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-sym"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div>
+        <div><span class="key">Ca</span><h3>2D Visualization</h3>
+        <p>Interactive plan view with satellite overlay. See your survey on a real map.</p></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-sym"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l2.5 2.5L16 9"/></svg></div>
+        <div><span class="key">Cb</span><h3>Loop Closure</h3>
+        <p>Detect loops in your survey network and distribute errors automatically for more accurate maps.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WORKFLOW: chart panels, in survey order ══ -->
+<section class="section" id="workflow">
+  <div class="sec-head">
+    <span class="legend">Import Workflow</span>
+    <h2>From DMP File to Mapped Cave</h2>
+    <p>A guided wizard walks you through every step of importing mNemo survey data — from file selection to final placement on your cave map.</p>
+  </div>
+
+  <div class="panels">
+    <article class="panel">
+      <div class="panel-plate"><iframe src="/dialogs/01-section-selection.html" loading="lazy" title="Section selection dialog"></iframe></div>
+      <div class="panel-body">
+        <div class="panel-stamp"><b>01</b><span>Sheet A</span></div>
+        <h3>Section Selection</h3>
+        <p>Open a DMP file and review its contents at a glance — shot count, total length, depth range. Pick which sections to import, skip already-imported ones, and set default surveyor and date for the batch.</p>
+      </div>
+    </article>
+    <article class="panel">
+      <div class="panel-plate"><iframe src="/dialogs/02-zero-datum-config.html" loading="lazy" title="Zero datum configuration dialog"></iframe></div>
+      <div class="panel-body">
+        <div class="panel-stamp"><b>02</b><span>Sheet B</span></div>
+        <h3>Zero Datum Configuration</h3>
+        <p>Anchor your first section to real-world coordinates. Choose a station as the GPS zero datum, enter coordinates in decimal degrees, and configure section metadata — name, surveyor, date, color, and direction.</p>
+      </div>
+    </article>
+    <article class="panel">
+      <div class="panel-plate"><iframe src="/dialogs/03-suggesting.html" loading="lazy" title="Connection suggesting dialog"></iframe></div>
+      <div class="panel-body">
+        <div class="panel-stamp"><b>03</b><span>Sheet C</span></div>
+        <h3>Connection Suggesting</h3>
+        <p>For each subsequent section, the system automatically suggests a connection point based on shot matching. Review the confidence level, merge-station mapping, and overlap handling — or pick from alternative connections.</p>
+      </div>
+    </article>
+    <article class="panel">
+      <div class="panel-plate"><iframe src="/dialogs/04-manual-placing.html" loading="lazy" title="Manual placing dialog"></iframe></div>
+      <div class="panel-body">
+        <div class="panel-stamp"><b>04</b><span>Sheet D</span></div>
+        <h3>Manual Placing</h3>
+        <p>When no automatic suggestion fits, take full control. Choose from previous suggestions, connect to an existing station, place manually on the map, or skip the section entirely. Full shot table and metadata remain editable.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ══ PREVIEW ══ -->
+<section class="section" id="preview">
+  <div class="sec-head">
+    <span class="legend">App Preview</span>
+    <h2>See It in Action</h2>
+    <p>The working survey view — plan, sections and shot table on one sheet.</p>
+  </div>
+  <div class="plate-wide">
+    <div class="plate-wide-inner"><iframe src="/app-preview.html" loading="lazy" title="StalagMight application preview"></iframe></div>
+    <div class="plate-cap"><span>Plate I — Plan view, satellite overlay</span><span>Depths in metres</span></div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="cta" id="download">
+  <div class="cta-in">
+    <div>
+      <span class="legend">Authorities</span>
+      <h2 style="margin-top:.6rem">Begin Your Survey</h2>
+      <p>Download StalagMight for free. Available on Windows, macOS, and Linux.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download for desktop
+        </a>
+        <a class="btn btn-secondary" href="#">View on GitHub</a>
+      </div>
+    </div>
+    <div class="platforms">
+      <span><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Windows</span>
+      <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>macOS</span>
+      <span><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Linux</span>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-brand">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><g fill="none" stroke="#C4006B" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#16181C"><circle cx="320" cy="620" r="26"/><circle cx="430" cy="520" r="26"/><circle cx="520" cy="600" r="26"/><circle cx="640" cy="460" r="26"/><circle cx="730" cy="540" r="26"/><circle cx="420" cy="390" r="26"/><circle cx="540" cy="360" r="26"/><circle cx="520" cy="740" r="26"/></g></svg>
+    StalagMight
+  </div>
+  <ul class="footer-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Process</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="#">Documentation</a></li>
+    <li><a href="#">GitHub</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 StalagMight · Underwater cave survey and mapping</div>
+</footer>
+
+</div>
+</body>
+</html>

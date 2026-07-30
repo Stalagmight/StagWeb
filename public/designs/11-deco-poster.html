@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StalagMight — Underwater Cave Survey &amp; Mapping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Limelight&family=Josefin+Sans:wght@300;400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+/* A 1930s expedition poster: night petrol, jade, brass and cream. Deco
+   palettes are small and metallic, and the metal only ever appears as a
+   line or a rule — never as a fill behind text. */
+:root{
+  --night:#0D2831;
+  --night-2:#123642;
+  --jade:#1C6355;
+  --jade-2:#25806E;
+  --brass:#D6A651;
+  --brass-hi:#F0D391;
+  --brass-lo:#96702E;
+  --cream:#F2E7CE;
+  --cream-dim:#C3B99F;
+  --oxblood:#8E2F26;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--night);color:var(--cream);
+  font-family:'Crimson Pro',Georgia,serif;font-size:18px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;text-align:center;
+}
+a{color:var(--brass);text-decoration:none}
+h1,h2,h3{font-family:'Limelight',display;font-weight:400;line-height:1.1;letter-spacing:.02em}
+
+/* Deco labels: geometric sans, wide tracking, always caps. */
+.deco-label{
+  font-family:'Josefin Sans',sans-serif;font-weight:600;font-size:.7rem;
+  letter-spacing:.42em;text-transform:uppercase;color:var(--brass);
+}
+.deco-sub{
+  font-family:'Josefin Sans',sans-serif;font-weight:300;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--cream-dim);
+}
+
+/* ── SIGNATURE: the stepped ziggurat. Deco's defining move, and it earns
+      its place here because a cave section IS a stepped profile. Drawn as
+      an explicit outline rather than stacked rules, so it reads as one
+      shape instead of three stray lines. ── */
+.zigrule{display:block;width:min(440px,80%);margin:0 auto;height:auto}
+.zigrule path{fill:none;stroke:var(--brass);stroke-width:1.2;opacity:.9}
+.zigrule line{stroke:var(--brass);stroke-width:1;opacity:.45}
+
+/* Chevron rule — the short deco divider between title and text. */
+.chev{display:flex;align-items:center;justify-content:center;gap:.55rem;margin:1.4rem 0}
+.chev i{width:8px;height:8px;border-right:1.5px solid var(--brass);border-bottom:1.5px solid var(--brass);transform:rotate(45deg)}
+.chev i:nth-child(2){opacity:.7}.chev i:nth-child(3){opacity:.4}
+
+/* ═══ NAV ═══ */
+.nav{
+  position:sticky;top:0;z-index:70;
+  background:rgba(13,40,49,.94);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(214,166,81,.4);
+  display:flex;justify-content:center;align-items:center;gap:2.4rem;
+  padding:.85rem 1.5rem;flex-wrap:wrap;
+}
+.nav-brand{display:flex;align-items:center;gap:.6rem;font-family:'Limelight',display;
+  font-size:1.06rem;letter-spacing:.1em;color:var(--cream)}
+.nav-brand svg{width:23px;height:23px}
+.nav-links{list-style:none;display:flex;gap:1.9rem}
+.nav-links a{font-family:'Josefin Sans',sans-serif;font-weight:600;font-size:.62rem;
+  letter-spacing:.3em;text-transform:uppercase;color:var(--cream-dim)}
+.nav-links a:hover{color:var(--brass)}
+.nav-links a:focus-visible{outline:1px solid var(--brass);outline-offset:5px}
+
+/* ═══ HERO — the poster. Strict bilateral symmetry, a sunburst behind a
+       stepped arch, and the title in a true Deco display face. ═══ */
+.poster{position:relative;overflow:hidden;padding:5rem 1.5rem 4.5rem}
+.sunburst{
+  position:absolute;top:-14%;left:50%;transform:translateX(-50%);
+  width:min(1150px,155vw);height:min(1150px,155vw);pointer-events:none;opacity:.5;
+}
+.poster-in{position:relative;z-index:2;max-width:780px;margin:0 auto}
+.poster-mark{width:84px;height:84px;margin:0 auto 1.3rem}
+.poster h1{
+  font-size:clamp(2.6rem,9vw,5.4rem);
+  color:var(--cream);
+  text-shadow:0 0 26px rgba(214,166,81,.22);
+}
+.poster .tagline{
+  font-family:'Josefin Sans',sans-serif;font-weight:300;
+  font-size:clamp(.82rem,2.4vw,1.2rem);letter-spacing:.3em;text-transform:uppercase;
+  color:var(--brass);margin-top:.85rem;
+}
+.poster p.desc{max-width:46ch;margin:0 auto;color:var(--cream-dim);font-size:1.1rem}
+
+/* Deco arch frame around the title stack. */
+.arch{
+  border:1px solid rgba(214,166,81,.5);
+  border-top-left-radius:200px 60px;border-top-right-radius:200px 60px;
+  padding:3rem 2.2rem 2.4rem;position:relative;
+  background:linear-gradient(180deg,rgba(28,99,85,.16),rgba(13,40,49,.5));
+}
+.arch::before{
+  content:'';position:absolute;inset:8px;pointer-events:none;
+  border:1px solid rgba(214,166,81,.22);
+  border-top-left-radius:190px 54px;border-top-right-radius:190px 54px;
+}
+
+.btn-row{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-top:2rem}
+.btn{
+  display:inline-flex;align-items:center;gap:.55rem;padding:.8rem 1.9rem;
+  font-family:'Josefin Sans',sans-serif;font-weight:600;font-size:.66rem;
+  letter-spacing:.28em;text-transform:uppercase;
+  border:1px solid var(--brass);transition:background .4s,color .4s;
+}
+.btn-primary{background:linear-gradient(180deg,var(--brass-hi),var(--brass));color:var(--night)}
+.btn-primary:hover{background:var(--brass-hi)}
+.btn-secondary{color:var(--brass);background:transparent}
+.btn-secondary:hover{background:rgba(214,166,81,.14)}
+.btn:focus-visible{outline:1px solid var(--cream);outline-offset:4px}
+
+/* ═══ SECTIONS ═══ */
+.section{max-width:1140px;margin:0 auto;padding:4.6rem 1.5rem}
+.sec-head{max-width:56ch;margin:0 auto 2.8rem}
+.sec-head h2{font-size:clamp(1.7rem,4.4vw,2.7rem);margin-top:.9rem}
+.sec-head p{color:var(--cream-dim);margin-top:.5rem}
+
+/* ═══ FEATURES — six panels around a central spine. Symmetry is the
+       organising idea, so they are paired, not gridded loosely. ═══ */
+.panels{display:grid;grid-template-columns:1fr 1px 1fr;gap:0 2.4rem}
+.spine{background:linear-gradient(180deg,transparent,rgba(214,166,81,.5) 12%,rgba(214,166,81,.5) 88%,transparent)}
+.pcol{display:flex;flex-direction:column;gap:2.2rem}
+.pitem{padding:1.6rem 1.2rem;border:1px solid rgba(214,166,81,.24);
+  background:linear-gradient(180deg,rgba(28,99,85,.1),transparent)}
+.pitem-fig{width:46px;height:46px;margin:0 auto 1rem;
+  border:1px solid rgba(214,166,81,.45);transform:rotate(45deg);display:grid;place-items:center}
+.pitem-fig svg{width:22px;height:22px;fill:none;stroke:var(--brass);stroke-width:1.5;transform:rotate(-45deg)}
+.pitem h3{font-size:1.16rem;letter-spacing:.03em}
+.pitem .num{font-family:'Josefin Sans',sans-serif;font-weight:600;font-size:.58rem;
+  letter-spacing:.34em;color:var(--jade-2);display:block;margin-bottom:.5rem}
+.pitem p{color:var(--cream-dim);font-size:.96rem;margin-top:.4rem}
+
+/* ═══ WORKFLOW — four stepped plates, centred ═══ */
+.acts{display:flex;flex-direction:column;gap:3.4rem}
+.act{max-width:940px;margin:0 auto;width:100%}
+.act-num{
+  font-family:'Limelight',display;font-size:2.4rem;color:var(--brass);line-height:1;
+}
+.act h3{font-size:clamp(1.3rem,3.2vw,1.8rem);margin-top:.5rem}
+.act p{color:var(--cream-dim);max-width:60ch;margin:.6rem auto 1.5rem;font-size:1rem}
+.act-plate{
+  border:1px solid rgba(214,166,81,.45);padding:.5rem;
+  background:linear-gradient(180deg,rgba(214,166,81,.12),transparent);
+}
+.act-plate-in{background:#0e0d0c;overflow:hidden}
+.act-plate iframe{width:100%;height:400px;border:0;display:block}
+
+/* ═══ PREVIEW ═══ */
+.grand{border:1px solid rgba(214,166,81,.5);padding:.65rem;
+  background:linear-gradient(180deg,rgba(214,166,81,.14),transparent)}
+.grand-in{background:#0e0d0c;overflow:hidden}
+.grand iframe{width:100%;height:min(76vh,690px);border:0;display:block}
+
+/* ═══ CTA ═══ */
+.finale{max-width:1140px;margin:0 auto;padding:4.6rem 1.5rem 2.5rem}
+.finale h2{font-size:clamp(1.9rem,5vw,3rem)}
+.finale p{color:var(--cream-dim);margin-top:.5rem}
+.plats{display:flex;justify-content:center;flex-wrap:wrap;gap:2.6rem;margin-top:2.2rem}
+.plats span{display:flex;align-items:center;gap:.55rem;
+  font-family:'Josefin Sans',sans-serif;font-weight:600;font-size:.62rem;
+  letter-spacing:.28em;text-transform:uppercase;color:var(--cream-dim)}
+.plats svg{width:14px;height:14px;fill:none;stroke:var(--brass);stroke-width:1.8}
+
+/* ═══ FOOTER ═══ */
+.footer{max-width:1140px;margin:0 auto;padding:2.4rem 1.5rem 3.4rem}
+.footer-brand{display:inline-flex;align-items:center;gap:.6rem;font-family:'Limelight',display;
+  letter-spacing:.1em;margin-bottom:1.2rem}
+.footer-brand svg{width:22px;height:22px}
+.footer-links{list-style:none;display:flex;justify-content:center;flex-wrap:wrap;gap:1.8rem;margin-bottom:1.1rem}
+.footer-links a{font-family:'Josefin Sans',sans-serif;font-weight:600;font-size:.6rem;
+  letter-spacing:.28em;text-transform:uppercase;color:var(--cream-dim)}
+.footer-links a:hover{color:var(--brass)}
+
+@media(max-width:880px){
+  .panels{grid-template-columns:1fr}
+  .spine{display:none}
+  .pcol{gap:1.6rem}
+  .panels .pcol:first-child{margin-bottom:1.6rem}
+  .nav-links{display:none}
+  .poster{padding:2.6rem 1rem 3rem}
+  .arch{padding:2rem 1.2rem 1.8rem}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><g fill="none" stroke="#D6A651" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F2E7CE"><circle cx="320" cy="620" r="26"/><circle cx="430" cy="520" r="26"/><circle cx="520" cy="600" r="26"/><circle cx="640" cy="460" r="26"/><circle cx="730" cy="540" r="26"/><circle cx="420" cy="390" r="26"/><circle cx="540" cy="360" r="26"/><circle cx="520" cy="740" r="26"/></g></svg>
+    StalagMight
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Process</a></li>
+    <li><a href="#preview">Preview</a></li>
+    <li><a href="#download">Download</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO: the poster ══ -->
+<header class="poster">
+  <svg class="sunburst" viewBox="0 0 600 600" aria-hidden="true">
+    <defs>
+      <!-- userSpaceOnUse so every ray fades from one shared centre outward;
+           objectBoundingBox would give each rotated ray its own gradient and
+           render them as solid slabs. cx/cy are 0 because the rays sit inside
+           translate(300 300) and userSpaceOnUse resolves in that space. -->
+      <radialGradient id="ray" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="300">
+        <stop offset="0" stop-color="#D6A651" stop-opacity=".22"/>
+        <stop offset=".4" stop-color="#D6A651" stop-opacity=".6"/>
+        <stop offset=".76" stop-color="#D6A651" stop-opacity=".28"/>
+        <stop offset="1" stop-color="#D6A651" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <g fill="url(#ray)">
+      <g transform="translate(300 300)">
+        <path d="M0 0 L-11 -300 L11 -300 Z"/>
+        <path d="M0 0 L-11 -300 L11 -300 Z" transform="rotate(15)"/>
+        <path d="M0 0 L-11 -300 L11 -300 Z" transform="rotate(30)"/>
+        <path d="M0 0 L-11 -300 L11 -300 Z" transform="rotate(45)"/>
+        <path d="M0 0 L-11 -300 L11 -300 Z" transform="rotate(60)"/>
+        <path d="M0 0 L-11 -300 L11 -300 Z" transform="rotate(75)"/>
+        <path d="M0 0 L-11 -300 L11 -300 Z" transform="rotate(90)"/>
+        <path d="M0 0 L-11 -300 L11 -300 Z" transform="rotate(105)"/>
+        <path d="M0 0 L-11 -300 L11 -300 Z" transform="rotate(-15)"/>
+        <path d="M0 0 L-11 -300 L11 -300 Z" transform="rotate(-30)"/>
+        <path d="M0 0 L-11 -300 L11 -300 Z" transform="rotate(-45)"/>
+        <path d="M0 0 L-11 -300 L11 -300 Z" transform="rotate(-60)"/>
+        <path d="M0 0 L-11 -300 L11 -300 Z" transform="rotate(-75)"/>
+        <path d="M0 0 L-11 -300 L11 -300 Z" transform="rotate(-90)"/>
+        <path d="M0 0 L-11 -300 L11 -300 Z" transform="rotate(-105)"/>
+      </g>
+    </g>
+    <circle cx="300" cy="300" r="216" fill="none" stroke="#D6A651" stroke-width="1" opacity=".16"/>
+    <circle cx="300" cy="300" r="252" fill="none" stroke="#D6A651" stroke-width="1" opacity=".09"/>
+  </svg>
+
+  <div class="poster-in">
+    <div class="arch">
+      <div class="poster-mark">
+        <svg viewBox="0 0 1024 1024" aria-hidden="true"><defs><linearGradient id="pb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0D391"/><stop offset="1" stop-color="#96702E"/></linearGradient></defs><circle cx="512" cy="512" r="326" fill="none" stroke="#D6A651" stroke-width="7" opacity=".5"/><g fill="none" stroke="url(#pb)" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F2E7CE"><circle cx="320" cy="620" r="16"/><circle cx="430" cy="520" r="16"/><circle cx="520" cy="600" r="16"/><circle cx="640" cy="460" r="16"/><circle cx="730" cy="540" r="16"/><circle cx="420" cy="390" r="16"/><circle cx="540" cy="360" r="16"/><circle cx="520" cy="740" r="16"/></g></svg>
+      </div>
+      <span class="deco-label">Expeditions below the water table</span>
+      <h1 style="margin-top:1rem">StalagMight</h1>
+      <div class="tagline">Underwater Cave Survey &amp; Mapping</div>
+      <div class="chev"><i></i><i></i><i></i></div>
+      <p class="desc">Free, open-source underwater cave survey software. Simple data entry, fast visualization, and easy map exports.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="#download">Download free</a>
+        <a class="btn btn-secondary" href="#features">Explore features</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══ FEATURES ══ -->
+<section class="section" id="features">
+  <svg class="zigrule" viewBox="0 0 440 30" aria-hidden="true" style="margin-bottom:2.4rem">
+    <path d="M0 29 H120 V21 H160 V13 H200 V5 H240 V13 H280 V21 H320 V29 H440"/>
+    <line x1="0" y1="29" x2="440" y2="29"/>
+  </svg>
+  <div class="sec-head">
+    <span class="deco-label">Core capabilities</span>
+    <h2>Features</h2>
+    <p>Everything you need to go from raw survey data to a finished map.</p>
+  </div>
+
+  <div class="panels">
+    <div class="pcol">
+      <article class="pitem">
+        <div class="pitem-fig"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
+        <span class="num">I</span><h3>Free Forever</h3>
+        <p>No trials, no subscriptions, no paywalls. Stalagmight is and always will be completely free to use.</p>
+      </article>
+      <article class="pitem">
+        <div class="pitem-fig"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+        <span class="num">III</span><h3>mNemo &amp; Manual Data Entry</h3>
+        <p>Import DMP files directly from mNemo survey device, or enter data by hand with a built-in spreadsheet.</p>
+      </article>
+      <article class="pitem">
+        <div class="pitem-fig"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div>
+        <span class="num">V</span><h3>2D Visualization</h3>
+        <p>Interactive plan view with satellite overlay. See your survey on a real map.</p>
+      </article>
+    </div>
+
+    <div class="spine" aria-hidden="true"></div>
+
+    <div class="pcol">
+      <article class="pitem">
+        <div class="pitem-fig"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 00-.9-2.6c3.1-.35 6.4-1.5 6.4-7A5.4 5.4 0 0020 4.8 5.1 5.1 0 0019.9 1S18.7.65 16 2.5a13.4 13.4 0 00-7 0C6.3.65 5.1 1 5.1 1A5.1 5.1 0 005 4.8a5.4 5.4 0 00-1.5 3.8c0 5.4 3.3 6.6 6.4 7A3.4 3.4 0 009 18.1V22"/></svg></div>
+        <span class="num">II</span><h3>Open-Source</h3>
+        <p>All source code is publicly available. Inspect it, modify it, or contribute back to the project.</p>
+      </article>
+      <article class="pitem">
+        <div class="pitem-fig"><svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></div>
+        <span class="num">IV</span><h3>Automated Section Alignment</h3>
+        <p>Automatically match and connect survey sections based on shared reference shots. Less manual placement, fewer mistakes, faster data entry.</p>
+      </article>
+      <article class="pitem">
+        <div class="pitem-fig"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l2.5 2.5L16 9"/></svg></div>
+        <span class="num">VI</span><h3>Loop Closure</h3>
+        <p>Detect loops in your survey network and distribute errors automatically for more accurate maps.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WORKFLOW ══ -->
+<section class="section" id="workflow">
+  <div class="sec-head">
+    <span class="deco-label">Import workflow</span>
+    <h2>From DMP File to Mapped Cave</h2>
+    <p>A guided wizard walks you through every step of importing mNemo survey data — from file selection to final placement on your cave map.</p>
+  </div>
+
+  <div class="acts">
+    <article class="act">
+      <div class="act-num">I</div>
+      <h3>Section Selection</h3>
+      <p>Open a DMP file and review its contents at a glance — shot count, total length, depth range. Pick which sections to import, skip already-imported ones, and set default surveyor and date for the batch.</p>
+      <div class="act-plate"><div class="act-plate-in"><iframe src="/dialogs/01-section-selection.html" loading="lazy" title="Section selection dialog"></iframe></div></div>
+    </article>
+    <article class="act">
+      <div class="act-num">II</div>
+      <h3>Zero Datum Configuration</h3>
+      <p>Anchor your first section to real-world coordinates. Choose a station as the GPS zero datum, enter coordinates in decimal degrees, and configure section metadata — name, surveyor, date, color, and direction.</p>
+      <div class="act-plate"><div class="act-plate-in"><iframe src="/dialogs/02-zero-datum-config.html" loading="lazy" title="Zero datum configuration dialog"></iframe></div></div>
+    </article>
+    <article class="act">
+      <div class="act-num">III</div>
+      <h3>Connection Suggesting</h3>
+      <p>For each subsequent section, the system automatically suggests a connection point based on shot matching. Review the confidence level, merge-station mapping, and overlap handling — or pick from alternative connections.</p>
+      <div class="act-plate"><div class="act-plate-in"><iframe src="/dialogs/03-suggesting.html" loading="lazy" title="Connection suggesting dialog"></iframe></div></div>
+    </article>
+    <article class="act">
+      <div class="act-num">IV</div>
+      <h3>Manual Placing</h3>
+      <p>When no automatic suggestion fits, take full control. Choose from previous suggestions, connect to an existing station, place manually on the map, or skip the section entirely. Full shot table and metadata remain editable.</p>
+      <div class="act-plate"><div class="act-plate-in"><iframe src="/dialogs/04-manual-placing.html" loading="lazy" title="Manual placing dialog"></iframe></div></div>
+    </article>
+  </div>
+</section>
+
+<!-- ══ PREVIEW ══ -->
+<section class="section" id="preview">
+  <svg class="zigrule" viewBox="0 0 440 30" aria-hidden="true" style="margin-bottom:2.4rem">
+    <path d="M0 29 H120 V21 H160 V13 H200 V5 H240 V13 H280 V21 H320 V29 H440"/>
+    <line x1="0" y1="29" x2="440" y2="29"/>
+  </svg>
+  <div class="sec-head">
+    <span class="deco-label">App preview</span>
+    <h2>See It in Action</h2>
+    <p>The working survey view — plan, sections and shot table on one screen.</p>
+  </div>
+  <div class="grand"><div class="grand-in"><iframe src="/app-preview.html" loading="lazy" title="StalagMight application preview"></iframe></div></div>
+  <div class="deco-sub" style="font-size:.62rem;margin-top:.8rem">Plan view · satellite overlay · depths in metres</div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="finale" id="download">
+  <span class="deco-label">Passage booked</span>
+  <h2 style="margin-top:.9rem">Begin Your Survey</h2>
+  <div class="chev"><i></i><i></i><i></i></div>
+  <p>Download StalagMight for free. Available on Windows, macOS, and Linux.</p>
+  <div class="btn-row">
+    <a class="btn btn-primary" href="#">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download for desktop
+    </a>
+    <a class="btn btn-secondary" href="#">View on GitHub</a>
+  </div>
+  <div class="plats">
+    <span><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Windows</span>
+    <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>macOS</span>
+    <span><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Linux</span>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-brand">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><g fill="none" stroke="#D6A651" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#F2E7CE"><circle cx="320" cy="620" r="26"/><circle cx="430" cy="520" r="26"/><circle cx="520" cy="600" r="26"/><circle cx="640" cy="460" r="26"/><circle cx="730" cy="540" r="26"/><circle cx="420" cy="390" r="26"/><circle cx="540" cy="360" r="26"/><circle cx="520" cy="740" r="26"/></g></svg>
+    StalagMight
+  </div>
+  <ul class="footer-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Process</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="#">Documentation</a></li>
+    <li><a href="#">GitHub</a></li>
+  </ul>
+  <div class="deco-sub" style="font-size:.6rem">© 2026 StalagMight · Underwater cave survey and mapping</div>
+</footer>
+
+</body>
+</html>

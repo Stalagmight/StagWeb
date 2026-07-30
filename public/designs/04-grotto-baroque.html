@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StalagMight — Underwater Cave Survey &amp; Mapping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cormorant+SC:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+/* A flooded grotto rendered as an 18th-century engraved plate: malachite
+   dark, alabaster ink, and gold leaf used only on rules and small caps.
+   Gold everywhere would be costume jewellery; gold on the rules is binding. */
+:root{
+  --abyss:#04120E;
+  --malachite:#0A241E;
+  --malachite-2:#0E2F27;
+  --verdigris:#4E8C7A;
+  --alabaster:#EFE7D2;
+  --alabaster-dim:#B9B29C;
+  --gold-1:#8C6A1E;
+  --gold-2:#C9A227;
+  --gold-3:#F2DFA0;
+  --oxblood:#6E1F1F;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--abyss);color:var(--alabaster);
+  font-family:'EB Garamond',Georgia,serif;font-size:18px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+/* Engraver's hatching — the ambient texture of a copperplate, at almost
+   nothing so it reads as tone rather than pattern. */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(58deg,rgba(239,231,210,.035) 0 1px,transparent 1px 5px);
+}
+.vellum{position:relative;z-index:1}
+
+a{color:var(--gold-2);text-decoration:none}
+a:hover{color:var(--gold-3)}
+h1,h2,h3{font-family:'Cormorant',serif;font-weight:400;line-height:1.06}
+
+.smallcaps{
+  font-family:'Cormorant SC',serif;font-weight:600;
+  letter-spacing:.24em;font-size:.74rem;
+  background:linear-gradient(90deg,var(--gold-1),var(--gold-3) 55%,var(--gold-2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+/* Gold rule with a lozenge at centre — the engraver's section break. */
+.orn-rule{display:flex;align-items:center;gap:.9rem;margin:1.6rem 0}
+.orn-rule::before,.orn-rule::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-1) 20%,var(--gold-2) 50%,var(--gold-1) 80%,transparent);
+}
+.orn-rule i{
+  width:9px;height:9px;transform:rotate(45deg);
+  background:linear-gradient(135deg,var(--gold-3),var(--gold-1));
+}
+
+/* ═══ NAV ═══ */
+.nav{
+  position:sticky;top:0;z-index:70;
+  background:rgba(4,18,14,.93);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(201,162,39,.34);
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.85rem 2rem;gap:1.5rem;
+}
+.nav-brand{display:flex;align-items:center;gap:.7rem}
+.nav-brand svg{width:26px;height:26px}
+.nav-brand b{font-family:'Cormorant SC',serif;font-weight:600;font-size:1.16rem;letter-spacing:.16em}
+.nav-links{list-style:none;display:flex;gap:1.9rem}
+.nav-links a{
+  font-family:'Cormorant SC',serif;font-size:.82rem;letter-spacing:.19em;
+  color:var(--alabaster-dim);position:relative;padding-bottom:.2rem;
+}
+.nav-links a::after{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg,var(--gold-1),var(--gold-3));
+  transform:scaleX(0);transition:transform .45s cubic-bezier(.2,.7,.2,1);
+}
+.nav-links a:hover{color:var(--alabaster)}
+.nav-links a:hover::after{transform:scaleX(1)}
+.nav-links a:focus-visible{outline:1px solid var(--gold-2);outline-offset:5px}
+
+/* ═══ HERO — the frontispiece. An engraved plate opens with an
+       ornamented cartouche, a rule, and a lettered dedication. ═══ */
+.hero{position:relative;padding:6rem 1.5rem 5rem;overflow:hidden}
+/* Light shaft from a distant sump entrance — one ambient gesture. */
+.hero::before{
+  content:'';position:absolute;top:-30%;left:50%;width:70vw;height:130%;
+  transform:translateX(-50%) rotate(9deg);
+  background:radial-gradient(ellipse 46% 58% at 50% 12%,rgba(78,140,122,.30),transparent 66%);
+  filter:blur(28px);pointer-events:none;
+}
+.plate-frame{
+  position:relative;max-width:920px;margin:0 auto;
+  border:1px solid rgba(201,162,39,.46);
+  background:linear-gradient(180deg,rgba(14,47,39,.82),rgba(4,18,14,.9));
+  padding:3.6rem 3rem 3.2rem;text-align:center;
+}
+/* Rocaille corner pieces, drawn not imported. */
+.plate-frame span.corner{position:absolute;width:34px;height:34px;pointer-events:none}
+.plate-frame span.corner svg{width:100%;height:100%;fill:none;stroke:var(--gold-2);stroke-width:1.1}
+.corner.tl{top:-1px;left:-1px}
+.corner.tr{top:-1px;right:-1px;transform:scaleX(-1)}
+.corner.bl{bottom:-1px;left:-1px;transform:scaleY(-1)}
+.corner.br{bottom:-1px;right:-1px;transform:scale(-1)}
+
+.hero-mark{width:78px;height:78px;margin:0 auto 1.2rem;opacity:.95}
+.hero h1{
+  font-size:clamp(3rem,9vw,5.6rem);letter-spacing:-.012em;
+  background:linear-gradient(180deg,var(--alabaster) 30%,var(--gold-2) 130%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero .tagline{
+  font-family:'Cormorant',serif;font-style:italic;font-weight:300;
+  font-size:clamp(1.15rem,3vw,1.6rem);color:var(--verdigris);margin-top:.3rem;
+}
+/* A floated drop cap only works against a left-aligned block, so this
+   paragraph opts out of the plate's centred alignment. */
+.hero p.dedication{
+  max-width:46ch;margin:0 auto;color:var(--alabaster-dim);
+  font-size:1.09rem;text-align:left;
+}
+/* Drop cap — the engraved plate's opening initial. */
+.hero p.dedication::first-letter{
+  font-family:'Cormorant',serif;font-size:3.1rem;line-height:.78;
+  float:left;padding:.16rem .42rem 0 0;
+  background:linear-gradient(180deg,var(--gold-3),var(--gold-1));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.btn-row{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-top:2rem}
+.btn{
+  display:inline-flex;align-items:center;gap:.55rem;
+  font-family:'Cormorant SC',serif;font-weight:600;font-size:.86rem;letter-spacing:.2em;
+  padding:.85rem 2rem;border:1px solid var(--gold-2);
+  transition:background .4s,color .4s;
+}
+.btn-primary{
+  background:linear-gradient(180deg,var(--gold-2),var(--gold-1));color:var(--abyss);
+}
+.btn-primary:hover{background:linear-gradient(180deg,var(--gold-3),var(--gold-2));color:var(--abyss)}
+.btn-secondary{color:var(--gold-2);background:transparent}
+.btn-secondary:hover{background:rgba(201,162,39,.13);color:var(--gold-3)}
+.btn:focus-visible{outline:1px solid var(--gold-3);outline-offset:4px}
+
+/* ═══ SECTIONS ═══ */
+.section{max-width:1160px;margin:0 auto;padding:5.5rem 1.5rem}
+.sec-head{text-align:center;max-width:64ch;margin:0 auto 3rem}
+.sec-head h2{font-size:clamp(2rem,4.6vw,3.1rem);margin-top:.5rem}
+.sec-head p{color:var(--alabaster-dim);font-style:italic;margin-top:.7rem}
+
+/* ═══ FEATURES — engraved cartouches, each with its own gilt frame ═══ */
+.cartouches{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:1.7rem}
+.cartouche{
+  position:relative;padding:2rem 1.7rem 1.9rem;
+  background:linear-gradient(180deg,rgba(14,47,39,.6),rgba(4,18,14,.55));
+  border:1px solid rgba(201,162,39,.24);
+  transition:border-color .5s,transform .5s cubic-bezier(.2,.7,.2,1);
+}
+.cartouche:hover{border-color:rgba(201,162,39,.62);transform:translateY(-4px)}
+.cartouche-fig{
+  width:52px;height:52px;margin-bottom:1.1rem;
+  border:1px solid rgba(201,162,39,.4);border-radius:50%;
+  display:grid;place-items:center;
+}
+.cartouche-fig svg{width:26px;height:26px;fill:none;stroke:var(--gold-2);stroke-width:1.4}
+.cartouche h3{font-size:1.5rem;margin-bottom:.15rem}
+.cartouche .fig-no{
+  font-family:'Cormorant SC',serif;font-size:.66rem;letter-spacing:.24em;color:var(--verdigris);
+  display:block;margin-bottom:.5rem;
+}
+.cartouche p{color:var(--alabaster-dim);font-size:.99rem}
+
+/* ═══ WORKFLOW — four engraved plates, numbered because the wizard
+       genuinely proceeds in this order ═══ */
+.plates{display:flex;flex-direction:column;gap:4.5rem}
+.plate{display:grid;grid-template-columns:1.3fr .9fr;gap:2.6rem;align-items:center}
+.plate:nth-child(even){grid-template-columns:.9fr 1.3fr}
+.plate:nth-child(even) .plate-img{order:2}
+.plate:nth-child(even) .plate-txt{order:1}
+.plate-img{
+  position:relative;padding:.5rem;
+  background:linear-gradient(140deg,rgba(201,162,39,.34),rgba(201,162,39,.06) 45%,rgba(201,162,39,.28));
+}
+.plate-img-in{background:#0e0d0c;overflow:hidden;border:1px solid rgba(4,18,14,.8)}
+.plate-img iframe{width:100%;height:400px;border:0;display:block}
+.plate-cap{
+  text-align:center;margin-top:.7rem;font-family:'Cormorant',serif;font-style:italic;
+  font-size:.86rem;color:var(--alabaster-dim);
+}
+.plate-txt .numeral{
+  font-family:'Cormorant',serif;font-size:3.4rem;line-height:1;
+  background:linear-gradient(180deg,var(--gold-3),var(--gold-1));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.plate-txt h3{font-size:1.9rem;margin:.2rem 0 .3rem}
+.plate-txt p{color:var(--alabaster-dim)}
+
+/* ═══ PREVIEW ═══ */
+.grand-plate{
+  padding:.7rem;
+  background:linear-gradient(140deg,rgba(201,162,39,.4),rgba(201,162,39,.08) 50%,rgba(201,162,39,.34));
+}
+.grand-plate-in{background:#0e0d0c;overflow:hidden}
+.grand-plate iframe{width:100%;height:min(76vh,700px);border:0;display:block}
+
+/* ═══ CTA ═══ */
+.colophon{
+  max-width:1160px;margin:0 auto;padding:5rem 1.5rem 3rem;text-align:center;
+}
+.colophon-box{
+  border-top:1px solid rgba(201,162,39,.4);border-bottom:1px solid rgba(201,162,39,.4);
+  padding:3.4rem 2rem;
+  background:radial-gradient(ellipse 70% 100% at 50% 0%,rgba(78,140,122,.16),transparent 70%);
+}
+.colophon h2{font-size:clamp(2rem,5vw,3.2rem)}
+.colophon p{color:var(--alabaster-dim);font-style:italic;margin-top:.6rem}
+.plats{display:flex;justify-content:center;flex-wrap:wrap;gap:2.4rem;margin-top:2.4rem}
+.plats span{
+  display:flex;align-items:center;gap:.55rem;
+  font-family:'Cormorant SC',serif;font-size:.78rem;letter-spacing:.2em;color:var(--alabaster-dim);
+}
+.plats svg{width:15px;height:15px;fill:none;stroke:var(--gold-2);stroke-width:1.6}
+
+/* ═══ FOOTER ═══ */
+.footer{max-width:1160px;margin:0 auto;padding:2.5rem 1.5rem 3.5rem;text-align:center}
+.footer-brand{display:inline-flex;align-items:center;gap:.6rem;margin-bottom:1.2rem}
+.footer-brand svg{width:24px;height:24px}
+.footer-brand b{font-family:'Cormorant SC',serif;font-weight:600;letter-spacing:.16em;font-size:1.05rem}
+.footer-links{list-style:none;display:flex;justify-content:center;flex-wrap:wrap;gap:1.9rem;margin-bottom:1.1rem}
+.footer-links a{font-family:'Cormorant SC',serif;font-size:.76rem;letter-spacing:.19em;color:var(--alabaster-dim)}
+.footer-links a:hover{color:var(--gold-2)}
+.footer-copy{font-family:'Cormorant',serif;font-style:italic;font-size:.86rem;color:#6E7A72}
+
+@media(max-width:880px){
+  .plate,.plate:nth-child(even){grid-template-columns:1fr}
+  .plate:nth-child(even) .plate-img{order:0}
+  .plate:nth-child(even) .plate-txt{order:0}
+  .nav-links{display:none}
+  .plate-frame{padding:2.4rem 1.4rem}
+  .hero{padding:3.5rem 1rem 3.5rem}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="vellum">
+
+<nav class="nav">
+  <div class="nav-brand">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2DFA0"/><stop offset="1" stop-color="#8C6A1E"/></linearGradient></defs><g fill="none" stroke="url(#g1)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#EFE7D2"><circle cx="320" cy="620" r="25"/><circle cx="430" cy="520" r="25"/><circle cx="520" cy="600" r="25"/><circle cx="640" cy="460" r="25"/><circle cx="730" cy="540" r="25"/><circle cx="420" cy="390" r="25"/><circle cx="540" cy="360" r="25"/><circle cx="520" cy="740" r="25"/></g></svg>
+    <b>StalagMight</b>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Process</a></li>
+    <li><a href="#preview">Preview</a></li>
+    <li><a href="#download">Download</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO: frontispiece ══ -->
+<header class="hero">
+  <div class="plate-frame">
+    <span class="corner tl"><svg viewBox="0 0 34 34"><path d="M1 33 V9 Q1 1 9 1 H33"/><path d="M6 33 V12 Q6 6 12 6 H33"/><circle cx="9" cy="9" r="2.2"/></svg></span>
+    <span class="corner tr"><svg viewBox="0 0 34 34"><path d="M1 33 V9 Q1 1 9 1 H33"/><path d="M6 33 V12 Q6 6 12 6 H33"/><circle cx="9" cy="9" r="2.2"/></svg></span>
+    <span class="corner bl"><svg viewBox="0 0 34 34"><path d="M1 33 V9 Q1 1 9 1 H33"/><path d="M6 33 V12 Q6 6 12 6 H33"/><circle cx="9" cy="9" r="2.2"/></svg></span>
+    <span class="corner br"><svg viewBox="0 0 34 34"><path d="M1 33 V9 Q1 1 9 1 H33"/><path d="M6 33 V12 Q6 6 12 6 H33"/><circle cx="9" cy="9" r="2.2"/></svg></span>
+
+    <div class="hero-mark">
+      <svg viewBox="0 0 1024 1024" aria-hidden="true"><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2DFA0"/><stop offset="1" stop-color="#8C6A1E"/></linearGradient></defs><circle cx="512" cy="512" r="330" fill="none" stroke="#C9A227" stroke-width="8" opacity=".4"/><circle cx="512" cy="512" r="262" fill="none" stroke="#4E8C7A" stroke-width="6" opacity=".5"/><g fill="none" stroke="url(#g2)" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#EFE7D2"><circle cx="320" cy="620" r="16"/><circle cx="430" cy="520" r="16"/><circle cx="520" cy="600" r="16"/><circle cx="640" cy="460" r="16"/><circle cx="730" cy="540" r="16"/><circle cx="420" cy="390" r="16"/><circle cx="540" cy="360" r="16"/><circle cx="520" cy="740" r="16"/></g></svg>
+    </div>
+
+    <span class="smallcaps">Being a compleat instrument for the survey of flooded caverns</span>
+    <h1>StalagMight</h1>
+    <div class="tagline">Underwater Cave Survey &amp; Mapping</div>
+    <div class="orn-rule"><i></i></div>
+    <p class="dedication">Free, open-source underwater cave survey software. Simple data entry, fast visualization, and easy map exports.</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="#download">Download free</a>
+      <a class="btn btn-secondary" href="#features">Explore features</a>
+    </div>
+  </div>
+</header>
+
+<!-- ══ FEATURES ══ -->
+<section class="section" id="features">
+  <div class="sec-head">
+    <span class="smallcaps">Core Capabilities</span>
+    <h2>Features</h2>
+    <div class="orn-rule"><i></i></div>
+    <p>Everything you need to go from raw survey data to a finished map.</p>
+  </div>
+  <div class="cartouches">
+    <article class="cartouche">
+      <div class="cartouche-fig"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
+      <span class="fig-no">Fig. I</span><h3>Free Forever</h3>
+      <p>No trials, no subscriptions, no paywalls. Stalagmight is and always will be completely free to use.</p>
+    </article>
+    <article class="cartouche">
+      <div class="cartouche-fig"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 00-.9-2.6c3.1-.35 6.4-1.5 6.4-7A5.4 5.4 0 0020 4.8 5.1 5.1 0 0019.9 1S18.7.65 16 2.5a13.4 13.4 0 00-7 0C6.3.65 5.1 1 5.1 1A5.1 5.1 0 005 4.8a5.4 5.4 0 00-1.5 3.8c0 5.4 3.3 6.6 6.4 7A3.4 3.4 0 009 18.1V22"/></svg></div>
+      <span class="fig-no">Fig. II</span><h3>Open-Source</h3>
+      <p>All source code is publicly available. Inspect it, modify it, or contribute back to the project.</p>
+    </article>
+    <article class="cartouche">
+      <div class="cartouche-fig"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <span class="fig-no">Fig. III</span><h3>mNemo &amp; Manual Data Entry</h3>
+      <p>Import DMP files directly from mNemo survey device, or enter data by hand with a built-in spreadsheet.</p>
+    </article>
+    <article class="cartouche">
+      <div class="cartouche-fig"><svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></div>
+      <span class="fig-no">Fig. IV</span><h3>Automated Section Alignment</h3>
+      <p>Automatically match and connect survey sections based on shared reference shots. Less manual placement, fewer mistakes, faster data entry.</p>
+    </article>
+    <article class="cartouche">
+      <div class="cartouche-fig"><svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div>
+      <span class="fig-no">Fig. V</span><h3>2D Visualization</h3>
+      <p>Interactive plan view with satellite overlay. See your survey on a real map.</p>
+    </article>
+    <article class="cartouche">
+      <div class="cartouche-fig"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l2.5 2.5L16 9"/></svg></div>
+      <span class="fig-no">Fig. VI</span><h3>Loop Closure</h3>
+      <p>Detect loops in your survey network and distribute errors automatically for more accurate maps.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ══ WORKFLOW ══ -->
+<section class="section" id="workflow">
+  <div class="sec-head">
+    <span class="smallcaps">Import Workflow</span>
+    <h2>From DMP File to Mapped Cave</h2>
+    <div class="orn-rule"><i></i></div>
+    <p>A guided wizard walks you through every step of importing mNemo survey data — from file selection to final placement on your cave map.</p>
+  </div>
+
+  <div class="plates">
+    <article class="plate">
+      <div class="plate-img">
+        <div class="plate-img-in"><iframe src="/dialogs/01-section-selection.html" loading="lazy" title="Section selection dialog"></iframe></div>
+        <div class="plate-cap">Plate I — the contents of a DMP file, surveyed at a glance</div>
+      </div>
+      <div class="plate-txt">
+        <div class="numeral">I</div>
+        <h3>Section Selection</h3>
+        <p>Open a DMP file and review its contents at a glance — shot count, total length, depth range. Pick which sections to import, skip already-imported ones, and set default surveyor and date for the batch.</p>
+      </div>
+    </article>
+
+    <article class="plate">
+      <div class="plate-img">
+        <div class="plate-img-in"><iframe src="/dialogs/02-zero-datum-config.html" loading="lazy" title="Zero datum configuration dialog"></iframe></div>
+        <div class="plate-cap">Plate II — the anchoring of a section to the surface world</div>
+      </div>
+      <div class="plate-txt">
+        <div class="numeral">II</div>
+        <h3>Zero Datum Configuration</h3>
+        <p>Anchor your first section to real-world coordinates. Choose a station as the GPS zero datum, enter coordinates in decimal degrees, and configure section metadata — name, surveyor, date, color, and direction.</p>
+      </div>
+    </article>
+
+    <article class="plate">
+      <div class="plate-img">
+        <div class="plate-img-in"><iframe src="/dialogs/03-suggesting.html" loading="lazy" title="Connection suggesting dialog"></iframe></div>
+        <div class="plate-cap">Plate III — a connection proposed from matching shots</div>
+      </div>
+      <div class="plate-txt">
+        <div class="numeral">III</div>
+        <h3>Connection Suggesting</h3>
+        <p>For each subsequent section, the system automatically suggests a connection point based on shot matching. Review the confidence level, merge-station mapping, and overlap handling — or pick from alternative connections.</p>
+      </div>
+    </article>
+
+    <article class="plate">
+      <div class="plate-img">
+        <div class="plate-img-in"><iframe src="/dialogs/04-manual-placing.html" loading="lazy" title="Manual placing dialog"></iframe></div>
+        <div class="plate-cap">Plate IV — placement returned to the hand of the surveyor</div>
+      </div>
+      <div class="plate-txt">
+        <div class="numeral">IV</div>
+        <h3>Manual Placing</h3>
+        <p>When no automatic suggestion fits, take full control. Choose from previous suggestions, connect to an existing station, place manually on the map, or skip the section entirely. Full shot table and metadata remain editable.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ══ PREVIEW ══ -->
+<section class="section" id="preview">
+  <div class="sec-head">
+    <span class="smallcaps">App Preview</span>
+    <h2>See It in Action</h2>
+    <div class="orn-rule"><i></i></div>
+    <p>The working survey view — plan, sections and shot table upon a single plate.</p>
+  </div>
+  <div class="grand-plate">
+    <div class="grand-plate-in"><iframe src="/app-preview.html" loading="lazy" title="StalagMight application preview"></iframe></div>
+  </div>
+  <div class="plate-cap">Plate V — the plan view, with satellite overlay. Depths in metres.</div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="colophon" id="download">
+  <div class="colophon-box">
+    <span class="smallcaps">Colophon</span>
+    <h2>Begin Your Survey</h2>
+    <div class="orn-rule"><i></i></div>
+    <p>Download StalagMight for free. Available on Windows, macOS, and Linux.</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="#">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download for desktop
+      </a>
+      <a class="btn btn-secondary" href="#">View on GitHub</a>
+    </div>
+    <div class="plats">
+      <span><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Windows</span>
+      <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>macOS</span>
+      <span><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Linux</span>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-brand">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2DFA0"/><stop offset="1" stop-color="#8C6A1E"/></linearGradient></defs><g fill="none" stroke="url(#g3)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#EFE7D2"><circle cx="320" cy="620" r="25"/><circle cx="430" cy="520" r="25"/><circle cx="520" cy="600" r="25"/><circle cx="640" cy="460" r="25"/><circle cx="730" cy="540" r="25"/><circle cx="420" cy="390" r="25"/><circle cx="540" cy="360" r="25"/><circle cx="520" cy="740" r="25"/></g></svg>
+    <b>StalagMight</b>
+  </div>
+  <ul class="footer-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Process</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="#">Documentation</a></li>
+    <li><a href="#">GitHub</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 StalagMight — Underwater cave survey and mapping</div>
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StalagMight — Underwater Cave Survey &amp; Mapping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+/* Dive-table palette. Taken from the objects, not from a mood board:
+   safety yellow off a tank boot, slate grey off a wetnotes slate,
+   the red used on a no-decompression limit row. */
+:root{
+  --slate:#22262A;
+  --slate-2:#2C3136;
+  --slate-3:#383E44;
+  --ink:#0C0E10;
+  --chalk:#E9ECE8;
+  --chalk-dim:#9AA1A5;
+  --yellow:#FFD400;
+  --red:#E03C31;
+  --cyan:#3FD0C9;
+  --line:#454C52;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--slate);color:var(--chalk);
+  font-family:'Archivo',sans-serif;font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+a{color:var(--yellow);text-decoration:none}
+h1,h2,h3{line-height:1;font-weight:800;letter-spacing:-.02em}
+.mono{font-family:'IBM Plex Mono',monospace}
+
+.tag{
+  font-family:'IBM Plex Mono',monospace;font-size:.66rem;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--chalk-dim);
+}
+
+/* Hazard stripe — one use only, on the download bar, where it means
+   "this is the action". Everywhere else it would be noise. */
+.hazard{
+  background:repeating-linear-gradient(-45deg,var(--yellow) 0 14px,var(--ink) 14px 28px);
+  height:8px;
+}
+
+/* ═══ NAV — instrument bezel bar ═══ */
+.nav{
+  position:sticky;top:0;z-index:60;background:var(--ink);
+  border-bottom:2px solid var(--yellow);
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.55rem 1.2rem;gap:1rem;
+}
+.nav-brand{display:flex;align-items:center;gap:.6rem;font-weight:800;letter-spacing:.02em}
+.nav-brand svg{width:24px;height:24px}
+.nav-links{list-style:none;display:flex;gap:.2rem}
+.nav-links a{
+  display:block;padding:.42rem .8rem;color:var(--chalk);
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;font-weight:500;
+  letter-spacing:.15em;text-transform:uppercase;border:1px solid transparent;
+}
+.nav-links a:hover{border-color:var(--line);color:var(--yellow)}
+.nav-links a:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+
+/* ═══ HERO — the page opens on a dive profile, because that is the
+       most characteristic artefact a cave diver reads every day.
+       The four import steps are plotted as decompression stops. ═══ */
+.hero{background:var(--ink);border-bottom:1px solid var(--line)}
+.hero-in{max-width:1240px;margin:0 auto;padding:2.8rem 1.2rem 0;
+  display:grid;grid-template-columns:.85fr 1.15fr;gap:2.5rem;align-items:center}
+.hero h1{font-size:clamp(2.6rem,7vw,4.6rem);text-transform:uppercase}
+.hero h1 span{color:var(--yellow)}
+.hero .tagline{
+  font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:500;
+  letter-spacing:.24em;text-transform:uppercase;color:var(--cyan);
+  margin:.9rem 0 1.2rem;
+}
+.hero p{color:var(--chalk-dim);max-width:40ch;font-size:1.02rem}
+
+/* Spec strip — the readout a diver checks before splashing. */
+.specs{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);margin:1.6rem 0}
+.specs div{padding:.7rem .8rem;border-right:1px solid var(--line)}
+.specs div:last-child{border-right:0}
+.specs dt{font-family:'IBM Plex Mono',monospace;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--chalk-dim)}
+.specs dd{font-family:'IBM Plex Mono',monospace;font-size:1rem;font-weight:600;color:var(--yellow);margin-top:.15rem}
+
+.btn-row{display:flex;flex-wrap:wrap;gap:.6rem}
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.4rem;
+  font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;
+  letter-spacing:.17em;text-transform:uppercase;border:2px solid var(--yellow);
+}
+.btn-primary{background:var(--yellow);color:var(--ink)}
+.btn-primary:hover{background:#E6BF00}
+.btn-secondary{background:transparent;color:var(--yellow)}
+.btn-secondary:hover{background:rgba(255,212,0,.12)}
+.btn:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+.profile{width:100%;height:auto;display:block}
+.profile .grid-l{stroke:var(--line);stroke-width:1}
+.profile .surface{stroke:var(--cyan);stroke-width:2}
+.profile .dive{fill:none;stroke:var(--yellow);stroke-width:2.5;stroke-linejoin:round}
+.profile .stopdot{fill:var(--ink);stroke:var(--yellow);stroke-width:2.5}
+.profile text{font-family:'IBM Plex Mono',monospace;fill:var(--chalk-dim);font-size:10px}
+.profile .stoplab{fill:var(--chalk);font-weight:600;font-size:11px}
+.profile .axis{fill:var(--chalk-dim);font-size:9px;letter-spacing:.14em}
+
+/* ═══ SECTIONS ═══ */
+.section{max-width:1240px;margin:0 auto;padding:4.2rem 1.2rem}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;
+  gap:1.5rem;flex-wrap:wrap;border-bottom:2px solid var(--yellow);padding-bottom:.9rem;margin-bottom:2rem}
+.sec-head h2{font-size:clamp(1.6rem,4vw,2.4rem);text-transform:uppercase}
+.sec-head .lead{color:var(--chalk-dim);max-width:48ch;font-size:.96rem}
+
+/* ═══ FEATURES — a real spec table. A table is the honest form for
+       six parallel facts; six identical cards would be filler. ═══ */
+.spec-table{width:100%;border-collapse:collapse;font-size:.95rem}
+.spec-table caption{
+  text-align:left;font-family:'IBM Plex Mono',monospace;font-size:.62rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--chalk-dim);padding-bottom:.6rem;
+}
+.spec-table th{
+  text-align:left;font-family:'IBM Plex Mono',monospace;font-size:.6rem;font-weight:600;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--ink);background:var(--yellow);
+  padding:.55rem .8rem;border:1px solid var(--ink);
+}
+.spec-table td{padding:.95rem .8rem;border:1px solid var(--line);vertical-align:top}
+.spec-table tbody tr:nth-child(odd){background:var(--slate-2)}
+.spec-table tbody tr:hover{background:var(--slate-3)}
+.spec-table .c-ref{font-family:'IBM Plex Mono',monospace;color:var(--cyan);width:4.5rem;font-weight:600}
+.spec-table .c-name{font-weight:700;width:15rem}
+.spec-table .c-stat{width:7rem;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--yellow);white-space:nowrap}
+.spec-table td p{color:var(--chalk-dim)}
+
+/* ═══ WORKFLOW — stops. Ordered because the wizard is ordered. ═══ */
+.stops{display:flex;flex-direction:column;gap:1.4rem}
+.stop{border:1px solid var(--line);background:var(--slate-2);display:grid;grid-template-columns:5.5rem 1fr 1.05fr}
+.stop-depth{
+  background:var(--ink);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;padding:1rem .4rem;
+}
+.stop-depth b{font-family:'IBM Plex Mono',monospace;font-size:1.9rem;font-weight:600;color:var(--yellow);line-height:1}
+.stop-depth span{font-family:'IBM Plex Mono',monospace;font-size:.54rem;letter-spacing:.15em;text-transform:uppercase;color:var(--chalk-dim);text-align:center}
+.stop-body{padding:1.5rem 1.5rem}
+.stop-body h3{font-size:1.2rem;text-transform:uppercase;margin-bottom:.5rem}
+.stop-body p{color:var(--chalk-dim);font-size:.93rem}
+.stop-plate{border-left:1px solid var(--line);background:var(--ink);overflow:hidden}
+.stop-plate iframe{width:100%;height:100%;min-height:340px;border:0;display:block}
+
+/* ═══ PREVIEW ═══ */
+.screen{border:1px solid var(--line);background:var(--ink);padding:.4rem}
+.screen-bar{display:flex;justify-content:space-between;align-items:center;padding:.4rem .5rem .6rem;
+  font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--chalk-dim)}
+.screen-in{overflow:hidden;border:1px solid var(--line)}
+.screen iframe{width:100%;height:min(74vh,680px);border:0;display:block}
+
+/* ═══ CTA ═══ */
+.cta{background:var(--ink);border-top:1px solid var(--line)}
+.cta-in{max-width:1240px;margin:0 auto;padding:3.6rem 1.2rem;display:grid;grid-template-columns:1fr auto;gap:2.5rem;align-items:center}
+.cta h2{font-size:clamp(1.8rem,4.5vw,2.8rem);text-transform:uppercase}
+.cta p{color:var(--chalk-dim);margin:.55rem 0 1.5rem}
+.plats{display:flex;flex-direction:column;border:1px solid var(--line)}
+.plats span{display:flex;align-items:center;gap:.6rem;padding:.7rem 1.1rem;border-bottom:1px solid var(--line);
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase}
+.plats span:last-child{border-bottom:0}
+.plats svg{width:14px;height:14px;fill:none;stroke:var(--cyan);stroke-width:2}
+
+/* ═══ FOOTER ═══ */
+.footer{max-width:1240px;margin:0 auto;padding:2.2rem 1.2rem 3rem;display:flex;flex-wrap:wrap;
+  gap:1.4rem;justify-content:space-between;align-items:center}
+.footer-brand{display:flex;align-items:center;gap:.55rem;font-weight:800;text-transform:uppercase;font-size:.95rem}
+.footer-brand svg{width:22px;height:22px}
+.footer-links{list-style:none;display:flex;flex-wrap:wrap;gap:1.2rem}
+.footer-links a{color:var(--chalk-dim);font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.15em;text-transform:uppercase}
+.footer-links a:hover{color:var(--yellow)}
+.footer-copy{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--chalk-dim)}
+
+@media(max-width:900px){
+  .hero-in{grid-template-columns:1fr;padding-top:2rem}
+  .stop{grid-template-columns:4.5rem 1fr}
+  .stop-plate{grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}
+  .cta-in{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .spec-table .c-name{width:auto}
+  .spec-table,.spec-table tbody,.spec-table tr,.spec-table td{display:block;width:100%}
+  .spec-table thead{display:none}
+  .spec-table td{border-top:0}
+  .spec-table tr{border-top:1px solid var(--line);margin-bottom:.8rem}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><g fill="none" stroke="#FFD400" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#3FD0C9"><circle cx="320" cy="620" r="28"/><circle cx="430" cy="520" r="28"/><circle cx="520" cy="600" r="28"/><circle cx="640" cy="460" r="28"/><circle cx="730" cy="540" r="28"/><circle cx="420" cy="390" r="28"/><circle cx="540" cy="360" r="28"/><circle cx="520" cy="740" r="28"/></g></svg>
+    StalagMight
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Process</a></li>
+    <li><a href="#preview">Preview</a></li>
+    <li><a href="#download">Download</a></li>
+  </ul>
+</nav>
+
+<header class="hero">
+  <div class="hero-in">
+    <div>
+      <span class="tag">Free · Open source · v1.0</span>
+      <h1>Stalag<span>Might</span></h1>
+      <div class="tagline">Underwater cave survey &amp; mapping</div>
+      <p>Free, open-source underwater cave survey software. Simple data entry, fast visualization, and easy map exports.</p>
+      <dl class="specs">
+        <div><dt>Cost</dt><dd>0.00</dd></div>
+        <div><dt>Source</dt><dd>Open</dd></div>
+        <div><dt>Platforms</dt><dd>3</dd></div>
+      </dl>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="#download">Download free</a>
+        <a class="btn btn-secondary" href="#features">Explore features</a>
+      </div>
+    </div>
+
+    <!-- The import wizard as a dive profile: four stops on the way up. -->
+    <svg class="profile" viewBox="0 0 640 400" role="img" aria-label="The four import steps plotted as decompression stops on a dive profile">
+      <g class="grid-l">
+        <line x1="52" y1="40" x2="620" y2="40"/><line x1="52" y1="110" x2="620" y2="110"/>
+        <line x1="52" y1="180" x2="620" y2="180"/><line x1="52" y1="250" x2="620" y2="250"/>
+        <line x1="52" y1="320" x2="620" y2="320"/>
+      </g>
+      <line class="surface" x1="52" y1="40" x2="620" y2="40"/>
+      <text class="axis" x="52" y="30">SURFACE</text>
+      <text x="14" y="114">−10</text><text x="14" y="184">−20</text>
+      <text x="14" y="254">−30</text><text x="14" y="324">−40</text>
+
+      <path class="dive" d="M60 40 L150 320 L300 320 L330 250 L420 250 L448 180 L520 180 L548 110 L600 110 L620 40"/>
+
+      <circle class="stopdot" cx="330" cy="250" r="6"/>
+      <circle class="stopdot" cx="448" cy="180" r="6"/>
+      <circle class="stopdot" cx="548" cy="110" r="6"/>
+      <circle class="stopdot" cx="150" cy="320" r="6"/>
+
+      <text class="stoplab" x="96"  y="345">01</text>
+      <text class="stoplab" x="336" y="242">02</text>
+      <text class="stoplab" x="454" y="172">03</text>
+      <text class="stoplab" x="554" y="102">04</text>
+      <text x="168" y="345">select</text>
+      <text x="360" y="242">datum</text>
+      <text x="478" y="172">suggest</text>
+      <text x="578" y="102">place</text>
+    </svg>
+  </div>
+  <div class="hazard" style="margin-top:1.6rem"></div>
+</header>
+
+<!-- ══ FEATURES: spec table ══ -->
+<section class="section" id="features">
+  <div class="sec-head">
+    <div>
+      <span class="tag">Core capabilities</span>
+      <h2 style="margin-top:.4rem">Features</h2>
+    </div>
+    <p class="lead">Everything you need to go from raw survey data to a finished map.</p>
+  </div>
+
+  <table class="spec-table">
+    <caption>Table 1 — Capabilities</caption>
+    <thead>
+      <tr><th scope="col">Ref</th><th scope="col">Capability</th><th scope="col">What it does</th><th scope="col">Status</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="c-ref">F-01</td><td class="c-name">Free Forever</td>
+        <td><p>No trials, no subscriptions, no paywalls. Stalagmight is and always will be completely free to use.</p></td>
+        <td class="c-stat">No cost</td>
+      </tr>
+      <tr>
+        <td class="c-ref">F-02</td><td class="c-name">Open-Source</td>
+        <td><p>All source code is publicly available. Inspect it, modify it, or contribute back to the project.</p></td>
+        <td class="c-stat">Public repo</td>
+      </tr>
+      <tr>
+        <td class="c-ref">F-03</td><td class="c-name">mNemo &amp; Manual Data Entry</td>
+        <td><p>Import DMP files directly from mNemo survey device, or enter data by hand with a built-in spreadsheet.</p></td>
+        <td class="c-stat">DMP + sheet</td>
+      </tr>
+      <tr>
+        <td class="c-ref">F-04</td><td class="c-name">Automated Section Alignment</td>
+        <td><p>Automatically match and connect survey sections based on shared reference shots. Less manual placement, fewer mistakes, faster data entry.</p></td>
+        <td class="c-stat">Automatic</td>
+      </tr>
+      <tr>
+        <td class="c-ref">F-05</td><td class="c-name">2D Visualization</td>
+        <td><p>Interactive plan view with satellite overlay. See your survey on a real map.</p></td>
+        <td class="c-stat">Plan view</td>
+      </tr>
+      <tr>
+        <td class="c-ref">F-06</td><td class="c-name">Loop Closure</td>
+        <td><p>Detect loops in your survey network and distribute errors automatically for more accurate maps.</p></td>
+        <td class="c-stat">Automatic</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══ WORKFLOW ══ -->
+<section class="section" id="workflow">
+  <div class="sec-head">
+    <div>
+      <span class="tag">Import workflow</span>
+      <h2 style="margin-top:.4rem">From DMP File to Mapped Cave</h2>
+    </div>
+    <p class="lead">A guided wizard walks you through every step of importing mNemo survey data — from file selection to final placement on your cave map.</p>
+  </div>
+
+  <div class="stops">
+    <article class="stop">
+      <div class="stop-depth"><b>01</b><span>Stop</span></div>
+      <div class="stop-body">
+        <h3>Section Selection</h3>
+        <p>Open a DMP file and review its contents at a glance — shot count, total length, depth range. Pick which sections to import, skip already-imported ones, and set default surveyor and date for the batch.</p>
+      </div>
+      <div class="stop-plate"><iframe src="/dialogs/01-section-selection.html" loading="lazy" title="Section selection dialog"></iframe></div>
+    </article>
+    <article class="stop">
+      <div class="stop-depth"><b>02</b><span>Stop</span></div>
+      <div class="stop-body">
+        <h3>Zero Datum Configuration</h3>
+        <p>Anchor your first section to real-world coordinates. Choose a station as the GPS zero datum, enter coordinates in decimal degrees, and configure section metadata — name, surveyor, date, color, and direction.</p>
+      </div>
+      <div class="stop-plate"><iframe src="/dialogs/02-zero-datum-config.html" loading="lazy" title="Zero datum configuration dialog"></iframe></div>
+    </article>
+    <article class="stop">
+      <div class="stop-depth"><b>03</b><span>Stop</span></div>
+      <div class="stop-body">
+        <h3>Connection Suggesting</h3>
+        <p>For each subsequent section, the system automatically suggests a connection point based on shot matching. Review the confidence level, merge-station mapping, and overlap handling — or pick from alternative connections.</p>
+      </div>
+      <div class="stop-plate"><iframe src="/dialogs/03-suggesting.html" loading="lazy" title="Connection suggesting dialog"></iframe></div>
+    </article>
+    <article class="stop">
+      <div class="stop-depth"><b>04</b><span>Stop</span></div>
+      <div class="stop-body">
+        <h3>Manual Placing</h3>
+        <p>When no automatic suggestion fits, take full control. Choose from previous suggestions, connect to an existing station, place manually on the map, or skip the section entirely. Full shot table and metadata remain editable.</p>
+      </div>
+      <div class="stop-plate"><iframe src="/dialogs/04-manual-placing.html" loading="lazy" title="Manual placing dialog"></iframe></div>
+    </article>
+  </div>
+</section>
+
+<!-- ══ PREVIEW ══ -->
+<section class="section" id="preview">
+  <div class="sec-head">
+    <div>
+      <span class="tag">App preview</span>
+      <h2 style="margin-top:.4rem">See It in Action</h2>
+    </div>
+    <p class="lead">The working survey view — plan, sections and shot table in one window.</p>
+  </div>
+  <div class="screen">
+    <div class="screen-bar"><span>Plan view · satellite overlay</span><span>Depths in metres</span></div>
+    <div class="screen-in"><iframe src="/app-preview.html" loading="lazy" title="StalagMight application preview"></iframe></div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<div class="hazard"></div>
+<section class="cta" id="download">
+  <div class="cta-in">
+    <div>
+      <span class="tag">Ready to splash</span>
+      <h2 style="margin-top:.4rem">Begin Your Survey</h2>
+      <p>Download StalagMight for free. Available on Windows, macOS, and Linux.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="#">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download for desktop
+        </a>
+        <a class="btn btn-secondary" href="#">View on GitHub</a>
+      </div>
+    </div>
+    <div class="plats">
+      <span><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Windows</span>
+      <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>macOS</span>
+      <span><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Linux</span>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-brand">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><g fill="none" stroke="#FFD400" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#3FD0C9"><circle cx="320" cy="620" r="28"/><circle cx="430" cy="520" r="28"/><circle cx="520" cy="600" r="28"/><circle cx="640" cy="460" r="28"/><circle cx="730" cy="540" r="28"/><circle cx="420" cy="390" r="28"/><circle cx="540" cy="360" r="28"/><circle cx="520" cy="740" r="28"/></g></svg>
+    StalagMight
+  </div>
+  <ul class="footer-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Process</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="#">Documentation</a></li>
+    <li><a href="#">GitHub</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 StalagMight · Underwater cave survey and mapping</div>
+</footer>
+
+</body>
+</html>

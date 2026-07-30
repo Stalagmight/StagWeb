@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StalagMight — Underwater Cave Survey &amp; Mapping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;500;600;700&family=Saira:wght@300;400;500&family=Anonymous+Pro:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+/* Cyanotype: iron-blue paper, white linework, and the red pencil an
+   engineer uses to mark a revision. Three colours, because a blueprint
+   only ever had three. */
+:root{
+  --prussian:#0E2B48;
+  --prussian-2:#123A5E;
+  --prussian-3:#17486F;
+  --line:#DCE8F0;
+  --line-2:rgba(220,232,240,.42);
+  --line-3:rgba(220,232,240,.18);
+  --cyan:#7FBEDC;
+  --redline:#F0705C;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--prussian);color:var(--line);
+  font-family:'Saira',sans-serif;font-weight:300;font-size:16px;line-height:1.62;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+/* Cyanotype wash — the paper never coats evenly. */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 40% at 18% 12%,rgba(127,190,220,.09),transparent 70%),
+    radial-gradient(ellipse 50% 45% at 84% 34%,rgba(127,190,220,.07),transparent 70%),
+    radial-gradient(ellipse 70% 50% at 42% 88%,rgba(10,30,50,.5),transparent 70%);
+}
+.sheet{position:relative;z-index:1}
+
+a{color:var(--cyan);text-decoration:none}
+h1,h2,h3{font-family:'Saira Condensed',sans-serif;font-weight:600;
+  text-transform:uppercase;letter-spacing:.05em;line-height:1.06}
+
+/* ISO 3098 lettering: condensed, uppercase, tracked. */
+.tl{
+  font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:.68rem;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);
+}
+.num{font-family:'Anonymous Pro',monospace}
+
+/* ── SHEET FRAME with zone letters and numbers. Standard on every
+      engineering drawing: it is how two people on a phone agree which
+      part of the drawing they are looking at. ── */
+.frame{position:relative;border:2px solid var(--line-2);margin:12px;padding:22px}
+.zones{position:absolute;pointer-events:none;display:flex;font-family:'Anonymous Pro',monospace;
+  font-size:.56rem;color:var(--line-3)}
+.zones-t{top:3px;left:22px;right:22px;justify-content:space-around}
+.zones-l{left:5px;top:22px;bottom:22px;flex-direction:column;justify-content:space-around}
+.frame::before{
+  content:'';position:absolute;inset:16px;border:1px solid var(--line-3);pointer-events:none;
+}
+
+/* ═══ NAV ═══ */
+.nav{
+  position:sticky;top:0;z-index:60;
+  background:rgba(14,43,72,.94);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line-2);
+  display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.2rem;gap:1.2rem;
+}
+.nav-brand{display:flex;align-items:center;gap:.55rem;font-family:'Saira Condensed',sans-serif;
+  font-weight:700;text-transform:uppercase;letter-spacing:.09em;font-size:1rem}
+.nav-brand svg{width:22px;height:22px}
+.nav-links{list-style:none;display:flex;gap:1.4rem}
+.nav-links a{font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:.64rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--line)}
+.nav-links a:hover{color:var(--cyan)}
+.nav-links a:focus-visible{outline:1px solid var(--cyan);outline-offset:4px}
+
+/* ═══ HERO — the drawing. Dimension lines annotate the title stack,
+       and the title block sits bottom-right where it belongs. ═══ */
+.hero{position:relative;padding:3.4rem 1.6rem 1.6rem}
+.hero-in{max-width:1220px;margin:0 auto;display:grid;grid-template-columns:1.25fr .75fr;gap:2.6rem;align-items:end}
+.hero h1{font-size:clamp(2.4rem,7vw,4.6rem);letter-spacing:.02em}
+.hero .tagline{font-family:'Saira Condensed',sans-serif;font-weight:400;
+  font-size:clamp(1rem,2.5vw,1.4rem);letter-spacing:.2em;text-transform:uppercase;
+  color:var(--cyan);margin-top:.3rem}
+.hero p.desc{max-width:44ch;margin-top:1.2rem;color:rgba(220,232,240,.82)}
+
+/* Dimension line — extension lines, arrowheads, and a measurement.
+   It annotates the headline, so it says something true about it. */
+.dimline{position:relative;margin:1.7rem 0 0;height:34px;max-width:420px}
+.dimline svg{width:100%;height:100%;overflow:visible}
+.dimline path,.dimline line{stroke:var(--cyan);stroke-width:1;fill:none}
+.dimline text{font-family:'Anonymous Pro',monospace;font-size:9px;fill:var(--cyan)}
+
+.btn-row{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1.7rem}
+.btn{
+  display:inline-flex;align-items:center;gap:.45rem;padding:.62rem 1.3rem;
+  font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:.68rem;
+  letter-spacing:.2em;text-transform:uppercase;border:1px solid var(--line);
+  transition:background .3s,color .3s;
+}
+.btn-primary{background:var(--line);color:var(--prussian)}
+.btn-primary:hover{background:var(--cyan)}
+.btn-secondary{color:var(--line);background:transparent}
+.btn-secondary:hover{background:rgba(220,232,240,.13)}
+.btn:focus-visible{outline:2px solid var(--redline);outline-offset:3px}
+
+/* Title block — the real thing, fields and all. */
+.titleblock{border:1px solid var(--line);font-size:.72rem}
+.tb-row{display:grid;border-bottom:1px solid var(--line-2)}
+.tb-row:last-child{border-bottom:0}
+.tb-2{grid-template-columns:1fr 1fr}
+.tb-3{grid-template-columns:1fr 1fr 1fr}
+.tb-cell{padding:.4rem .55rem;border-right:1px solid var(--line-2)}
+.tb-cell:last-child{border-right:0}
+.tb-cell dt{font-family:'Anonymous Pro',monospace;font-size:.5rem;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(220,232,240,.55)}
+.tb-cell dd{font-family:'Saira Condensed',sans-serif;font-weight:600;
+  text-transform:uppercase;letter-spacing:.06em;margin-top:.05rem}
+.tb-title{padding:.6rem .55rem;background:rgba(220,232,240,.08)}
+.tb-title dd{font-size:.95rem}
+
+/* ═══ SECTIONS ═══ */
+.section{max-width:1220px;margin:0 auto;padding:3.6rem 1.6rem}
+.sec-head{max-width:58ch;margin-bottom:2.1rem}
+.sec-head h2{font-size:clamp(1.5rem,3.6vw,2.2rem);margin-top:.4rem}
+.sec-head p{color:rgba(220,232,240,.72);margin-top:.5rem}
+
+/* ═══ FEATURES — a parts list. Every drawing has one: item, qty,
+       description. Six capabilities, itemised. ═══ */
+.parts{width:100%;border-collapse:collapse;border:1px solid var(--line);font-size:.9rem}
+.parts caption{text-align:left;padding-bottom:.5rem}
+.parts th{
+  text-align:left;font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:.58rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--prussian);background:var(--line);
+  padding:.4rem .7rem;
+}
+.parts td{padding:.8rem .7rem;border-bottom:1px solid var(--line-3);vertical-align:top}
+.parts tr:last-child td{border-bottom:0}
+.parts tr:hover td{background:rgba(127,190,220,.08)}
+.parts .item{font-family:'Anonymous Pro',monospace;color:var(--cyan);width:4rem}
+.parts .nm{font-family:'Saira Condensed',sans-serif;font-weight:600;text-transform:uppercase;
+  letter-spacing:.05em;width:16rem}
+.parts .ds{color:rgba(220,232,240,.75)}
+
+/* ═══ WORKFLOW — detail views, ordered as the wizard is ═══ */
+.details{display:flex;flex-direction:column;gap:2.2rem}
+.detail{border:1px solid var(--line-2)}
+.detail-bar{display:flex;align-items:center;gap:.8rem;padding:.45rem .8rem;
+  border-bottom:1px solid var(--line-2);background:rgba(220,232,240,.06)}
+.detail-bar .ref{font-family:'Anonymous Pro',monospace;font-weight:700;color:var(--redline);font-size:.75rem}
+.detail-bar h3{font-size:.98rem;flex:1}
+.detail-bar .sc{font-family:'Anonymous Pro',monospace;font-size:.58rem;color:rgba(220,232,240,.55)}
+.detail-in{display:grid;grid-template-columns:1fr 1.15fr}
+.detail-txt{padding:1.3rem 1.3rem;border-right:1px solid var(--line-3)}
+.detail-txt p{color:rgba(220,232,240,.75);font-size:.94rem}
+.detail-plate{background:#0e0d0c;overflow:hidden}
+.detail-plate iframe{width:100%;height:100%;min-height:330px;border:0;display:block}
+
+/* ═══ PREVIEW ═══ */
+.viewsheet{border:1px solid var(--line);padding:.45rem}
+.viewsheet-in{overflow:hidden;border:1px solid var(--line-3);background:#0e0d0c}
+.viewsheet iframe{width:100%;height:min(74vh,660px);border:0;display:block}
+.viewsheet-cap{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:.5rem .2rem 0}
+
+/* ═══ REVISION TABLE + CTA ═══ */
+.revs{width:100%;border-collapse:collapse;border:1px solid var(--line-2);font-size:.78rem;margin-top:1.6rem}
+.revs th{text-align:left;font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:.54rem;
+  letter-spacing:.2em;text-transform:uppercase;color:rgba(220,232,240,.6);
+  padding:.35rem .6rem;border-bottom:1px solid var(--line-2)}
+.revs td{padding:.35rem .6rem;border-bottom:1px solid var(--line-3);font-family:'Anonymous Pro',monospace}
+.revs tr:last-child td{border-bottom:0}
+.cta{border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2)}
+.cta-in{max-width:1220px;margin:0 auto;padding:3.4rem 1.6rem;
+  display:grid;grid-template-columns:1.1fr .9fr;gap:3rem;align-items:center}
+.cta h2{font-size:clamp(1.6rem,4vw,2.4rem)}
+.cta p{color:rgba(220,232,240,.75);margin:.5rem 0 1.4rem;max-width:42ch}
+.plats{border:1px solid var(--line-2)}
+.plats span{display:flex;align-items:center;gap:.6rem;padding:.6rem .9rem;
+  border-bottom:1px solid var(--line-3);font-family:'Saira Condensed',sans-serif;
+  font-weight:600;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase}
+.plats span:last-child{border-bottom:0}
+.plats svg{width:13px;height:13px;fill:none;stroke:var(--cyan);stroke-width:2}
+
+/* ═══ FOOTER ═══ */
+.footer{max-width:1220px;margin:0 auto;padding:2rem 1.6rem 2.4rem;
+  display:flex;flex-wrap:wrap;gap:1.3rem;justify-content:space-between;align-items:center}
+.footer-brand{display:flex;align-items:center;gap:.5rem;font-family:'Saira Condensed',sans-serif;
+  font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.footer-brand svg{width:20px;height:20px}
+.footer-links{list-style:none;display:flex;flex-wrap:wrap;gap:1.2rem}
+.footer-links a{font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:.62rem;
+  letter-spacing:.18em;text-transform:uppercase;color:rgba(220,232,240,.7)}
+.footer-links a:hover{color:var(--cyan)}
+
+@media(max-width:900px){
+  .hero-in,.detail-in,.cta-in{grid-template-columns:1fr}
+  .detail-txt{border-right:0;border-bottom:1px solid var(--line-3)}
+  .nav-links{display:none}
+  .zones{display:none}
+  .frame{margin:5px;padding:10px}
+  .frame::before{display:none}
+  .parts,.parts tbody,.parts tr,.parts td{display:block;width:100%}
+  .parts thead{display:none}
+  .parts tr{border-bottom:1px solid var(--line-3);padding:.4rem 0}
+  .parts .nm{width:auto}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="sheet">
+<div class="frame">
+  <div class="zones zones-t" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+  <div class="zones zones-l" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>D</span></div>
+
+<nav class="nav">
+  <div class="nav-brand">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><g fill="none" stroke="#DCE8F0" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#7FBEDC"><circle cx="320" cy="620" r="27"/><circle cx="430" cy="520" r="27"/><circle cx="520" cy="600" r="27"/><circle cx="640" cy="460" r="27"/><circle cx="730" cy="540" r="27"/><circle cx="420" cy="390" r="27"/><circle cx="540" cy="360" r="27"/><circle cx="520" cy="740" r="27"/></g></svg>
+    StalagMight
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Process</a></li>
+    <li><a href="#preview">Preview</a></li>
+    <li><a href="#download">Download</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO ══ -->
+<header class="hero">
+  <div class="hero-in">
+    <div>
+      <span class="tl">General arrangement · sheet 1 of 1</span>
+      <h1>StalagMight</h1>
+      <div class="tagline">Underwater cave survey &amp; mapping</div>
+
+      <div class="dimline" aria-hidden="true">
+        <svg viewBox="0 0 420 34" preserveAspectRatio="none">
+          <line x1="1" y1="4" x2="1" y2="26"/>
+          <line x1="419" y1="4" x2="419" y2="26"/>
+          <line x1="1" y1="15" x2="180" y2="15"/>
+          <line x1="240" y1="15" x2="419" y2="15"/>
+          <path d="M1 15 L11 11 L11 19 Z" fill="#7FBEDC" stroke="none"/>
+          <path d="M419 15 L409 11 L409 19 Z" fill="#7FBEDC" stroke="none"/>
+          <text x="188" y="19">0.00 EUR</text>
+        </svg>
+      </div>
+
+      <p class="desc">Free, open-source underwater cave survey software. Simple data entry, fast visualization, and easy map exports.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="#download">Download free</a>
+        <a class="btn btn-secondary" href="#features">Explore features</a>
+      </div>
+    </div>
+
+    <div class="titleblock">
+      <div class="tb-row"><div class="tb-cell tb-title"><dt>Title</dt><dd>Underwater cave survey &amp; mapping</dd></div></div>
+      <div class="tb-row tb-2">
+        <div class="tb-cell"><dt>Licence</dt><dd>Free · open</dd></div>
+        <div class="tb-cell"><dt>Instrument</dt><dd>mNemo DMP</dd></div>
+      </div>
+      <div class="tb-row tb-3">
+        <div class="tb-cell"><dt>Units</dt><dd>Metres</dd></div>
+        <div class="tb-cell"><dt>Datum</dt><dd>WGS 84</dd></div>
+        <div class="tb-cell"><dt>Rev</dt><dd>1.0</dd></div>
+      </div>
+      <div class="tb-row tb-2">
+        <div class="tb-cell"><dt>Platforms</dt><dd>Win · Mac · Linux</dd></div>
+        <div class="tb-cell"><dt>Sheet</dt><dd>1024</dd></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══ FEATURES: parts list ══ -->
+<section class="section" id="features">
+  <div class="sec-head">
+    <span class="tl">Core capabilities</span>
+    <h2>Features</h2>
+    <p>Everything you need to go from raw survey data to a finished map.</p>
+  </div>
+  <table class="parts">
+    <caption class="tl">Parts list</caption>
+    <thead><tr><th scope="col">Item</th><th scope="col">Capability</th><th scope="col">Description</th></tr></thead>
+    <tbody>
+      <tr><td class="item">01</td><td class="nm">Free Forever</td>
+        <td class="ds">No trials, no subscriptions, no paywalls. Stalagmight is and always will be completely free to use.</td></tr>
+      <tr><td class="item">02</td><td class="nm">Open-Source</td>
+        <td class="ds">All source code is publicly available. Inspect it, modify it, or contribute back to the project.</td></tr>
+      <tr><td class="item">03</td><td class="nm">mNemo &amp; Manual Data Entry</td>
+        <td class="ds">Import DMP files directly from mNemo survey device, or enter data by hand with a built-in spreadsheet.</td></tr>
+      <tr><td class="item">04</td><td class="nm">Automated Section Alignment</td>
+        <td class="ds">Automatically match and connect survey sections based on shared reference shots. Less manual placement, fewer mistakes, faster data entry.</td></tr>
+      <tr><td class="item">05</td><td class="nm">2D Visualization</td>
+        <td class="ds">Interactive plan view with satellite overlay. See your survey on a real map.</td></tr>
+      <tr><td class="item">06</td><td class="nm">Loop Closure</td>
+        <td class="ds">Detect loops in your survey network and distribute errors automatically for more accurate maps.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══ WORKFLOW: detail views ══ -->
+<section class="section" id="workflow">
+  <div class="sec-head">
+    <span class="tl">Import workflow</span>
+    <h2>From DMP File to Mapped Cave</h2>
+    <p>A guided wizard walks you through every step of importing mNemo survey data — from file selection to final placement on your cave map.</p>
+  </div>
+  <div class="details">
+    <article class="detail">
+      <div class="detail-bar"><span class="ref">DET 01</span><h3>Section Selection</h3><span class="sc">Scale NTS</span></div>
+      <div class="detail-in">
+        <div class="detail-txt"><p>Open a DMP file and review its contents at a glance — shot count, total length, depth range. Pick which sections to import, skip already-imported ones, and set default surveyor and date for the batch.</p></div>
+        <div class="detail-plate"><iframe src="/dialogs/01-section-selection.html" loading="lazy" title="Section selection dialog"></iframe></div>
+      </div>
+    </article>
+    <article class="detail">
+      <div class="detail-bar"><span class="ref">DET 02</span><h3>Zero Datum Configuration</h3><span class="sc">Scale NTS</span></div>
+      <div class="detail-in">
+        <div class="detail-txt"><p>Anchor your first section to real-world coordinates. Choose a station as the GPS zero datum, enter coordinates in decimal degrees, and configure section metadata — name, surveyor, date, color, and direction.</p></div>
+        <div class="detail-plate"><iframe src="/dialogs/02-zero-datum-config.html" loading="lazy" title="Zero datum configuration dialog"></iframe></div>
+      </div>
+    </article>
+    <article class="detail">
+      <div class="detail-bar"><span class="ref">DET 03</span><h3>Connection Suggesting</h3><span class="sc">Scale NTS</span></div>
+      <div class="detail-in">
+        <div class="detail-txt"><p>For each subsequent section, the system automatically suggests a connection point based on shot matching. Review the confidence level, merge-station mapping, and overlap handling — or pick from alternative connections.</p></div>
+        <div class="detail-plate"><iframe src="/dialogs/03-suggesting.html" loading="lazy" title="Connection suggesting dialog"></iframe></div>
+      </div>
+    </article>
+    <article class="detail">
+      <div class="detail-bar"><span class="ref">DET 04</span><h3>Manual Placing</h3><span class="sc">Scale NTS</span></div>
+      <div class="detail-in">
+        <div class="detail-txt"><p>When no automatic suggestion fits, take full control. Choose from previous suggestions, connect to an existing station, place manually on the map, or skip the section entirely. Full shot table and metadata remain editable.</p></div>
+        <div class="detail-plate"><iframe src="/dialogs/04-manual-placing.html" loading="lazy" title="Manual placing dialog"></iframe></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ══ PREVIEW ══ -->
+<section class="section" id="preview">
+  <div class="sec-head">
+    <span class="tl">App preview</span>
+    <h2>See It in Action</h2>
+    <p>The working survey view — plan, sections and shot table on one sheet.</p>
+  </div>
+  <div class="viewsheet">
+    <div class="viewsheet-in"><iframe src="/app-preview.html" loading="lazy" title="StalagMight application preview"></iframe></div>
+    <div class="viewsheet-cap"><span class="tl">View A — plan, satellite overlay</span><span class="tl">Depths in metres</span></div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="cta" id="download">
+  <div class="cta-in">
+    <div>
+      <span class="tl">Issued for use</span>
+      <h2 style="margin-top:.4rem">Begin Your Survey</h2>
+      <p>Download StalagMight for free. Available on Windows, macOS, and Linux.</p>
+      <div class="btn-row" style="margin-top:0">
+        <a class="btn btn-primary" href="#">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download for desktop
+        </a>
+        <a class="btn btn-secondary" href="#">View on GitHub</a>
+      </div>
+      <table class="revs">
+        <thead><tr><th scope="col">Rev</th><th scope="col">Date</th><th scope="col">Note</th></tr></thead>
+        <tbody>
+          <tr><td>1.0</td><td>2026</td><td>Issued — free, open source</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="plats">
+      <span><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Windows</span>
+      <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>macOS</span>
+      <span><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Linux</span>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-brand">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><g fill="none" stroke="#DCE8F0" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#7FBEDC"><circle cx="320" cy="620" r="27"/><circle cx="430" cy="520" r="27"/><circle cx="520" cy="600" r="27"/><circle cx="640" cy="460" r="27"/><circle cx="730" cy="540" r="27"/><circle cx="420" cy="390" r="27"/><circle cx="540" cy="360" r="27"/><circle cx="520" cy="740" r="27"/></g></svg>
+    StalagMight
+  </div>
+  <ul class="footer-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Process</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="#">Documentation</a></li>
+    <li><a href="#">GitHub</a></li>
+  </ul>
+  <span class="tl" style="color:rgba(220,232,240,.5)">© 2026 StalagMight · Underwater cave survey and mapping</span>
+</footer>
+
+</div>
+</div>
+</body>
+</html>

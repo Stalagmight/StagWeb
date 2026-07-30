@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StalagMight — Underwater Cave Survey &amp; Mapping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+/* Two spot inks on newsprint — the economics of a caving club that prints
+   its own bulletin. Fluoro pink and aqua are real Riso inks; everything
+   else is the black plate or the paper showing through. */
+:root{
+  --news:#EDE8D9;
+  --news-2:#E2DCC9;
+  --pink:#FF3D9A;
+  --aqua:#00A2B3;
+  --plate:#1A1A17;
+  --plate-2:#4A4943;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--news);color:var(--plate);
+  font-family:'Space Mono',monospace;font-size:15px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+/* Paper tooth + the halftone screen a Riso lays down. Two layers so the
+   dots sit on top of the fibre rather than replacing it. */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(circle at 50% 50%,rgba(26,26,23,.13) 0 .8px,transparent 1.1px);
+  background-size:4px 4px;
+}
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
+  background-image:radial-gradient(circle at 50% 50%,rgba(0,162,179,.2) 0 .7px,transparent 1px);
+  background-size:6px 6px;background-position:2px 3px;
+}
+.zine{position:relative;z-index:1}
+
+a{color:var(--pink);text-decoration:none}
+h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;line-height:.92;letter-spacing:.01em}
+
+.stamp{font-size:.64rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--plate-2)}
+
+/* ── SIGNATURE: misregistration. A Riso pulls one ink at a time and the
+      paper never lands twice in the same place. The headline is set three
+      times — aqua, pink, then the black plate on top, each a hair off. ── */
+.misreg{position:relative;display:inline-block}
+.misreg span{display:block}
+.misreg .ink-a{position:absolute;top:-3px;left:-4px;color:var(--aqua);mix-blend-mode:multiply}
+.misreg .ink-b{position:absolute;top:3px;left:3px;color:var(--pink);mix-blend-mode:multiply}
+.misreg .ink-k{position:relative;color:var(--plate)}
+
+/* Blocks are hand-cut and pasted down — never perfectly square. */
+.paste{background:var(--news-2);border:2px solid var(--plate);box-shadow:5px 5px 0 var(--plate)}
+.tilt-l{transform:rotate(-.5deg)}
+.tilt-r{transform:rotate(.55deg)}
+
+/* ═══ NAV — a stapled masthead strip ═══ */
+.nav{
+  position:sticky;top:0;z-index:60;background:var(--plate);color:var(--news);
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.45rem 1.2rem;gap:1rem;
+}
+.nav-brand{display:flex;align-items:center;gap:.5rem;font-family:'Anton',sans-serif;
+  text-transform:uppercase;font-size:1.02rem;letter-spacing:.04em}
+.nav-brand svg{width:21px;height:21px}
+.nav-links{list-style:none;display:flex;gap:.9rem}
+.nav-links a{color:var(--news);font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.nav-links a:hover{color:var(--pink)}
+.nav-links a:focus-visible{outline:2px solid var(--aqua);outline-offset:3px}
+
+/* ═══ HERO — the bulletin cover ═══ */
+.hero{max-width:1120px;margin:0 auto;padding:2.4rem 1.3rem 3rem}
+.masthead{
+  border-top:5px solid var(--plate);border-bottom:2px solid var(--plate);
+  padding:.4rem 0;display:flex;justify-content:space-between;
+  flex-wrap:wrap;gap:.7rem;margin-bottom:1.7rem;
+}
+.hero h1{font-size:clamp(3.2rem,13vw,8.4rem)}
+.hero .tagline{
+  font-family:'Space Mono',monospace;font-weight:700;
+  font-size:clamp(.82rem,2.3vw,1.12rem);letter-spacing:.13em;text-transform:uppercase;
+  background:var(--aqua);color:var(--news);display:inline-block;
+  padding:.22rem .6rem;margin-top:1.1rem;transform:rotate(-.7deg);
+}
+.hero-body{display:grid;grid-template-columns:1.15fr .85fr;gap:2rem;margin-top:2rem;align-items:start}
+.hero p.desc{font-size:1rem}
+/* Pull-quote slug in the pink plate. */
+.slug{
+  background:var(--pink);color:var(--news);padding:1rem 1.1rem;
+  font-weight:700;font-size:.9rem;line-height:1.45;transform:rotate(.6deg);
+  border:2px solid var(--plate);box-shadow:5px 5px 0 var(--plate);
+}
+.btn-row{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.5rem}
+.btn{
+  display:inline-flex;align-items:center;gap:.45rem;padding:.62rem 1.25rem;
+  font-weight:700;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+  border:2px solid var(--plate);box-shadow:4px 4px 0 var(--plate);
+  transition:transform .1s,box-shadow .1s;
+}
+.btn-primary{background:var(--pink);color:var(--news)}
+.btn-secondary{background:var(--news);color:var(--plate)}
+.btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--plate)}
+.btn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--plate)}
+.btn:focus-visible{outline:2px solid var(--aqua);outline-offset:3px}
+
+/* ═══ SECTIONS ═══ */
+.section{max-width:1120px;margin:0 auto;padding:3.2rem 1.3rem}
+.sec-head{margin-bottom:2rem}
+.sec-head h2{font-size:clamp(1.9rem,6vw,3.4rem)}
+.sec-rule{border-bottom:3px solid var(--plate);margin:.5rem 0 .8rem}
+.sec-head p{max-width:56ch;font-size:.94rem;color:var(--plate-2)}
+
+/* ═══ FEATURES — clipped articles pasted onto the page ═══ */
+.clips{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.7rem}
+.clip{padding:1.3rem 1.2rem 1.2rem}
+.clip:nth-child(3n+1){transform:rotate(-.6deg)}
+.clip:nth-child(3n+2){transform:rotate(.45deg)}
+.clip:nth-child(3n){transform:rotate(-.25deg)}
+.clip-no{
+  display:inline-block;font-family:'Anton',sans-serif;font-size:1.5rem;line-height:1;
+  background:var(--aqua);color:var(--news);padding:.1rem .42rem;margin-bottom:.7rem;
+}
+.clip h3{font-size:1.3rem;margin-bottom:.4rem}
+.clip p{font-size:.88rem;color:var(--plate-2)}
+
+/* ═══ WORKFLOW — a photostory. Numbered because it is a sequence. ═══ */
+.strip{display:flex;flex-direction:column;gap:2.4rem}
+.frame{padding:.9rem;display:grid;grid-template-columns:1fr 1.15fr;gap:1.2rem;align-items:start}
+.frame:nth-child(even){transform:rotate(-.4deg)}
+.frame:nth-child(odd){transform:rotate(.35deg)}
+.frame-txt .n{
+  display:inline-block;font-family:'Anton',sans-serif;font-size:2.1rem;line-height:1;
+  background:var(--pink);color:var(--news);padding:.05rem .4rem;margin-bottom:.6rem;
+}
+.frame-txt h3{font-size:1.35rem;margin-bottom:.45rem}
+.frame-txt p{font-size:.88rem;color:var(--plate-2)}
+.frame-img{border:2px solid var(--plate);background:#0e0d0c;overflow:hidden}
+.frame-img iframe{width:100%;height:330px;border:0;display:block}
+.frame-cap{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--plate-2);margin-top:.4rem}
+
+/* ═══ PREVIEW ═══ */
+.spread{padding:.9rem}
+.spread-in{border:2px solid var(--plate);background:#0e0d0c;overflow:hidden}
+.spread iframe{width:100%;height:min(74vh,650px);border:0;display:block}
+.spread-cap{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:.5rem}
+
+/* ═══ CTA — the back-page order form ═══ */
+.order{max-width:1120px;margin:0 auto;padding:3.2rem 1.3rem}
+.order-box{padding:2.2rem 1.9rem;border:3px dashed var(--plate);background:var(--news-2)}
+.order h2{font-size:clamp(1.9rem,5.5vw,3rem)}
+.order p{margin:.6rem 0 1.4rem;max-width:44ch;color:var(--plate-2)}
+.plats{display:flex;flex-wrap:wrap;gap:1.4rem;margin-top:1.7rem}
+.plats span{display:flex;align-items:center;gap:.45rem;font-weight:700;font-size:.68rem;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--plate-2)}
+.plats svg{width:13px;height:13px;fill:none;stroke:var(--aqua);stroke-width:2.4}
+
+/* ═══ FOOTER — the colophon strip ═══ */
+.footer{background:var(--plate);color:var(--news);margin-top:2rem}
+.footer-in{max-width:1120px;margin:0 auto;padding:1.7rem 1.3rem 2.2rem;
+  display:flex;flex-wrap:wrap;gap:1.2rem;justify-content:space-between;align-items:center}
+.footer-brand{display:flex;align-items:center;gap:.5rem;font-family:'Anton',sans-serif;
+  text-transform:uppercase;letter-spacing:.04em}
+.footer-brand svg{width:20px;height:20px}
+.footer-links{list-style:none;display:flex;flex-wrap:wrap;gap:1.1rem}
+.footer-links a{color:var(--news);font-size:.62rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+.footer-links a:hover{color:var(--pink)}
+.footer-copy{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:#9C9A92}
+
+@media(max-width:880px){
+  .hero-body,.frame{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .clip,.frame{transform:none}
+  .hero{padding:1.6rem 1rem 2rem}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="zine">
+
+<nav class="nav">
+  <div class="nav-brand">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><g fill="none" stroke="#FF3D9A" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#00A2B3"><circle cx="320" cy="620" r="30"/><circle cx="430" cy="520" r="30"/><circle cx="520" cy="600" r="30"/><circle cx="640" cy="460" r="30"/><circle cx="730" cy="540" r="30"/><circle cx="420" cy="390" r="30"/><circle cx="540" cy="360" r="30"/><circle cx="520" cy="740" r="30"/></g></svg>
+    StalagMight
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#workflow">Process</a></li>
+    <li><a href="#preview">Preview</a></li>
+    <li><a href="#download">Download</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO: bulletin cover ══ -->
+<header class="hero">
+  <div class="masthead">
+    <span class="stamp">Sump Bulletin · No. 7</span>
+    <span class="stamp">Free to members · and everyone else</span>
+  </div>
+
+  <h1 class="misreg">
+    <span class="ink-a" aria-hidden="true">StalagMight</span>
+    <span class="ink-b" aria-hidden="true">StalagMight</span>
+    <span class="ink-k">StalagMight</span>
+  </h1>
+  <div class="tagline">Underwater cave survey &amp; mapping</div>
+
+  <div class="hero-body">
+    <div>
+      <p class="desc">Free, open-source underwater cave survey software. Simple data entry, fast visualization, and easy map exports.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="#download">Download free</a>
+        <a class="btn btn-secondary" href="#features">Explore features</a>
+      </div>
+    </div>
+    <div class="slug">Runs on Windows, macOS and Linux. Costs nothing. The source is right there if you want to read it.</div>
+  </div>
+</header>
+
+<!-- ══ FEATURES ══ -->
+<section class="section" id="features">
+  <div class="sec-head">
+    <span class="stamp">Core capabilities</span>
+    <h2>Features</h2>
+    <div class="sec-rule"></div>
+    <p>Everything you need to go from raw survey data to a finished map.</p>
+  </div>
+
+  <div class="clips">
+    <article class="clip paste">
+      <span class="clip-no">01</span>
+      <h3>Free Forever</h3>
+      <p>No trials, no subscriptions, no paywalls. Stalagmight is and always will be completely free to use.</p>
+    </article>
+    <article class="clip paste">
+      <span class="clip-no">02</span>
+      <h3>Open-Source</h3>
+      <p>All source code is publicly available. Inspect it, modify it, or contribute back to the project.</p>
+    </article>
+    <article class="clip paste">
+      <span class="clip-no">03</span>
+      <h3>mNemo &amp; Manual Data Entry</h3>
+      <p>Import DMP files directly from mNemo survey device, or enter data by hand with a built-in spreadsheet.</p>
+    </article>
+    <article class="clip paste">
+      <span class="clip-no">04</span>
+      <h3>Automated Section Alignment</h3>
+      <p>Automatically match and connect survey sections based on shared reference shots. Less manual placement, fewer mistakes, faster data entry.</p>
+    </article>
+    <article class="clip paste">
+      <span class="clip-no">05</span>
+      <h3>2D Visualization</h3>
+      <p>Interactive plan view with satellite overlay. See your survey on a real map.</p>
+    </article>
+    <article class="clip paste">
+      <span class="clip-no">06</span>
+      <h3>Loop Closure</h3>
+      <p>Detect loops in your survey network and distribute errors automatically for more accurate maps.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ══ WORKFLOW: photostory ══ -->
+<section class="section" id="workflow">
+  <div class="sec-head">
+    <span class="stamp">Import workflow</span>
+    <h2>From DMP File to Mapped Cave</h2>
+    <div class="sec-rule"></div>
+    <p>A guided wizard walks you through every step of importing mNemo survey data — from file selection to final placement on your cave map.</p>
+  </div>
+
+  <div class="strip">
+    <article class="frame paste">
+      <div class="frame-txt">
+        <span class="n">01</span>
+        <h3>Section Selection</h3>
+        <p>Open a DMP file and review its contents at a glance — shot count, total length, depth range. Pick which sections to import, skip already-imported ones, and set default surveyor and date for the batch.</p>
+      </div>
+      <div>
+        <div class="frame-img"><iframe src="/dialogs/01-section-selection.html" loading="lazy" title="Section selection dialog"></iframe></div>
+        <div class="frame-cap">Fig. 1 — picking sections out of a DMP file</div>
+      </div>
+    </article>
+    <article class="frame paste">
+      <div class="frame-txt">
+        <span class="n">02</span>
+        <h3>Zero Datum Configuration</h3>
+        <p>Anchor your first section to real-world coordinates. Choose a station as the GPS zero datum, enter coordinates in decimal degrees, and configure section metadata — name, surveyor, date, color, and direction.</p>
+      </div>
+      <div>
+        <div class="frame-img"><iframe src="/dialogs/02-zero-datum-config.html" loading="lazy" title="Zero datum configuration dialog"></iframe></div>
+        <div class="frame-cap">Fig. 2 — tying the survey to the surface</div>
+      </div>
+    </article>
+    <article class="frame paste">
+      <div class="frame-txt">
+        <span class="n">03</span>
+        <h3>Connection Suggesting</h3>
+        <p>For each subsequent section, the system automatically suggests a connection point based on shot matching. Review the confidence level, merge-station mapping, and overlap handling — or pick from alternative connections.</p>
+      </div>
+      <div>
+        <div class="frame-img"><iframe src="/dialogs/03-suggesting.html" loading="lazy" title="Connection suggesting dialog"></iframe></div>
+        <div class="frame-cap">Fig. 3 — a match, offered for review</div>
+      </div>
+    </article>
+    <article class="frame paste">
+      <div class="frame-txt">
+        <span class="n">04</span>
+        <h3>Manual Placing</h3>
+        <p>When no automatic suggestion fits, take full control. Choose from previous suggestions, connect to an existing station, place manually on the map, or skip the section entirely. Full shot table and metadata remain editable.</p>
+      </div>
+      <div>
+        <div class="frame-img"><iframe src="/dialogs/04-manual-placing.html" loading="lazy" title="Manual placing dialog"></iframe></div>
+        <div class="frame-cap">Fig. 4 — doing it by hand instead</div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ══ PREVIEW ══ -->
+<section class="section" id="preview">
+  <div class="sec-head">
+    <span class="stamp">App preview</span>
+    <h2>See It in Action</h2>
+    <div class="sec-rule"></div>
+    <p>The working survey view — plan, sections and shot table on one screen.</p>
+  </div>
+  <div class="spread paste tilt-l">
+    <div class="spread-in"><iframe src="/app-preview.html" loading="lazy" title="StalagMight application preview"></iframe></div>
+    <div class="spread-cap"><span class="stamp">Centrefold — plan view, satellite overlay</span><span class="stamp">Depths in metres</span></div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="order" id="download">
+  <div class="order-box">
+    <span class="stamp">Back page</span>
+    <h2 style="margin-top:.3rem">Begin Your Survey</h2>
+    <p>Download StalagMight for free. Available on Windows, macOS, and Linux.</p>
+    <div class="btn-row" style="margin-top:0">
+      <a class="btn btn-primary" href="#">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download for desktop
+      </a>
+      <a class="btn btn-secondary" href="#">View on GitHub</a>
+    </div>
+    <div class="plats">
+      <span><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Windows</span>
+      <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>macOS</span>
+      <span><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Linux</span>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-in">
+    <div class="footer-brand">
+      <svg viewBox="0 0 1024 1024" aria-hidden="true"><g fill="none" stroke="#FF3D9A" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"><path d="M320 620 L430 520 L520 600 L640 460 L730 540"/><path d="M430 520 L420 390 L540 360 L640 460"/><path d="M520 600 L520 740"/></g><g fill="#00A2B3"><circle cx="320" cy="620" r="30"/><circle cx="430" cy="520" r="30"/><circle cx="520" cy="600" r="30"/><circle cx="640" cy="460" r="30"/><circle cx="730" cy="540" r="30"/><circle cx="420" cy="390" r="30"/><circle cx="540" cy="360" r="30"/><circle cx="520" cy="740" r="30"/></g></svg>
+      StalagMight
+    </div>
+    <ul class="footer-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#workflow">Process</a></li>
+      <li><a href="#download">Download</a></li>
+      <li><a href="#">Documentation</a></li>
+      <li><a href="#">GitHub</a></li>
+    </ul>
+    <div class="footer-copy">© 2026 StalagMight · Underwater cave survey and mapping</div>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
