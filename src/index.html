@@ -85,11 +85,18 @@ a:hover { color: var(--limestone-50); }
 
 .nav-links {
   display: flex;
+  align-items: center;      /* centre the items on each other, not on a baseline */
   gap: 2rem;
   list-style: none;
 }
 
+/* All three links are the same box type. Left as a plain inline element, the
+   GitHub one became inline-flex to seat its mark — and an inline-flex box takes
+   its baseline from its first item, so the SVG's bottom edge became the baseline
+   and pushed that link 1.7px below the others. */
 .nav-links a {
+  display: inline-flex;
+  align-items: center;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
@@ -120,13 +127,9 @@ a:hover { color: var(--limestone-50); }
   outline-offset: 4px;
 }
 
-/* Styled exactly like the other nav links — inline-flex only so the mark sits
-   beside the label. It keeps the shared colour, tracking and hover triangle. */
-.nav-github {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-}
+/* Styled exactly like the other nav links; it only adds the gap for its mark. */
+.nav-github { gap: 0.45rem; }
+.nav-github svg { display: block; }
 
 /* ===== HERO — copy stack, one action, then the app cropped at the fold ===== */
 .hero {
@@ -770,8 +773,8 @@ a:hover { color: var(--limestone-50); }
   -webkit-mask-size: contain;     mask-size: contain;
 }
 .icon-speleodb {
-  -webkit-mask-image: url('/speleodb-logo.png');
-  mask-image: url('/speleodb-logo.png');
+  -webkit-mask-image: url('speleodb-logo.png');
+  mask-image: url('speleodb-logo.png');
 }
 
 /* ===== CTA ===== */

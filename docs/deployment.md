@@ -1,5 +1,10 @@
 # Deployment
 
+The site is published twice from the same build: **GitHub Pages** at
+<https://stalagmight.com> (see [github-pages.md](github-pages.md)) and the
+internal VPN copy below.
+
+
 The site is hosted on **anzu** (`10.10.0.220`) and reachable from anywhere on
 the VPN at:
 
