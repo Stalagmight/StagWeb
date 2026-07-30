@@ -318,17 +318,27 @@ a:hover { color: var(--limestone-50); }
 .hero-drips i:nth-child(7) { left: 74%; width: 10px; height: 104px; background: #402B1B; }
 .hero-drips i:nth-child(8) { left: 85%; width: 13px; height: 168px; background: #472F1F; }
 
-/* ── Hanging into the animated previews ──
-   One clump per clip covering about 15% of its width, at a different offset on
-   each so they do not line up down the page. Kept to the top edge, where a clip
-   is app chrome rather than survey data. */
+/* ── Rising from the floor of each animated preview ──
+   These grow upward from the bottom edge rather than hanging from the top, so
+   they are stalagmites. One clump per clip covering about 15% of its width, at a
+   different offset on each so they do not line up down the page. */
 .clip-drips {
   position: absolute;
-  top: 0;
+  bottom: 0;
   width: 15%;
   height: 0;
   z-index: 2;
   pointer-events: none;
+}
+
+/* Flip the shared drip: base on the floor, apex upward, and the taper fading
+   toward the tip means fading upward now. */
+.clip-drips i {
+  top: auto;
+  bottom: -2px;
+  clip-path: polygon(0 100%, 100% 100%, 50% 0);
+  -webkit-mask-image: linear-gradient(0deg, #000 0%, #000 28%, rgba(0,0,0,0.55) 62%, transparent 100%);
+  mask-image: linear-gradient(0deg, #000 0%, #000 28%, rgba(0,0,0,0.55) 62%, transparent 100%);
 }
 
 .clip-drips i:nth-child(1) { left:  4%; width:  9px; height: 34px; background: #2A2018; }
