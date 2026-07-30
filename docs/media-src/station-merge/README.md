@@ -9,31 +9,13 @@ Ten screenshots of the station-merge interaction, in timestamp order:
 9. **Merge Stations** dialog (Station A 34:0 / Station B 35:1)
 10. merged result, auto-save pending
 
-These are the source for `public/media/station-merge.webp`, which is what the
-site actually serves. Kept here because the originals were dropped in `dist/`,
-and `vite build` runs with `emptyOutDir: true` — anything in `dist/` is deleted
-on the next build.
-
-## Re-encoding
-
-Crop is the map viewport, `1923x1250+588+140` out of the 3072x1920 frame,
-scaled to 1000px wide. Holds are expressed as duplicate frames at 10 fps; the
-libwebp animation encoder collapses runs of identical frames into one frame
-with a longer delay, so the output is 10 frames totalling 8.0 s.
+Full-screen captures, so they need `--window full`; the app at full width is
+unreadable at 640 px on the page, hence the crop to the map viewport.
 
 ```bash
-i=1; mkdir -p frames seq
-for f in *.png; do
-  magick "$f" -crop 1923x1250+588+140 +repage -resize 1000x -strip \
-    "frames/$(printf '%02d' $i).png"; i=$((i+1))
-done
-n=0; idx=1
-for h in 12 7 6 5 4 4 4 5 15 18; do          # tenths of a second per frame
-  for _ in $(seq 1 $h); do n=$((n+1));
-    ln -s "$PWD/frames/$(printf '%02d' $idx).png" "seq/$(printf '%04d' $n).png"; done
-  idx=$((idx+1))
-done
-ffmpeg -y -framerate 10 -i seq/%04d.png -c:v libwebp_anim \
-  -lossless 0 -q:v 75 -compression_level 6 -loop 0 station-merge.webp
-magick station-merge.webp -coalesce -delete 1--1 -strip station-merge-still.webp
+../build-anim.py . ../../../public/media/station-merge.webp \
+    --holds 12,7,6,5,4,4,4,5,15,18 --width 1000 --quality 75 \
+    --window full --crop 1923x1250+588+140 --report
 ```
+
+See [../README.md](../README.md) for what the pipeline does and why.
