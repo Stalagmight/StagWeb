@@ -12,11 +12,11 @@ Website for the Stalagmight cave mapping software project.
 
 `vite build` runs with `emptyOutDir: true`, so **`dist/` is wiped on every
 build**. Screenshots or any other input dropped there survive exactly until the
-next build. Captures belong in `docs/media-src/<name>/`.
+next build. Captures belong in `assets/screenshots/<name>/`.
 
 ## Screenshot animations
 
-`docs/media-src/build-anim.py` turns a folder of PNG captures into a registered,
+`assets/build-anim.py` turns a folder of PNG captures into a registered,
 cropped, animated WebP for the site. Captures of the same window are never
 pixel-identical, so it detects the app window, removes the desktop around it,
 and registers the frames against each other before encoding — otherwise the
@@ -24,7 +24,7 @@ result twitches on every frame change. It reports `all frames aligned` when the
 residual shift of every frame is zero; treat anything else as a failure.
 
 Deployed output goes in `public/media/`. See
-[docs/media-src/README.md](docs/media-src/README.md).
+[docs/screenshot-animations.md](docs/screenshot-animations.md).
 
 ## DMP Import Dialog Sequence
 

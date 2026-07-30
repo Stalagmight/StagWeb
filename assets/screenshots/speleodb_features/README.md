@@ -16,8 +16,8 @@ A floating window, captured at sizes between 1440x1098 and 1454x1124 and sitting
 a few pixels off between shots. Registration handles both — no manual crop.
 
 ```bash
-../build-anim.py . ../../../public/media/speleodb.webp \
-    --holds 9,7,9,13,9,5,6,13,9,20 --width 1000 --quality 76 --report
+../../build-anim.py . ../../../public/media/speleodb.webp \
+    --holds 9,7,9,39,9,5,6,39,9,60 --width 1000 --quality 76 --report
 ```
 
-See [../README.md](../README.md) for what the pipeline does and why.
+See [../../../docs/screenshot-animations.md](../../../docs/screenshot-animations.md) for what the pipeline does and why.

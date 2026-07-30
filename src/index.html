@@ -506,10 +506,13 @@ a:hover { color: var(--limestone-50); }
 }
 .f-clip img { display: block; width: 100%; height: auto; }
 
-/* On a media row the screenshot takes the visual column, so the mark moves up
-   beside the title rather than being dropped. Mark rows keep their large
-   floating glyph and don't repeat it here — showing the same glyph twice in one
-   row reads as a mistake. */
+/* A row with nothing to show gets no visual column — a half-empty row reads as
+   a failed image load. Its copy runs to a comfortable measure instead. */
+.f-row-text { display: block; }
+.f-row-text .f-body p { max-width: 78ch; }
+
+/* Every row carries its mark beside the title, since five of six have a
+   recording in the visual column and no large glyph to stand in for it. */
 .f-head {
   display: flex;
   align-items: center;
