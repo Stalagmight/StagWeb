@@ -45,7 +45,7 @@
       "applicationSubCategory": "Underwater cave surveying",
       "operatingSystem": "Windows, macOS, Linux",
       "url": "https://stalagmight.com/",
-      "codeRepository": "https://github.com/Stalagmight",
+      "codeRepository": "https://github.com/Stalagmight/Stalagmight",
       "license": "https://www.gnu.org/licenses/agpl-3.0.html",
       "isAccessibleForFree": true,
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
@@ -380,6 +380,10 @@
 }
 
 .hero-platforms {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 0.45rem;
   font-family: 'Rajdhani', sans-serif;
   font-size: 0.78rem;
   letter-spacing: 0.2em;
@@ -387,6 +391,26 @@
   color: var(--text-secondary);
   position: relative;
   opacity: 0.8;
+}
+
+/* Filled in by js/download.js as separate items, and a flex row so it wraps
+   between them rather than mid-item. The tag keeps its own case; "V0.5.0-RC5"
+   reads as shouting. */
+.hero-platforms > span { white-space: nowrap; }
+.hero-platforms > span + span::before { content: '\00b7'; margin: 0 0.6em; }
+.hero-platforms .ver { text-transform: none; letter-spacing: 0.08em; }
+.hero-platforms > .hero-meta-warn {
+  flex-basis: 100%;
+  white-space: normal;
+  color: var(--silt-300);
+}
+.hero-platforms > .hero-meta-warn::before { content: none; }
+
+.hero-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 2.4rem;
 }
 
 .hero-platforms::before {
@@ -749,30 +773,215 @@
   line-height: 1.7;
 }
 
-.cta-buttons {
-  display: flex;
-  gap: 1.5rem;
-  justify-content: center;
-  flex-wrap: wrap;
+/* ── Every file of the release ──
+   Three columns ruled off from each other rather than three boxed cards: it is
+   a list of files, read like a survey book — name, a dotted leader, the size. */
+.dl {
+  position: relative;
+  z-index: 2;
+  max-width: 1080px;
+  margin: 0 auto;
+  text-align: left;
 }
 
-/* Same stacking as the hero: one primary action, then GitHub as a quiet link
-   under it, then the platform line. */
-.cta-content .ghost-link { margin-top: 1.7rem; }
-
-.cta-platforms {
-  display: flex;
-  gap: 2rem;
-  justify-content: center;
-  margin-top: 2rem;
-  color: var(--text-secondary);
-  font-size: 0.85rem;
+.dl-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.cta-platforms span {
+.dl-card {
+  position: relative;
+  padding: 2rem 2rem 2.2rem;
+}
+.dl-card + .dl-card { border-left: 1px solid var(--border-subtle); }
+
+/* The visitor's own platform carries the primary button's gradient along its
+   top edge, over the rule. */
+.dl-card.is-yours::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--limestone-50), var(--sandstone-200));
+}
+
+.dl-head {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.6rem;
+  color: var(--sandstone-200);
+}
+.dl-head svg { flex: 0 0 auto; }
+.dl-head h3 {
+  font-size: 1.4rem;
+  color: var(--limestone-50);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.dl-card.is-yours .dl-head::after {
+  content: 'Your system';
+  margin-left: auto;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sandstone-200);
+}
+
+.dl-arch {
+  margin-top: 0.2rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.dl-files { list-style: none; margin-top: 1.2rem; }
+
+.dl-file {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  padding: 0.5rem 0;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 1.08rem;
+  letter-spacing: 0.03em;
+  color: var(--limestone-50);
+}
+.dl-ext { font-weight: 500; font-size: 0.92rem; color: var(--silt-300); white-space: nowrap; }
+.dl-lead {
+  flex: 1;
+  min-width: 1.2rem;
+  border-bottom: 1px dotted rgba(243,232,216,0.22);
+  transition: border-color 0.3s;
+}
+.dl-size {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.dl-file::after {
+  content: '\2193';
+  font-size: 0.9rem;
+  color: var(--sandstone-200);
+  opacity: 0.55;
+  transition: opacity 0.3s, transform 0.3s;
+}
+.dl-file:hover { color: var(--sandstone-200); }
+.dl-file:hover .dl-lead { border-bottom-color: var(--sandstone-200); }
+.dl-file:hover::after { opacity: 1; transform: translateY(2px); }
+.dl-file:focus-visible,
+.dl-copy:focus-visible {
+  outline: 2px solid var(--sandstone-200);
+  outline-offset: 3px;
+}
+
+.dl-note {
+  margin-top: 1rem;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.dl-note + .dl-note { margin-top: 0.5rem; }
+.dl-note b { font-weight: 600; color: var(--text-primary); }
+.dl-warn { color: var(--silt-300); }
+.dl-warn b { color: var(--limestone-50); }
+
+.dl-note code,
+.dl-cmd code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+}
+.dl-note code {
+  padding: 0.05em 0.35em;
+  background: rgba(243,232,216,0.06);
+  color: var(--text-primary);
+}
+
+.dl-missing {
+  display: block;
+  padding: 0.5rem 0;
+  font-size: 0.9rem;
+  color: var(--silt-300);
+}
+
+/* The command wraps rather than scrolls: the copy button is how it is meant to
+   be taken, and a wrapped line still selects as one. */
+.dl-cmd {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0.6rem 0;
+  padding: 0.55rem 0.6rem 0.55rem 0.75rem;
+  background: rgba(0,0,0,0.28);
+  border: 1px solid var(--border);
+}
+.dl-cmd code {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.55;
+  color: var(--limestone-50);
+  overflow-wrap: anywhere;
+}
+/* Only offered where the script that runs it is. */
+.dl-copy {
+  display: none;
+  flex: 0 0 auto;
+  padding: 0.35rem 0.55rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sandstone-200);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: color 0.3s, border-color 0.3s;
+}
+.js .dl-copy { display: inline-block; }
+.dl-copy:hover { color: var(--limestone-50); border-color: var(--sandstone-200); }
+
+.dl-foot {
+  margin-top: 2.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6rem;
+  text-align: center;
+}
+
+.dl-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 0.45rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.dl-meta > * { white-space: nowrap; }
+.dl-meta > * + *::before {
+  content: '\00b7';
+  margin: 0 0.7em;
+  color: var(--text-secondary);
+}
+.dl-meta .ver { text-transform: none; letter-spacing: 0.08em; }
+
+.dl-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 2.4rem;
 }
 
 /* ===== RESPONSIVE ===== */
@@ -799,6 +1008,12 @@
   .f-visual svg { width: 68px; height: 68px; }
   .f-visual .icon-mark { width: 76px; height: 76px; }
   .fs-head { padding: 4.5rem 1.25rem 2rem; }
+  /* Stacked, with the visitor's own platform first. Every card takes the rule
+     above it, so moving one to the top cannot leave a rule out of place. */
+  .dl-grid { grid-template-columns: 1fr; border-top: 0; }
+  .dl-card { padding: 1.7rem 0.25rem 1.9rem; border-top: 1px solid var(--border-subtle); }
+  .dl-card + .dl-card { border-left: 0; }
+  .dl-card.is-yours { order: -1; }
 }
 
 @media (max-width: 900px) {
@@ -814,6 +1029,13 @@
   .btn { padding: 0.75rem 1.5rem; font-size: 0.9rem; }
   .btn-download { padding: 0.9rem 1.9rem; font-size: 0.95rem; }
   .hero-shot-title { display: none; }
+  .cta-section { padding: 6rem 1rem; }
+  /* These lines wrap on a phone, and a wrapped line would open on a stray dot,
+     so the items are spaced apart instead of dotted. */
+  .hero-platforms,
+  .dl-meta { column-gap: 1.1em; letter-spacing: 0.14em; }
+  .hero-platforms > span + span::before,
+  .dl-meta > * + *::before { content: none; }
 }
 
 /* ===== SCROLL REVEAL ===== */
@@ -867,22 +1089,6 @@ document.querySelectorAll('.reveal').forEach(el => {
 });
 
 
-
-// Label the download button for the visitor's own platform. Falls back to the
-// generic "Download for Desktop" already in the markup if detection fails, so
-// the button is never blank or wrong-looking without JS.
-(() => {
-  const label = document.getElementById('heroDownloadLabel');
-  if (!label) return;
-  const ua = navigator.userAgent;
-  const plat = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '';
-  const hay = (plat + ' ' + ua).toLowerCase();
-  let os = null;
-  if (/mac|darwin/.test(hay) && !/iphone|ipad/.test(hay)) os = 'macOS';
-  else if (/win/.test(hay)) os = 'Windows';
-  else if (/linux|x11|ubuntu|fedora|debian/.test(hay) && !/android/.test(hay)) os = 'Linux';
-  if (os) label.textContent = 'Download for ' + os;
-})();
 
 // Only the feature clip nearest the middle of the viewport animates; the others
 // show their first frame. Five looping WebPs decoding at once is wasted work and
@@ -966,5 +1172,7 @@ document.querySelectorAll('.reveal').forEach(el => {
   fit();
 })();
 </script>
+<!-- The download links: platform detection and the current release's files. -->
+<script type="module" src="js/download.js"></script>
 </body>
 </html>
