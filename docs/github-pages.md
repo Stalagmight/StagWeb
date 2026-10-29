@@ -13,7 +13,9 @@ VPN copy, from one build.
 
 Vite's `base` option would not have fixed this on its own: these URLs are written
 by hand in HTML attributes and in the inline `<style>` block, so they never pass
-through Vite's asset pipeline for rewriting.
+through Vite's asset pipeline for rewriting. It is still set to `'./'`, but for a
+different reason. The bundled scripts in `assets/` are the one thing Vite writes
+URLs for, and the default `/` would make them root-absolute.
 
 Verified by serving `dist/` from a subdirectory and confirming all images load and
 the CSS mask resolves — worth repeating if asset references are ever edited.

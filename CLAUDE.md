@@ -14,6 +14,14 @@ Website for the Stalagmight cave mapping software project.
 build**. Screenshots or any other input dropped there survive exactly until the
 next build. Captures belong in `assets/screenshots/<name>/`.
 
+## Downloads come from GitHub at runtime
+
+Download links and the `/releases/` page are filled in by the browser from the
+GitHub API (`src/js/releases.js`). There is no build-time snapshot, so never
+hard-code a version or an asset URL. Files are matched by suffix. See
+[docs/downloads.md](docs/downloads.md) before touching the download markup or if
+the app's release pipeline renames its files.
+
 ## Screenshot animations
 
 `assets/build-anim.py` turns a folder of PNG captures into a registered,

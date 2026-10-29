@@ -44,8 +44,11 @@ npm run build          # regenerates dist/ — that is the whole deploy
 ```
 
 Reload the browser and the change is live. `vite build` inlines all partials
-into a single `dist/index.html` and copies `public/` (the dialog mockups and
-`app-preview.html`) verbatim.
+into `dist/index.html` and `dist/releases/index.html`, bundles their scripts
+into `dist/assets/`, and copies `public/` verbatim.
+
+A new **app release** needs no deploy at all: the download links and the
+releases page read GitHub in the browser ([downloads.md](downloads.md)).
 
 ## Local development
 

@@ -65,8 +65,10 @@ outreach, not code:
 2. **Inbound links** from caving and cave-diving communities — CDS/NSS sections,
    speleo forums, the mNemo and SpeleoDB communities, European federations. For
    competitive terms this outweighs everything on-page.
-3. **Real release URLs.** A download page with actual binaries and release notes
-   is both a ranking asset and the thing that converts.
+3. ~~**Real release URLs.**~~ Done: every download links to its file, and
+   `/releases/` carries the binaries and notes ([downloads.md](downloads.md)). The
+   page is filled in by JavaScript, which Google renders but other crawlers may
+   not.
 
 Worth noting the honest constraint: the six feature descriptions are the
 customer's own wording, so they were not rewritten to carry keywords. Keyword
