@@ -76,127 +76,8 @@
   ]
 }
 </script>
+<load src="partials/style-base.html" />
 <style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-:root {
-  --cave-ember-700: #3A251A; --cave-ember-900: #1A120B; --basalt-950: #0F0906;
-  --limestone-50: #F3E8D8; --sandstone-200: #C1A07A; --silt-300: #AE8D67;
-  --bg: #0e0d0c; --panel: #171615; --border: #2a2826;
-  --text-primary: #d5d0ca; --text-secondary: #858280; --accent: #a89060;
-  --warning: #b89848; --error: #b85048; --success: #48986a;
-  --border-subtle: rgba(243,232,216,0.18); --border-strong: rgba(243,232,216,0.60);
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Barlow', sans-serif;
-  background: var(--basalt-950);
-  color: var(--text-primary);
-  line-height: 1.6;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: 0.02em;
-}
-
-a { color: var(--sandstone-200); text-decoration: none; transition: color 0.3s; }
-a:hover { color: var(--limestone-50); }
-
-/* ===== NAV ===== */
-.nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
-  padding: 1.2rem 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(15,9,6,0.92);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.nav::after {
-  content: '';
-  position: absolute;
-  bottom: -40px; left: 0; right: 0;
-  height: 40px;
-  background: linear-gradient(180deg, rgba(15,9,6,0.6), transparent);
-  pointer-events: none;
-}
-
-.nav-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.nav-brand svg { width: 36px; height: 36px; }
-
-.nav-brand span {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--limestone-50);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;      /* centre the items on each other, not on a baseline */
-  gap: 2rem;
-  list-style: none;
-}
-
-/* All three links are the same box type. Left as a plain inline element, the
-   GitHub one became inline-flex to seat its mark — and an inline-flex box takes
-   its baseline from its first item, so the SVG's bottom edge became the baseline
-   and pushed that link 1.7px below the others. */
-.nav-links a {
-  display: inline-flex;
-  align-items: center;
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  position: relative;
-  padding: 0.25rem 0;
-}
-
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: -4px; left: 50%;
-  width: 0; height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 5px solid var(--sandstone-200);
-  transform: translateX(-50%);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.nav-links a:hover { color: var(--limestone-50); }
-.nav-links a:hover::after { opacity: 1; }
-.nav-links a:focus-visible {
-  outline: 2px solid var(--sandstone-200);
-  outline-offset: 4px;
-}
-
-/* Styled exactly like the other nav links; it only adds the gap for its mark. */
-.nav-github { gap: 0.45rem; }
-.nav-github svg { display: block; }
-
 /* ===== HERO — copy stack, one action, then the app cropped at the fold ===== */
 .hero {
   position: relative;
@@ -477,19 +358,6 @@ a:hover { color: var(--limestone-50); }
 .btn-drips i:nth-child(14) { left: 88%;   width:  7px; height:  44px; background: #2D2015; clip-path: polygon(0 0, 100% 0, 84% 30%, 62% 66%, 48% 100%, 36% 58%, 14% 26%); }
 .btn-drips i:nth-child(15) { display: none; clip-path: polygon(0 0, 100% 0, 62% 100%, 42% 96%); }
 
-.ghost-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 600;
-  font-size: 0.95rem;
-  letter-spacing: 0.06em;
-  color: var(--silt-300);
-  position: relative;
-  transition: color 0.3s ease;
-}
-
 /* A dim halo behind the label, hero only: it exists to dim the drips hanging off
    the download button. The drips sit at z-index -1 and this comes later in the
    document, so at the same level it paints over them — dimming whatever passes
@@ -506,10 +374,6 @@ a:hover { color: var(--limestone-50); }
               rgba(15,9,6,0.32) 66%, rgba(15,9,6,0) 100%);
 }
 
-.ghost-link:hover { color: var(--limestone-50); }
-.ghost-link svg { flex: 0 0 auto; }
-.ghost-arrow { font-size: 0.8em; opacity: 0.7; }
-.ghost-link:focus-visible,
 .btn-download:focus-visible {
   outline: 2px solid var(--sandstone-200);
   outline-offset: 4px;
@@ -911,77 +775,8 @@ a:hover { color: var(--limestone-50); }
   gap: 0.4rem;
 }
 
-/* ===== FOOTER ===== */
-.footer {
-  background: var(--basalt-950);
-  border-top: 1px solid var(--border);
-  padding: 3rem 2rem;
-  position: relative;
-}
-
-.footer::before {
-  content: '';
-  position: absolute;
-  top: -20px; left: 0; right: 0;
-  height: 20px;
-  background: var(--cave-ember-900);
-  clip-path: polygon(0 0, 100% 0, 95% 100%, 85% 40%, 75% 100%, 65% 40%, 55% 100%, 45% 40%, 35% 100%, 25% 40%, 15% 100%, 5% 40%);
-  opacity: 0.3;
-}
-
-.footer-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 2rem;
-}
-
-.footer-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.footer-brand svg { width: 28px; height: 28px; }
-
-.footer-brand span {
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--limestone-50);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-/* Wraps, and centres when it does — five links in one row is wider than a
-   phone, which used to push the whole document into horizontal scroll. */
-.footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem 2rem;
-  list-style: none;
-}
-
-.footer-links a {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  transition: color 0.3s;
-}
-
-.footer-links a:hover { color: var(--limestone-50); }
-
-.footer-copy {
-  color: var(--text-secondary);
-  font-size: 0.8rem;
-}
-
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
-  .nav-links { display: none; }
   /* One column, alternation dropped — flipping sides means nothing once
      everything is stacked. Every variant collapses to the same single track. */
   .f-row-in,
@@ -1041,11 +836,6 @@ a:hover { color: var(--limestone-50); }
    unwelcome the page becomes the still version of itself — nothing is hidden
    and nothing waits on an observer. */
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after {
-    animation: none !important;
-    transition: none !important;
-  }
   .js .reveal,
   .js .feature-card {
     opacity: 1 !important;
@@ -1056,11 +846,11 @@ a:hover { color: var(--limestone-50); }
 </head>
 <body>
 
-<load src="partials/nav.html" />
+<load src="partials/nav.html" root="" />
 <load src="partials/hero.html" />
 <load src="partials/features.html" />
 <load src="partials/cta.html" />
-<load src="partials/footer.html" />
+<load src="partials/footer.html" root="" />
 
 <script>
 // Scroll reveal
