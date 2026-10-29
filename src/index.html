@@ -857,10 +857,11 @@
   letter-spacing: 0.03em;
   color: var(--limestone-50);
 }
+.dl-name { white-space: nowrap; }
 .dl-ext { font-weight: 500; font-size: 0.92rem; color: var(--silt-300); white-space: nowrap; }
 .dl-lead {
   flex: 1;
-  min-width: 1.2rem;
+  min-width: 0.8rem;
   border-bottom: 1px dotted rgba(243,232,216,0.22);
   transition: border-color 0.3s;
 }
@@ -920,7 +921,7 @@
    be taken, and a wrapped line still selects as one. */
 .dl-cmd {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.6rem;
   margin: 0.6rem 0;
   padding: 0.55rem 0.6rem 0.55rem 0.75rem;
@@ -1012,8 +1013,15 @@
   .f-visual svg { width: 68px; height: 68px; }
   .f-visual .icon-mark { width: 76px; height: 76px; }
   .fs-head { padding: 4.5rem 1.25rem 2rem; }
-  /* Stacked, with the visitor's own platform first. Every card takes the rule
-     above it, so moving one to the top cannot leave a rule out of place. */
+}
+
+/* Three columns need ~285px of row each ("Fedora / openSUSE .rpm ··· 10.8 MB"),
+   which they stop getting below this width; stacked, at a measure that keeps
+   the leaders from running across a whole tablet. The visitor's own platform
+   comes first, and every card takes the rule above it, so moving one to the
+   top cannot leave a rule out of place. */
+@media (max-width: 1120px) {
+  .dl { max-width: 720px; }
   .dl-grid { grid-template-columns: 1fr; border-top: 0; }
   .dl-card { padding: 1.7rem 0.25rem 1.9rem; border-top: 1px solid var(--border-subtle); }
   .dl-card + .dl-card { border-left: 0; }
