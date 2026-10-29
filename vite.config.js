@@ -15,5 +15,12 @@ export default defineConfig({
   build: {
     outDir: '../dist',
     emptyOutDir: true,
+    // One entry per page; each is served from its own directory's index.html.
+    rollupOptions: {
+      input: {
+        main: 'src/index.html',
+        changelog: 'src/releases/index.html',
+      },
+    },
   },
 })
