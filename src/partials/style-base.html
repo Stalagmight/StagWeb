@@ -161,14 +161,17 @@ a:hover { color: var(--limestone-50); }
   opacity: 0.3;
 }
 
+/* One centred stack at every width. Spread across a row, the brand and the
+   copyright are different widths, so the links between them sat off centre,
+   and the row broke up differently at every width it wrapped. */
 .footer-inner {
   max-width: 1100px;
   margin: 0 auto;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 2rem;
+  gap: 1.4rem;
+  text-align: center;
 }
 
 .footer-brand {
@@ -209,6 +212,7 @@ a:hover { color: var(--limestone-50); }
 .footer-copy {
   color: var(--text-secondary);
   font-size: 0.8rem;
+  text-wrap: balance;
 }
 
 @media (max-width: 900px) {

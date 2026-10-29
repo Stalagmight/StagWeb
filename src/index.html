@@ -168,10 +168,14 @@
   filter: drop-shadow(0 0 40px rgba(193,160,122,0.3));
 }
 
+/* Letter-spacing trails the last glyph too, which pulls centred text left by
+   half of it; the same amount of padding on the left puts it back. Any rule
+   that changes the spacing below changes this padding with it. */
 .hero h1 {
   font-size: clamp(3.5rem, 8vw, 6rem);
   text-transform: uppercase;
   letter-spacing: 0.15em;
+  padding-left: 0.15em;
   background: linear-gradient(180deg, var(--limestone-50) 0%, var(--sandstone-200) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -186,11 +190,14 @@
   font-weight: 500;
   color: var(--silt-300);
   letter-spacing: 0.25em;
+  padding-left: 0.25em;
   text-transform: uppercase;
+  text-wrap: balance;
   margin-bottom: 1.4rem;
 }
 
 .hero-desc {
+  text-wrap: pretty;
   font-size: 1.1rem;
   color: var(--text-secondary);
   max-width: 560px;
@@ -384,6 +391,7 @@
   font-family: 'Rajdhani', sans-serif;
   font-size: 0.78rem;
   letter-spacing: 0.2em;
+  padding-left: 0.2em;
   text-transform: uppercase;
   color: var(--text-secondary);
   position: relative;
@@ -971,6 +979,7 @@
   font-family: 'Rajdhani', sans-serif;
   font-size: 0.78rem;
   letter-spacing: 0.2em;
+  padding-left: 0.2em;
   text-transform: uppercase;
   color: var(--text-secondary);
 }
@@ -1035,7 +1044,9 @@
 }
 
 @media (max-width: 600px) {
-  .hero h1 { font-size: 2.5rem; letter-spacing: 0.08em; }
+  /* Fluid only below ~350px, where a fixed 2.5rem wordmark is wider than the
+     hero's content box and pushes it past the screen edge. */
+  .hero h1 { font-size: clamp(2rem, 11.5vw, 2.5rem); letter-spacing: 0.08em; padding-left: 0.08em; }
   .hero-tagline { font-size: 1rem; }
   .section { padding: 4rem 1.25rem; }
   .btn { padding: 0.75rem 1.5rem; font-size: 0.9rem; }
@@ -1045,7 +1056,7 @@
   /* These lines wrap on a phone, and a wrapped line would open on a stray dot,
      so the items are spaced apart instead of dotted. */
   .hero-platforms,
-  .dl-meta { column-gap: 1.1em; letter-spacing: 0.14em; }
+  .dl-meta { column-gap: 1.1em; letter-spacing: 0.14em; padding-left: 0.14em; }
   .hero-platforms > span + span::before,
   .dl-meta > * + *::before { content: none; }
 }

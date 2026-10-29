@@ -70,7 +70,8 @@ getCurrentRelease().then(release => {
   const what = [tagSpan(release), channel(release)];
   if (key) {
     button.href = files[key].url;
-    line(heroMeta, [...what, FILE_KIND[key], fmtSize(files[key].size)]);
+    // Format and size as one item, so a wrap never leaves the size alone.
+    line(heroMeta, [...what, `${FILE_KIND[key]} · ${fmtSize(files[key].size)}`]);
     if (platform.os === 'macos') {
       const intel = document.createElement('span');
       intel.className = 'hero-meta-warn';
