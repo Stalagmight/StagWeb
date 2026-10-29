@@ -198,20 +198,15 @@
   line-height: 1.7;
 }
 
-/* One button, one text link, one reassurance line — stacked, not side by side,
-   so the download is unambiguously the primary action. */
-/* Wider gap than the copy above needs: it gives the drips hanging off the
-   button room to fade before they reach this text. */
+/* One button, then what it downloads, then two quiet links — stacked, not side
+   by side, so the download is unambiguously the primary action. The gap is
+   wider than the copy above needs: it gives the drips hanging off the button
+   room to fade before they reach the text. */
 .hero-actions {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2.2rem;
-}
-
-.btn-download {
-  padding: 1rem 2.6rem;
-  font-size: 1.05rem;
 }
 
 /* ── Stalactites growing off the download button ──
@@ -520,6 +515,13 @@
   border-color: var(--sandstone-200);
   background: rgba(193,160,122,0.08);
   color: var(--limestone-50);
+}
+
+/* The hero's download, a size up. It has to come after .btn: at equal
+   specificity the later rule wins, and above it this was silently overridden. */
+.btn-download {
+  padding: 1rem 2.6rem;
+  font-size: 1.05rem;
 }
 
 /* ===== SECTIONS ===== */
