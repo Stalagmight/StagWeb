@@ -4,6 +4,13 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+  # The build writes the app's releases into /releases/ for crawlers that do not
+  # run JavaScript (build/releases-snapshot.js). Rebuilding every six hours puts
+  # a new release there without a commit here; visitors get it sooner anyway,
+  # because the page also asks GitHub itself. GitHub pauses schedules after 60
+  # days without a commit to the repository; re-enable under Actions if so.
+  schedule:
+    - cron: '17 */6 * * *'
 
 # Every action is pinned to a full commit SHA: the repository's Actions policy
 # requires it, and refuses to start a run that uses a tag (startup_failure).
@@ -25,12 +32,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Full history: the sitemap's <lastmod> is each page's last commit,
+          # and a shallow clone would date every page to the newest commit.
+          fetch-depth: 0
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22'
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          # Read-only use, for the GitHub API's per-repo rate limit instead of
+          # the 60-an-hour one a shared runner IP may already have spent.
+          GITHUB_TOKEN: ${{ github.token }}
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: dist
