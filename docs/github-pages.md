@@ -1,7 +1,22 @@
 # GitHub Pages
 
-`.github/workflows/pages.yml` builds on every push to `master` and publishes
-`dist/` to Pages. Nothing is committed from the build — `dist/` stays ignored.
+`.github/workflows/pages.yml` builds on every push to `master`, and every six
+hours on a schedule, and publishes `dist/` to Pages. Nothing is committed from
+the build — `dist/` stays ignored.
+
+The schedule exists for the releases snapshot ([downloads.md](downloads.md)):
+the build reads the app's releases from GitHub, so a rebuild picks up a new
+release with no commit here. Two other settings in the workflow serve the build:
+
+- **`fetch-depth: 0`** on checkout. The sitemap dates each page by its last
+  commit; in a shallow clone every page would get the newest commit's date.
+- **`GITHUB_TOKEN`** for the build step, so the release fetch gets the per-repo
+  API limit instead of the 60-an-hour one a shared runner IP may have spent.
+
+A failed release fetch fails the build in CI on purpose: the deploy already live
+keeps its snapshot. GitHub pauses scheduled workflows after 60 days without a
+commit to the repository; if releases stop appearing on `/releases/` for
+crawlers, check the Actions tab and re-enable it.
 
 ## Why the asset paths are relative
 

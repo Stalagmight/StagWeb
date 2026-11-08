@@ -14,13 +14,28 @@ Website for the Stalagmight cave mapping software project.
 build**. Screenshots or any other input dropped there survive exactly until the
 next build. Captures belong in `assets/screenshots/<name>/`.
 
-## Downloads come from GitHub at runtime
+## Downloads come from GitHub, never from this repo
 
-Download links and the `/releases/` page are filled in by the browser from the
-GitHub API (`src/js/releases.js`). There is no build-time snapshot, so never
-hard-code a version or an asset URL. Files are matched by suffix. See
-[docs/downloads.md](docs/downloads.md) before touching the download markup or if
-the app's release pipeline renames its files.
+Download links are filled in by the browser from the GitHub API
+(`src/js/releases.js`). The `/releases/` list is also written into the HTML at
+build time (`build/releases-snapshot.js`) so crawlers without JavaScript see it,
+and the browser refreshes it. Both read GitHub when they run, so never hard-code
+a version or an asset URL. Files are matched by suffix. Release markup lives in
+`src/js/changelog-render.js`, which runs in the browser and under linkedom at
+build time: use the `doc`/`parse` it is handed and set attributes, not DOM
+properties. See [docs/downloads.md](docs/downloads.md) before touching the
+download markup or if the app's release pipeline renames its files.
+
+## Search and AI visibility
+
+- The name is spelled **Stalagmight** everywhere, never "StalagMight" (kept only
+  as a JSON-LD `alternateName`).
+- `sitemap.xml` is generated from `rollupOptions.input`: a new page is in the
+  sitemap by being added there. Do not recreate `public/sitemap.xml`.
+- `public/llms.txt` states facts about the app. Keep it in step with the
+  features, and never put a version number in it.
+
+Status, measurements and the off-site to-do list: [docs/seo.md](docs/seo.md).
 
 ## Screenshot animations
 
