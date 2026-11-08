@@ -1,0 +1,34 @@
+# Stalagmight
+
+> Stalagmight is free, open-source (AGPL-3.0-or-later) desktop software for underwater cave survey, mapping and dive planning. It turns mNemo DMP files, existing surveys and hand-entered shots into a clean, editable, georeferenced cave map, and runs on Windows, macOS and Linux.
+
+Spelled Stalagmight, not "stalagmite" (the cave formation). The name refers to the cave survey software at https://stalagmight.com/, published by the Stalagmight project on GitHub.
+
+Stalagmight is built for cave divers who survey underwater caves. It is meant for certified cave survey divers as an informational aid, not a replacement for cave survey training. It is pre-1.0 and under active development.
+
+## What it does
+
+- Import: mNemo `.dmp` raw survey files (versions 2-5), Ariane `.tml` / `.tmlu`, Compass `.mak` / `.dat` projects, Walls (experimental), and GPX waypoints, tracks and routes.
+- Manual data entry in a built-in spreadsheet, for surveys taken with compass, depth gauge and line.
+- Visual editing: connect surveyed sections by dragging them together, merge stations, move stations, segments and shots, edit comments and LRUD, with undo/redo. Section placement is suggested automatically on import.
+- Loop closure: least-squares adjustment that distributes survey error around closed loops.
+- Map: survey lines and stations drawn over satellite imagery (MapLibre), coloured by depth, with measurement and a distance-gradient overlay.
+- Dive planning: gas-weighted reachability over the surveyed cave, with turn points and stage-drop points along a chosen route, and a depth profile.
+- SpeleoDB: publish projects to SpeleoDB to collaborate with other divers, with locking, versioning, revision history and backup.
+- Export: map images as SVG, PNG or PDF; survey data as Ariane `.tml` / `.tmlu`, CSV or JSON.
+- Privacy: projects are stored locally on your machine, not on a server. Telemetry is opt-in.
+
+## Platforms
+
+- Windows, 64-bit: `.exe` installer or `.msi` package.
+- macOS, Apple Silicon (M1 and later) only: `.dmg`. Intel Macs are not supported.
+- Linux, x86-64: AppImage, `.deb` (Debian / Ubuntu) or `.rpm` (Fedora / openSUSE).
+
+Free to use, with no trials or subscriptions. Built with Tauri 2 (Rust backend, SQLite storage) and a React + TypeScript frontend.
+
+## Links
+
+- [Website](https://stalagmight.com/): overview, feature tour and downloads for every platform
+- [Releases and changelog](https://stalagmight.com/releases/): every version with its downloads and release notes
+- [Source code](https://github.com/Stalagmight/Stalagmight): the application repository, README and issue tracker
+- [GitHub releases](https://github.com/Stalagmight/Stalagmight/releases): the same downloads, straight from GitHub
