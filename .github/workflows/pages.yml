@@ -36,6 +36,18 @@ jobs:
           # Full history: the sitemap's <lastmod> is each page's last commit,
           # and a shallow clone would date every page to the newest commit.
           fetch-depth: 0
+      # The user guide lives in the app repository's docs/user-guide/ and is
+      # built into /docs/ (build/docs/). Only that folder is checked out, and
+      # the history comes without old file contents: enough to date each page
+      # by its last commit. No folder yet means the site builds without docs.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Stalagmight/Stalagmight
+          path: .app
+          sparse-checkout: docs/user-guide
+          fetch-depth: 0
+          filter: blob:none
+          persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22'
