@@ -36,7 +36,10 @@ function loadedPartials(root, file) {
 
 const latest = (...dates) => dates.filter(Boolean).sort((a, b) => Date.parse(b) - Date.parse(a))[0] || null;
 
-export default function sitemap({ site }) {
+// `lastmod(file)` may supply a date for pages whose history is not in this
+// repository (the generated docs pages); anything it leaves undefined is dated
+// from git here.
+export default function sitemap({ site, lastmod: dateOf = () => undefined }) {
   let config;
   return {
     name: 'sitemap',
@@ -52,7 +55,7 @@ export default function sitemap({ site }) {
       const urls = files.map(file => {
         const rel = path.relative(config.root, file).split(path.sep).join('/');
         const loc = site + rel.replace(/(^|\/)index\.html$/, '$1');
-        let lastmod = lastCommit([file, ...loadedPartials(config.root, file)]);
+        let lastmod = dateOf(file) || lastCommit([file, ...loadedPartials(config.root, file)]);
         if (rel === 'releases/index.html' && data?.versions[0]) lastmod = latest(lastmod, data.versions[0].date);
         return { loc, lastmod };
       }).sort((a, b) => a.loc.localeCompare(b.loc));
