@@ -32,10 +32,23 @@ download markup or if the app's release pipeline renames its files.
   as a JSON-LD `alternateName`).
 - `sitemap.xml` is generated from `rollupOptions.input`: a new page is in the
   sitemap by being added there. Do not recreate `public/sitemap.xml`.
-- `public/llms.txt` states facts about the app. Keep it in step with the
-  features, and never put a version number in it.
+- `src/llms.txt` states facts about the app. Keep it in step with the
+  features, and never put a version number in it. The build appends the docs
+  pages to it and writes `llms-full.txt`.
 
 Status, measurements and the off-site to-do list: [docs/seo.md](docs/seo.md).
+
+## The user guide comes from the app repository
+
+`/docs/` is generated from `docs/user-guide/` in `Stalagmight/Stalagmight` by
+`build/docs/` into the git-ignored `src/docs/`. Never edit or create files in
+`src/docs/`; they are wiped on every build. Authors work in the app repo
+(rules in its `docs/user-guide/README.md`). `npm run build` first pulls that
+folder into `.app/`. Test with `build/fixtures/user-guide/`, but
+`npm run build:fixtures` overwrites `dist/`, which is the live VPN copy: build
+to another `--outDir` instead. See
+[docs/user-guide-pipeline.md](docs/user-guide-pipeline.md).
+
 
 ## Screenshot animations
 

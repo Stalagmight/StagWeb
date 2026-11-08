@@ -43,6 +43,11 @@ Because `dist/` is bind-mounted live, **nginx serves whatever is currently in
 npm run build          # regenerates dist/ — that is the whole deploy
 ```
 
+`npm run build` first refreshes `.app/`, a sparse clone of the app repository
+holding the user guide, then runs Vite and Pagefind (the search index). Without
+network it builds with the copy it has. Never deploy the output of
+`npm run build:fixtures`: it publishes the sample guide.
+
 Reload the browser and the change is live. `vite build` inlines all partials
 into `dist/index.html` and `dist/releases/index.html`, bundles their scripts
 into `dist/assets/`, and copies `public/` verbatim.

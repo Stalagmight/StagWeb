@@ -10,6 +10,8 @@ release with no commit here. Two other settings in the workflow serve the build:
 
 - **`fetch-depth: 0`** on checkout. The sitemap dates each page by its last
   commit; in a shallow clone every page would get the newest commit's date.
+- **A second checkout** of `Stalagmight/Stalagmight`, only `docs/user-guide/`,
+  into `.app/`: the source of `/docs/` ([user-guide-pipeline.md](user-guide-pipeline.md)).
 - **`GITHUB_TOKEN`** for the build step, so the release fetch gets the per-repo
   API limit instead of the 60-an-hour one a shared runner IP may have spent.
 

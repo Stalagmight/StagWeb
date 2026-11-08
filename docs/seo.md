@@ -186,8 +186,10 @@ lean on the same sources.
 
 ## Next: web documentation
 
-The documentation planned next is the content these targets need. To make each
-page count:
+The pipeline is built ([user-guide-pipeline.md](user-guide-pipeline.md)): Markdown
+in the app repo's `docs/user-guide/` becomes `/docs/`, with search, sitemap
+entries, JSON-LD, `llms.txt` and `llms-full.txt`, and links from the nav, footer
+and home-page features. What is left is writing it. To make each page count:
 
 - **One topic per page**, with the phrase in the `<title>`, the `<h1>` and the
   first paragraph. Examples: importing mNemo DMP files, dive and gas planning,
