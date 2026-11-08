@@ -8,7 +8,11 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "docs:pull": "node build/docs-pull.mjs",
+    "prebuild": "node build/docs-pull.mjs",
+    "build": "vite build && pagefind --site dist",
+    "build:fixtures": "DOCS_SOURCE=build/fixtures/user-guide vite build && pagefind --site dist",
+    "dev:fixtures": "DOCS_SOURCE=build/fixtures/user-guide vite",
     "preview": "vite preview"
   },
   "repository": {
@@ -19,8 +23,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "github-slugger": "2.0.0",
+    "image-size": "2.0.4",
     "linkedom": "0.18.13",
+    "markdown-it": "14.3.3",
+    "pagefind": "1.5.2",
     "vite": "^7.3.1",
-    "vite-plugin-html-inject": "^1.1.2"
+    "vite-plugin-html-inject": "^1.1.2",
+    "yaml": "2.9.1"
   }
 }

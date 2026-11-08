@@ -2,6 +2,11 @@ import { defineConfig } from 'vite'
 import htmlInject from 'vite-plugin-html-inject'
 import releasesSnapshot from './build/releases-snapshot.js'
 import sitemap from './build/sitemap.js'
+import docs from './build/docs/index.js'
+
+const site = 'https://stalagmight.com/'
+// The user guide, built from the app repository's docs/user-guide/ (docs/user-guide-pipeline.md).
+const userGuide = docs({ site })
 
 export default defineConfig({
   root: 'src',
@@ -11,8 +16,9 @@ export default defineConfig({
   publicDir: '../public',
   plugins: [
     htmlInject(),
+    userGuide,
     releasesSnapshot(),
-    sitemap({ site: 'https://stalagmight.com/' }),
+    sitemap({ site, lastmod: userGuide.lastmodFor }),
   ],
   server: {
     host: '10.10.0.220',

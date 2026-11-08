@@ -743,6 +743,8 @@
   font-size: 1.03rem;
   max-width: 56ch;
 }
+/* The docs page for the feature, when the docs have one (build/docs/). */
+.f-body .f-more { margin-top: 1rem; }
 
 /* Real brand marks ship as monochrome PNGs, so they are masks rather than
    <img> — that way they take the accent colour like the stroked icons. */
@@ -1065,7 +1067,9 @@
 <body>
 
 <load src="partials/nav.html" root="" />
-<main>
+<!-- data-pagefind-body: the site search indexes the feature text here and the
+     docs pages, nothing else (not the releases page). -->
+<main data-pagefind-body>
 <load src="partials/hero.html" />
 <load src="partials/features.html" />
 <load src="partials/cta.html" />
