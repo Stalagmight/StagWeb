@@ -64,7 +64,7 @@ All paths relative to `assets/screenshots/`. Every one of these reports
 | `station_merge/` | Visual-First Editing | `station-merge.webp` (41 KB, 8.0 s) | `--holds 12,7,6,5,4,4,4,5,15,18 --quality 75 --window full --crop 1923x1250+588+140` |
 | `dive_plan/` | Dive Planning | `dive-plan.webp` (99 KB, 7.8 s) | `--holds 14,10,12,10,12,20` |
 | `export/` | Import & Export Existing Data | `export.webp` (61 KB, 6.0 s) | `--holds 12,16,15,17 --band 90 --passes 8` |
-| `main.png` | hero | `app-main-{1600,2200}.webp` | see below |
+| `main.png` | hero | `app-main-{800,1200,1600,2200}.webp` | see below |
 
 ### Why the bottom edge is treated differently
 
@@ -115,8 +115,12 @@ serve a still under `prefers-reduced-motion`.
 ## Hero image
 
 ```bash
-for w in 1600 2200; do
+for w in 800 1200 1600 2200; do
   magick assets/screenshots/main.png -resize ${w}x -strip -quality 82 \
     -define webp:method=6 public/media/app-main-${w}.webp
 done
 ```
+
+800 and 1200 exist for phones: a 412 px-wide screen at 1.75x needs about 720
+pixels, and with only 1600 on offer Lighthouse counted 56 KB of the hero as
+wasted.
