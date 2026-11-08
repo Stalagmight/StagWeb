@@ -40,11 +40,21 @@
       "@type": "SoftwareApplication",
       "@id": "https://stalagmight.com/#app",
       "name": "Stalagmight",
-      "alternateName": "Stalagmight cave survey software",
+      "alternateName": ["StalagMight", "Stalagmight cave survey software"],
       "applicationCategory": "Cave survey and dive planning software",
       "applicationSubCategory": "Underwater cave surveying",
       "operatingSystem": "Windows, macOS, Linux",
       "url": "https://stalagmight.com/",
+      "image": "https://stalagmight.com/og-image.png",
+      "screenshot": {
+        "@type": "ImageObject",
+        "url": "https://stalagmight.com/media/app-main-2200.webp",
+        "caption": "Stalagmight showing a 3.7 km survey of Naharon coloured by depth, with project statistics and the shot table."
+      },
+      "author": { "@id": "https://stalagmight.com/#org" },
+      "publisher": { "@id": "https://stalagmight.com/#org" },
+      "sameAs": ["https://github.com/Stalagmight/Stalagmight"],
+      "keywords": "cave survey, underwater cave survey, cave diving, cave mapping, speleology, mNemo, Ariane, dive planning, loop closure",
       "codeRepository": "https://github.com/Stalagmight/Stalagmight",
       "downloadUrl": "https://stalagmight.com/releases/",
       "releaseNotes": "https://stalagmight.com/releases/",
@@ -66,13 +76,16 @@
       "@id": "https://stalagmight.com/#org",
       "name": "Stalagmight",
       "url": "https://stalagmight.com/",
-      "sameAs": ["https://github.com/Stalagmight"]
+      "logo": "https://stalagmight.com/apple-touch-icon.png",
+      "description": "The team behind Stalagmight, free and open-source underwater cave survey software.",
+      "sameAs": ["https://github.com/Stalagmight", "https://github.com/Stalagmight/Stalagmight"]
     },
     {
       "@type": "WebSite",
       "@id": "https://stalagmight.com/#site",
       "url": "https://stalagmight.com/",
       "name": "Stalagmight",
+      "inLanguage": "en",
       "publisher": { "@id": "https://stalagmight.com/#org" }
     }
   ]
