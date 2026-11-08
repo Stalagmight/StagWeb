@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import htmlInject from 'vite-plugin-html-inject'
 import releasesSnapshot from './build/releases-snapshot.js'
+import sitemap from './build/sitemap.js'
 
 export default defineConfig({
   root: 'src',
@@ -11,6 +12,7 @@ export default defineConfig({
   plugins: [
     htmlInject(),
     releasesSnapshot(),
+    sitemap({ site: 'https://stalagmight.com/' }),
   ],
   server: {
     host: '10.10.0.220',
