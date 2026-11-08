@@ -305,7 +305,10 @@
 
 <load src="partials/nav.html" root="../" />
 
-<!-- Filled in by js/changelog.js from GitHub, one entry per version. -->
+<!-- One entry per version. The build writes the list in from GitHub
+     (build/releases-snapshot.js) so crawlers without JavaScript see it;
+     js/changelog.js asks GitHub again and redraws only if something changed.
+     The placeholder below is what is left when the build could not reach GitHub. -->
 <main class="rel-page">
   <div class="rel">
     <header class="rel-head">

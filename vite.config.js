@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import htmlInject from 'vite-plugin-html-inject'
+import releasesSnapshot from './build/releases-snapshot.js'
 
 export default defineConfig({
   root: 'src',
@@ -7,7 +8,10 @@ export default defineConfig({
   // the domain root, under a github.io project path and on the VPN copy alike.
   base: './',
   publicDir: '../public',
-  plugins: [htmlInject()],
+  plugins: [
+    htmlInject(),
+    releasesSnapshot(),
+  ],
   server: {
     host: '10.10.0.220',
     port: 8084,
