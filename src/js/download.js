@@ -94,22 +94,3 @@ getCurrentRelease().then(release => {
   }
   line(dlMeta, [...parts, 'AGPL-3.0']);
 }).catch(() => {});
-
-// Copy buttons for the shell commands. Without the clipboard API (an insecure
-// origin, an old browser) the text is selected instead, ready for Ctrl+C.
-for (const btn of document.querySelectorAll('[data-copy]')) {
-  btn.addEventListener('click', async () => {
-    const el = document.querySelector(btn.dataset.copy);
-    try {
-      await navigator.clipboard.writeText(el.textContent);
-      btn.textContent = 'Copied';
-    } catch {
-      const range = document.createRange();
-      range.selectNodeContents(el);
-      getSelection().removeAllRanges();
-      getSelection().addRange(range);
-      btn.textContent = 'Selected';
-    }
-    setTimeout(() => { btn.textContent = 'Copy'; }, 1800);
-  });
-}

@@ -890,8 +890,7 @@
 .dl-file:hover { color: var(--sandstone-200); }
 .dl-file:hover .dl-lead { border-bottom-color: var(--sandstone-200); }
 .dl-file:hover::after { opacity: 1; transform: translateY(2px); }
-.dl-file:focus-visible,
-.dl-copy:focus-visible {
+.dl-file:focus-visible {
   outline: 2px solid var(--sandstone-200);
   outline-offset: 3px;
 }
@@ -907,12 +906,9 @@
 .dl-warn { color: var(--silt-300); }
 .dl-warn b { color: var(--limestone-50); }
 
-.dl-note code,
-.dl-cmd code {
+.dl-note code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.78rem;
-}
-.dl-note code {
   padding: 0.05em 0.35em;
   background: rgba(243,232,216,0.06);
   color: var(--text-primary);
@@ -924,43 +920,6 @@
   font-size: 0.9rem;
   color: var(--silt-300);
 }
-
-/* The command wraps rather than scrolls: the copy button is how it is meant to
-   be taken, and a wrapped line still selects as one. */
-.dl-cmd {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin: 0.6rem 0;
-  padding: 0.55rem 0.6rem 0.55rem 0.75rem;
-  background: rgba(0,0,0,0.28);
-  border: 1px solid var(--border);
-}
-.dl-cmd code {
-  flex: 1;
-  min-width: 0;
-  line-height: 1.55;
-  color: var(--limestone-50);
-  overflow-wrap: anywhere;
-}
-/* Only offered where the script that runs it is. */
-.dl-copy {
-  display: none;
-  flex: 0 0 auto;
-  padding: 0.35rem 0.55rem;
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 600;
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--sandstone-200);
-  background: transparent;
-  border: 1px solid var(--border-subtle);
-  cursor: pointer;
-  transition: color 0.3s, border-color 0.3s;
-}
-.js .dl-copy { display: inline-block; }
-.dl-copy:hover { color: var(--limestone-50); border-color: var(--sandstone-200); }
 
 .dl-foot {
   margin-top: 2.2rem;
