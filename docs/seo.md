@@ -51,6 +51,31 @@ visits, so inbound links are the only lever there.
 - `/releases/`: 31 words without JavaScript before the snapshot; **about 15,600**
   with it.
 
+### Lighthouse (mobile)
+
+A report taken at 20:49 UTC scored Performance 78, Accessibility 97, Best
+Practices 100, SEO 100 and Agentic Browsing 100. Its 500 ms Total Blocking Time
+and "1.5 MB of unused JavaScript" were a Chrome extension
+(`chrome-extension://aadbahhifnekkkcbapdfandpimaoacmj`) in the profile that ran
+it. Run Lighthouse in a clean profile or incognito window, or use PageSpeed
+Insights. Three clean runs of the same build scored Performance 91–99 with TBT
+0 ms.
+
+The site's own findings, and what was done:
+
+| Finding | Fix | Result (local, 3 runs each) |
+|---|---|---|
+| Render-blocking Google Fonts stylesheet, ~770 ms | Fonts self-hosted, unhinted, fingerprinted, the first screen's faces preloaded | First paint 1.7 s steady (was 1.7–2.7 s); LCP 2.4 s (was 2.3–2.9 s) |
+| Layout shift 0.016 when the hero text's font swapped in | The same preloads | 0.001–0.005 |
+| No `<main>` landmark | Added | Accessibility 100 |
+| Hero screenshot 1600 px on a phone, 56 KB wasted | 800 and 1200 px sizes added | 26 KB on phones |
+| SpeleoDB mark 8.5 KB for a 34 px mask | 102 px, alpha only | 5.5 KB |
+| Short cache lifetimes; first byte up to 840 ms | Not in this repo: GitHub Pages sets the headers. Cloudflare rules in the to-do list below | — |
+
+Not done: the feature clips' still frames are 1000 px for slots about 360 px
+wide on phones, ~50 KB in all. Smaller sizes would mean reworking the script
+that swaps each clip between its still and its animation, for a small saving.
+
 ## What is in place
 
 | | |
@@ -84,31 +109,12 @@ The `gh` account on anzu is only an org member, so these were not applied.
 GitHub repos rank 1st on Brave for the name and are heavily represented in AI
 training data, which makes this the cheapest win available.
 
-**`Stalagmight/Stalagmight` → About (cog icon):**
+The step-by-step handoff, with UI and `gh` versions of each step, is
+**[github-admin.md](github-admin.md)**. It covers:
 
-- Description: `Free, open-source desktop software for underwater cave survey,
-  mapping and dive planning. Imports mNemo DMP, Ariane, Compass, Walls and GPX;
-  exports maps and survey data. Windows, macOS, Linux.`
-- Topics: `cave-survey cave-surveying cave-diving cave-mapping underwater-cave
-  speleology caving underwater mnemo speleodb dive-planning survey-data
-  loop-closure gis cartography maplibre tauri rust desktop-app`
-
-Or, as an admin:
-
-```bash
-gh api -X PATCH repos/Stalagmight/Stalagmight -f description='Free, open-source desktop software for underwater cave survey, mapping and dive planning. Imports mNemo DMP, Ariane, Compass, Walls and GPX; exports maps and survey data. Windows, macOS, Linux.'
-gh api -X PUT repos/Stalagmight/Stalagmight/topics \
-  -f 'names[]=cave-survey' -f 'names[]=cave-surveying' -f 'names[]=cave-diving' -f 'names[]=cave-mapping' \
-  -f 'names[]=underwater-cave' -f 'names[]=speleology' -f 'names[]=caving' -f 'names[]=underwater' \
-  -f 'names[]=mnemo' -f 'names[]=speleodb' -f 'names[]=dive-planning' -f 'names[]=survey-data' \
-  -f 'names[]=loop-closure' -f 'names[]=gis' -f 'names[]=cartography' -f 'names[]=maplibre' \
-  -f 'names[]=tauri' -f 'names[]=rust' -f 'names[]=desktop-app'
-```
-
-**Org profile** (needs the `admin:org` scope): display name `Stalagmight`,
-description `Free, open-source underwater cave survey, mapping and dive planning
-software.` Optionally add a public `Stalagmight/.github` repo with
-`profile/README.md` for an org landing page.
+- the app repo's description, topics and social preview image
+- the org's name and description, pinned repos and profile README
+- optionally, verifying the Pages domain
 
 `StagWeb`'s description was corrected to the new spelling on 8 Nov 2026.
 
@@ -126,6 +132,16 @@ software.` Optionally add a public `Stalagmight/.github` repo with
   Bing and others whenever content changes, at no cost.
 - **Managed robots.txt:** leave off; it would prepend AI-blocking rules.
 - **Bot Fight Mode:** off, or check that verified bots still get through.
+- **Cache the HTML at the edge.** HTML is not cached today
+  (`cf-cache-status: DYNAMIC`), so every visit waits on GitHub Pages: Lighthouse
+  measured the first byte at 60–840 ms. Add a Cache Rule for hostname
+  `stalagmight.com`: **Eligible for cache**, Edge TTL **10 minutes**, Browser
+  TTL **respect origin**. Deploys then take up to 10 minutes to show, which the
+  6-hourly schedule and the in-browser release refresh do not mind.
+- **Long browser cache for `/assets/*`.** Those files are fingerprinted by Vite
+  (scripts, fonts), so they never change under the same name. A Cache Rule for
+  URI path starting with `/assets/`: Browser TTL **1 year**. Leave `/media/`
+  on the default: those names are reused when a screenshot is re-cut.
 
 ### Listings that rank on their own
 
