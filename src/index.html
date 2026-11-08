@@ -26,9 +26,10 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="favicon.ico" sizes="48x48 32x32 16x16">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- The faces the first screen draws with; the rest load on use. -->
+<link rel="preload" href="fonts/rajdhani-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/rajdhani-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/barlow-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <!-- Marks that JS is available. The scroll-reveal states below are gated on
      this, so a visitor without JS gets the content rather than blank panels. -->
 <script>document.documentElement.className = 'js';</script>
@@ -91,7 +92,7 @@
   ]
 }
 </script>
-<load src="partials/style-base.html" />
+<load src="partials/style-base.html" root="" />
 <style>
 /* ===== HERO — copy stack, one action, then the app cropped at the fold ===== */
 .hero {
