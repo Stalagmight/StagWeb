@@ -248,6 +248,8 @@ export function buildModel(dir, { currentVersion = null, images = new Map() } = 
       return { src: P.relative(P.join('docs', p.route), P.join('docs/_files', resolved)), width: size.width, height: size.height };
     };
     p.html = sanitize(md.renderer.render(p.tokens, md.options, p.env));
+    // What the text itself links to, before `related` adds more.
+    p.contentLinks = new Set(p.links);
     p.related = [];
     for (const r of asList(p.data.related)) {
       const res = p.env.resolveLink(r);

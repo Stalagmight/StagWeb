@@ -56,9 +56,14 @@ export function renderPage(p, model, { site, currentVersion }) {
     ? `<div class="callout callout-important docs-since"><p class="callout-title">Coming in ${esc(p.upcoming)}</p><p>This describes a feature that is not in the current release${currentVersion ? ` (${esc(currentVersion)})` : ''} yet.</p></div>`
     : p.requires ? `<div class="callout callout-note docs-since"><p class="callout-title">Requires ${esc(p.requires)}</p><p>Available from Stalagmight ${esc(p.requires)}.</p></div>` : '';
 
-  // Sections list what is in them, after their own text if they have any.
+  // Sections list what is in them, after their own text if they have any;
+  // unless that text already links to every page directly below, in which
+  // case the author's list is the list and a second one would only repeat it.
   let listing = '';
-  if (isRoot) {
+  const listedByAuthor = !p.auto && kids.length > 0 && kids.every(k => p.contentLinks.has(k.route));
+  if (listedByAuthor) {
+    listing = '';
+  } else if (isRoot) {
     const groups = kids.map(k => {
       const sub = model.childrenOf(k.route);
       return `<section class="docs-group"><h2 id="${esc(k.route.replace(/\/$/, ''))}"><a href="${relUrl(p.route, k.route)}">${esc(k.title)}</a></h2>${k.description && !k.auto ? `<p>${esc(k.description)}</p>` : ''}${sub.length ? cards(sub, p, 'docs-cards') : ''}</section>`;

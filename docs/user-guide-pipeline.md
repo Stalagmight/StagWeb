@@ -21,9 +21,9 @@ docs/user-guide/                             build/docs/  (a Vite plugin)
 | In `docs/user-guide/` | On the site |
 |---|---|
 | `import/mnemo-dmp.md` | `/docs/import/mnemo-dmp/` |
-| `import/index.md` | `/docs/import/` (the section's page) |
+| `import/index.md` | `/docs/import/` (the section's page, followed by a list of its pages unless it already links to all of them) |
 | a folder without `index.md` | `/docs/<folder>/`, generated: a list of its pages |
-| `index.md` | `/docs/` (the landing page, followed by a directory of everything) |
+| `index.md` | `/docs/` (the landing page, followed by a directory of everything unless it already links to every section) |
 | `README.md` anywhere | not published (the authoring guide) |
 | `draft: true` | not published; links to it are reported |
 
