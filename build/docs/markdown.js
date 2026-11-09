@@ -37,10 +37,12 @@ function alerts(state) {
   }
 }
 
+// A line wrap in the source is a space in the text: without it, "open.\nBoth"
+// became "open.Both" in descriptions and search snippets.
 function plainText(inline) {
   return (inline.children || []).map(c =>
     c.type === 'text' || c.type === 'code_inline' ? c.content
-      : c.type === 'image' ? '' : '').join('');
+      : c.type === 'softbreak' || c.type === 'hardbreak' ? ' ' : '').join('');
 }
 
 // After inline parsing: ids for every heading, the outline, and the page's own
@@ -63,9 +65,18 @@ function headings(state) {
     env.leadTitle = plainText(t[first + 1]).trim();
     t.splice(first, 3);
   }
-  // The first paragraph, for pages without a description.
-  const p = t.findIndex(x => x.type === 'paragraph_open' && x.level === 0);
-  env.firstParagraph = p >= 0 ? plainText(t[p + 1]).replace(/\s+/g, ' ').trim() : '';
+  // For pages without a description: the first paragraph, or, on a page that
+  // opens with steps, the text of the first list.
+  const start = t.findIndex(x => x.level === 0 && /^(paragraph|bullet_list|ordered_list)_open$/.test(x.type));
+  let text = '';
+  if (start >= 0 && t[start].type === 'paragraph_open') text = plainText(t[start + 1]);
+  else if (start >= 0) {
+    const close = t[start].type.replace('_open', '_close');
+    for (let j = start + 1; j < t.length && !(t[j].type === close && t[j].level === 0); j++) {
+      if (t[j].type === 'inline') text += plainText(t[j]).replace(/[^.!?:]$/, '$&.') + ' ';
+    }
+  }
+  env.firstParagraph = text.replace(/\s+/g, ' ').trim();
 }
 
 export function createMarkdown() {
