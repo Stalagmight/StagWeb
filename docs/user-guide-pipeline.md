@@ -79,6 +79,41 @@ site never links to a `/docs/` that does not exist:
 - a link under a home-page feature, titled with the page's title, for each page
   that declares that `feature` (`<!--docs-more:<key>-->` in `features.html`)
 
+## Images
+
+Authors commit PNG screenshots at full size: 1920 px app windows, up to about
+1.4 MB each, 9.5 MB across the guide in November 2026. `build/docs/images.js`
+encodes every raster image (PNG, JPEG or WebP) as WebP:
+
+- 800 px and 1600 px for the page, through `srcset`;
+- one at the image's own size, at higher quality, for the enlarged view.
+
+Encodes are cached by content in `node_modules/.cache/stalagmight-docs-images/`,
+so dev-server rebuilds are instant. SVG and GIF files are copied unchanged.
+
+Clicking an image, or Enter on it, opens it full size (`src/js/docs.js`), which
+keeps the numbered callouts on full-window shots readable.
+
+| Page | As committed (PNG) | Served, 1x screen | Served, 2x screen |
+|---|---|---|---|
+| Creating a new survey (6 images) | 2,583 KB | 122 KB | 297 KB |
+| Survey view (1 image) | 1,372 KB | 47 KB | 122 KB |
+
+At 2x zoom, text in the full-size WebP is indistinguishable from the PNG.
+
+## Fonts on long pages
+
+Docs pages are mostly body text, so the Barlow swap was visible there. The step
+lists rewrapped when the font arrived, giving a layout shift of 0.201 on mobile
+and failing Lighthouse's Agentic Browsing check. `style-base.html` now defines
+`Barlow Fallback` and `Rajdhani Fallback`: local Arial scaled to the web fonts'
+width (measured on the guide's text), with ascent and descent from the fonts'
+own metrics. With the web fonts blocked and then loaded, no text block in the
+first screen moves at phone width. Live Lighthouse on docs pages afterwards:
+layout shift 0 to 0.001, every category 99-100 on mobile and desktop. On a
+wide desktop column, a line sitting exactly at the wrap point can still break
+differently, since the widths match on average, not line by line.
+
 ## Search
 
 [Pagefind](https://pagefind.app) runs after Vite (`npm run build` is
@@ -167,6 +202,18 @@ warnings.
 `src/docs/` is a build product. The plugin wipes it on every run, and refuses
 to if it lacks the marker file the plugin writes, so a hand-made folder there
 is never deleted silently.
+
+## The guide as written (9 Nov 2026)
+
+The team's guide went live on 9 Nov 2026: 25 pages in `workflows/` (tasks),
+`screens/` (one page per screen) and `concepts/`. It has no broken links and no
+build warnings.
+
+Their `README.md` is the table of contents plus contributor rules, and is not
+published. No page has front matter yet, so until the team adds `order:`
+(following the README's lists) and section and landing `index.md` files, the
+sidebar is alphabetical and `/docs/` is the generated list. How to add them is
+in the README's "Publishing on the website" section (app repo PR #658).
 
 ## Verified (8 Nov 2026, with the sample guide)
 
