@@ -23,7 +23,7 @@ const BLOB = `${APP_REPO}/blob/master/`;
 
 const FM = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/;
 
-function walk(dir, base = dir, out = []) {
+export function walk(dir, base = dir, out = []) {
   for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
     if (ent.name.startsWith('.')) continue;
     const full = path.join(dir, ent.name);
@@ -72,7 +72,9 @@ export function relUrl(from, to) {
   return r ? r + '/' : './';
 }
 
-export function buildModel(dir, { currentVersion = null } = {}) {
+// `images`: rel -> prepared WebP variants (build/docs/images.js). Images not in
+// it (SVG, GIF) are copied as they are.
+export function buildModel(dir, { currentVersion = null, images = new Map() } = {}) {
   const warnings = [];
   const warn = (rel, msg) => warnings.push({ file: rel, msg });
   const files = walk(dir);
@@ -226,6 +228,19 @@ export function buildModel(dir, { currentVersion = null } = {}) {
       if (/^[a-z][a-z0-9+.-]*:/i.test(src) || src.startsWith('//') || src.startsWith('/')) return { src };
       const { resolved } = resolveTarget(p.rel, src);
       if (resolved.startsWith('../') || !fileSet.has(resolved)) { warn(p.rel, `image ${src} not found`); return { broken: `missing image ${src}` }; }
+      const fromPage = P.join('docs', p.route);
+      const prepared = images.get(resolved);
+      if (prepared) {
+        assets.set(resolved, { kind: 'image', optimized: true });
+        const url = v => P.relative(fromPage, P.join('docs', v.file));
+        return {
+          src: url(prepared.variants[0]),
+          srcset: prepared.variants.map(v => `${url(v)} ${v.w}w`).join(', '),
+          sizes: '(max-width: 900px) calc(100vw - 2rem), 680px',
+          width: prepared.width,
+          height: prepared.height,
+        };
+      }
       assets.set(resolved, { kind: 'image' });
       let size = {};
       try { size = imageSize(fs.readFileSync(path.join(dir, resolved))); } catch {}

@@ -64,3 +64,40 @@ document.addEventListener('keydown', e => {
     open();
   }
 });
+
+// Click (or Enter) on a screenshot opens it at full size. The build gives each
+// one a srcset whose widest entry is the image at its own resolution
+// (build/docs/images.js), which is what the enlarged view shows.
+const zoom = document.createElement('dialog');
+zoom.className = 'docs-zoom';
+zoom.setAttribute('aria-label', 'Enlarged image');
+zoom.innerHTML = '<img alt=""><button type="button" class="docs-zoom-close" aria-label="Close">Esc</button>';
+const zoomImg = zoom.querySelector('img');
+
+function largest(img) {
+  const best = (img.getAttribute('srcset') || '').split(',')
+    .map(s => s.trim().split(/\s+/))
+    .filter(([u, w]) => u && /w$/.test(w || ''))
+    .sort((a, b) => parseInt(b[1], 10) - parseInt(a[1], 10))[0];
+  return best ? best[0] : img.currentSrc || img.src;
+}
+
+function enlarge(img) {
+  if (!zoom.isConnected) document.body.append(zoom);
+  zoomImg.src = largest(img);
+  zoomImg.alt = img.alt;
+  zoom.showModal();
+}
+
+for (const img of document.querySelectorAll('.docs-prose img')) {
+  if (img.closest('a')) continue;
+  img.classList.add('is-zoomable');
+  img.tabIndex = 0;
+  img.setAttribute('role', 'button');
+  img.setAttribute('aria-label', `Enlarge: ${img.alt}`);
+  img.addEventListener('click', () => enlarge(img));
+  img.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); enlarge(img); }
+  });
+}
+zoom.addEventListener('click', () => zoom.close());

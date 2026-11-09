@@ -141,6 +141,37 @@
 .docs-prose blockquote { padding: 0.2rem 0 0.2rem 1rem; border-left: 2px solid var(--border-strong); color: var(--silt-300); }
 .docs-prose hr { border: 0; border-top: 1px solid var(--border-subtle); margin: 2.4rem 0; }
 .docs-prose img { display: block; max-width: 100%; height: auto; border: 1px solid var(--border); }
+.docs-prose img.is-zoomable { cursor: zoom-in; transition: border-color 0.2s; }
+.docs-prose img.is-zoomable:hover { border-color: var(--border-strong); }
+.docs-prose img.is-zoomable:focus-visible { outline: 2px solid var(--sandstone-200); outline-offset: 3px; }
+
+/* ── Enlarged image ── */
+.docs-zoom {
+  max-width: none;
+  max-height: none;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 2rem;
+  border: 0;
+  background: transparent;
+  display: none;
+  cursor: zoom-out;
+}
+.docs-zoom[open] { display: flex; align-items: center; justify-content: center; }
+.docs-zoom::backdrop { background: rgba(5,3,2,0.94); }
+.docs-zoom img { max-width: 100%; max-height: 100%; object-fit: contain; border: 1px solid var(--border-subtle); }
+.docs-zoom-close {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  font: 600 0.72rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  padding: 0.25rem 0.5rem;
+  color: var(--text-secondary);
+  background: var(--panel);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+}
 .docs-table { overflow-x: auto; }
 .docs-prose table { border-collapse: collapse; font-size: 0.95rem; }
 .docs-prose th,

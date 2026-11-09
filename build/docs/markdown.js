@@ -115,7 +115,8 @@ export function createMarkdown() {
     if (img.broken) return `<span class="docs-broken" title="${esc(img.broken)}">${esc(alt)}</span>`;
     const title = tok.attrGet('title');
     const size = img.width ? ` width="${img.width}" height="${img.height}"` : '';
-    return `<img src="${esc(img.src)}" alt="${esc(alt)}"${title ? ` title="${esc(title)}"` : ''}${size} loading="lazy" decoding="async">`;
+    const set = img.srcset ? ` srcset="${esc(img.srcset)}" sizes="${esc(img.sizes)}"` : '';
+    return `<img src="${esc(img.src)}"${set} alt="${esc(alt)}"${title ? ` title="${esc(title)}"` : ''}${size} loading="lazy" decoding="async">`;
   };
 
   r.table_open = () => '<div class="docs-table"><table>\n';
