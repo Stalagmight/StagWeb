@@ -134,6 +134,21 @@
   src: url('{=$root}fonts/rajdhani-700-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
+/* Fallbacks sized to the web fonts. Until Barlow or Rajdhani arrives the text is
+   drawn in Arial scaled to the same width, so lines wrap the same before and
+   after the swap. Unscaled, a docs page's step list rewrapped when Barlow
+   landed: layout shift 0.2. Widths measured in Chrome on the user guide's own
+   text (Barlow 400 = 96.35% of Arial, 600 = 91.47% of Arial Bold; Rajdhani 500
+   = 91.38%, 700 = 86.10%); ascent and descent from each font's metrics. */
+@font-face { font-family: 'Barlow Fallback'; font-weight: 100 500; src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('Arimo');
+  size-adjust: 96.35%; ascent-override: 103.79%; descent-override: 20.76%; line-gap-override: 0%; }
+@font-face { font-family: 'Barlow Fallback'; font-weight: 600 900; src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('Arimo Bold');
+  size-adjust: 91.47%; ascent-override: 109.33%; descent-override: 21.87%; line-gap-override: 0%; }
+@font-face { font-family: 'Rajdhani Fallback'; font-weight: 100 500; src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('Arimo');
+  size-adjust: 91.38%; ascent-override: 101.77%; descent-override: 37.86%; line-gap-override: 0%; }
+@font-face { font-family: 'Rajdhani Fallback'; font-weight: 600 900; src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('Arimo Bold');
+  size-adjust: 86.10%; ascent-override: 108.01%; descent-override: 40.19%; line-gap-override: 0%; }
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
@@ -148,7 +163,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Barlow', sans-serif;
+  font-family: 'Barlow', 'Barlow Fallback', sans-serif;
   background: var(--basalt-950);
   color: var(--text-primary);
   line-height: 1.6;
@@ -157,7 +172,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Rajdhani', 'Rajdhani Fallback', sans-serif;
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: 0.02em;
@@ -198,7 +213,7 @@ a:hover { color: var(--limestone-50); }
 .nav-brand svg { width: 36px; height: 36px; }
 
 .nav-brand span {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Rajdhani', 'Rajdhani Fallback', sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--limestone-50);
@@ -220,7 +235,7 @@ a:hover { color: var(--limestone-50); }
 .nav-links a {
   display: inline-flex;
   align-items: center;
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Rajdhani', 'Rajdhani Fallback', sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
   color: var(--text-secondary);
@@ -258,7 +273,7 @@ a:hover { color: var(--limestone-50); }
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Rajdhani', 'Rajdhani Fallback', sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
   letter-spacing: 0.06em;
@@ -315,7 +330,7 @@ a:hover { color: var(--limestone-50); }
 .footer-brand svg { width: 28px; height: 28px; }
 
 .footer-brand span {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Rajdhani', 'Rajdhani Fallback', sans-serif;
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--limestone-50);
