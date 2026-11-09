@@ -40,6 +40,10 @@ Status, measurements and the off-site to-do list: [docs/seo.md](docs/seo.md).
 
 ## The user guide comes from the app repository
 
+**Not published since 9 Nov 2026** while the guide gets more work:
+`PUBLISH_USER_GUIDE = false` in `vite.config.js`. Flip it to `true` to put it
+back; nothing else needs to change.
+
 `/docs/` is generated from `docs/user-guide/` in `Stalagmight/Stalagmight` by
 `build/docs/` into the git-ignored `src/docs/`. Never edit or create files in
 `src/docs/`; they are wiped on every build. Authors work in the app repo

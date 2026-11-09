@@ -1,5 +1,19 @@
 # The user guide on the website
 
+> **Switched off on 9 Nov 2026** while the guide gets more work. With
+> `PUBLISH_USER_GUIDE = false` in `vite.config.js` the site builds as if there
+> were no guide: no `/docs/` pages, no Docs link in the nav or footer, no
+> home-page links, and nothing in the sitemap, `llms.txt` or search. Setting it
+> to `true` publishes the guide again on the next deploy, or within six hours
+> through the schedule.
+>
+> Everything else stays in place so that is a one-line change: the CI checkout
+> of the guide, `.app/` for local builds, and the pipeline itself. Builds with
+> `DOCS_SOURCE` set still include the guide, so `npm run dev:fixtures` and a
+> preview against a local checkout of the app repository keep working. The
+> `/docs/` URLs that were live from 9 Nov now return 404, which tells search
+> engines to drop them.
+
 The user guide is written in the **app repository**, as Markdown in
 [`docs/user-guide/`](https://github.com/Stalagmight/Stalagmight/tree/master/docs/user-guide),
 and published here at **`/docs/`**. Authors never touch this repository: the

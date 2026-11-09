@@ -24,7 +24,10 @@ function report(warnings) {
   }
 }
 
-export default function docs({ site }) {
+// `enabled: false` builds the site as if there were no user guide: no /docs/
+// pages, no nav, footer or home-page links to it, nothing in the sitemap,
+// llms.txt or search.
+export default function docs({ site, enabled = true }) {
   const source = path.resolve(process.env.DOCS_SOURCE || DEFAULT_SOURCE);
   let outDir = null;
   let model = null;
@@ -43,6 +46,10 @@ export default function docs({ site }) {
     clean();
     lastmod.clear();
     model = null;
+    if (!enabled) {
+      console.warn('[docs] publishing the user guide is switched off (PUBLISH_USER_GUIDE in vite.config.js); building without /docs/');
+      return {};
+    }
     if (!fs.existsSync(source)) {
       console.warn(`[docs] no user guide at ${path.relative(process.cwd(), source) || source}; building without /docs/`);
       return {};

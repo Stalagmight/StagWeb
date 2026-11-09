@@ -5,8 +5,14 @@ import sitemap from './build/sitemap.js'
 import docs from './build/docs/index.js'
 
 const site = 'https://stalagmight.com/'
-// The user guide, built from the app repository's docs/user-guide/ (docs/user-guide-pipeline.md).
-const userGuide = docs({ site })
+
+// The user guide, built from the app repository's docs/user-guide/
+// (docs/user-guide-pipeline.md). Off since 9 Nov 2026 while the guide gets more
+// work: set to true to publish it at /docs/ again. A build with DOCS_SOURCE set
+// (npm run build:fixtures, or a local checkout of the guide) still includes it,
+// so the pipeline and the guide can be previewed meanwhile.
+const PUBLISH_USER_GUIDE = false
+const userGuide = docs({ site, enabled: PUBLISH_USER_GUIDE || Boolean(process.env.DOCS_SOURCE) })
 
 export default defineConfig({
   root: 'src',
